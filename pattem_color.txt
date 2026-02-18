@@ -1,0 +1,5 @@
+--amber-gold: #ffbe0bff;
+--blaze-orange: #fb5607ff;
+--neon-pink: #ff006eff;
+--blue-violet: #8338ecff;
+--azure-blue: #3a86ffff;

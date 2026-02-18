@@ -1,0 +1,205 @@
+/* Base Container */
+.game-mgmt-container {
+    padding: 2rem;
+    min-height: 100vh;
+    background-color: var(--white);
+    background-image: radial-gradient(var(--black) 1px, transparent 1px);
+    background-size: 25px 25px;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background-color: var(--amber-gold);
+    padding: 1.5rem;
+    border: 4px solid var(--black);
+    box-shadow: 8px 8px 0px var(--black);
+}
+
+.page-title {
+    font-weight: 900;
+    font-size: 2rem;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.add-btn {
+    background-color: var(--azure-blue);
+    color: var(--white);
+    border: 3px solid var(--black);
+    padding: 10px 20px;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px var(--black);
+    transition: all 0.1s;
+}
+
+.add-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--black);
+}
+
+/* Masonry Layout */
+.masonry-grid {
+    columns: 1;
+    column-gap: 2rem;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .masonry-grid {
+        columns: 2;
+    }
+}
+
+@media (min-width: 1200px) {
+    .masonry-grid {
+        columns: 3;
+    }
+}
+
+@media (min-width: 1600px) {
+    .masonry-grid {
+        columns: 4;
+    }
+}
+
+.game-card {
+    break-inside: avoid;
+    margin-bottom: 2rem;
+    background-color: var(--white);
+    border: 4px solid var(--black);
+    box-shadow: 8px 8px 0px var(--black);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s;
+    overflow: hidden;
+}
+
+.game-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0px var(--black);
+}
+
+.card-image-wrapper {
+    width: 100%;
+    position: relative;
+    border-bottom: 4px solid var(--black);
+    overflow: hidden;
+}
+
+.game-cover {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: saturate(1.2);
+    transition: transform 0.3s;
+}
+
+.game-card:hover .game-cover {
+    transform: scale(1.05);
+}
+
+.card-price-tag {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--amber-gold);
+    color: var(--black);
+    padding: 5px 12px;
+    font-weight: 900;
+    border: 3px solid var(--black);
+    box-shadow: 3px 3px 0px var(--black);
+    transform: rotate(3deg);
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-weight: 900;
+    font-size: 1.4rem;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    color: var(--black);
+    line-height: 1.2;
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    /* Standard property for compatibility */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.genre-tag {
+    display: inline-block;
+    background-color: var(--blue-violet);
+    color: var(--white);
+    padding: 2px 8px;
+    margin: 2px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    border: 1px solid var(--black);
+}
+
+.card-footer {
+    padding: 1rem 1.5rem;
+    border-top: 2px solid var(--black);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+.game-id {
+    font-family: monospace;
+    font-size: 0.8rem;
+    background-color: #eee;
+    padding: 2px 5px;
+    border: 1px solid var(--black);
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.mini-action-btn {
+    padding: 8px;
+    width: 35px;
+    height: 35px;
+    border: 3px solid var(--black);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+    font-weight: 900;
+}
+
+.edit-btn-mini {
+    background-color: var(--azure-blue);
+    color: white;
+    box-shadow: 3px 3px 0px var(--black);
+}
+
+.delete-btn-mini {
+    background-color: var(--neon-pink);
+    color: white;
+    box-shadow: 3px 3px 0px var(--black);
+}
+
+.mini-action-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px var(--black);
+}
