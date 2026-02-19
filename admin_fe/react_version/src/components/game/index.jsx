@@ -4,6 +4,7 @@ import gameApi from '../../api/gameApi';
 import './game.css';
 import FormCreateGame from './formCreateGame';
 import FormUploadImageGame from './formUploadImageGame';
+import { toast } from '../notification/toast';
 
 const GameManagement = () => {
     const [games, setGames] = useState([]);
@@ -12,6 +13,7 @@ const GameManagement = () => {
     const [showUploadForm, setShowUploadForm] = useState(false);
     const [selectedGameForUpload, setSelectedGameForUpload] = useState(null);
     const [editingGame, setEditingGame] = useState(null);
+    const [isSeeding, setIsSeeding] = useState(false);
 
     useEffect(() => {
         loadGames();
@@ -106,7 +108,9 @@ const GameManagement = () => {
         <div className="game-mgmt-container">
             <div className="header-section">
                 <h1 className="page-title">KHO GAME ADMIN</h1>
-                <button className="add-btn" onClick={() => setShowForm(true)}>+ TAO GAME MOI</button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button className="add-btn" onClick={() => setShowForm(true)}>+ TAO GAME MOI</button>
+                </div>
             </div>
 
             <AnimatePresence>
