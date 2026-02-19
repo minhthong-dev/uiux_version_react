@@ -13,7 +13,34 @@ const getAllGames = async () => {
     console.log(data);
     return data.data || [];
 };
-
+const createGame = async (game) => {
+    const response = await fetch(`${GAME_API_URL}/create`, {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(game),
+    });
+    const data = await response.json();
+    console.log(data);
+    return data.data || [];
+};
+const uploadCoverGame = async (coverImage) => {
+    const response = await fetch(`${GAME_API_URL}/upload-cover`, {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(coverImage),
+    });
+    const data = await response.json();
+    console.log(data);
+    return data.data || [];
+};
 export default {
     getAllGames,
+    createGame,
+    uploadCoverGame,
 };

@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import gameApi from '../../api/gameApi';
 import './game.css';
+import FormCreateGame from './formCreateGame';
+
 
 const GameManagement = () => {
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showForm, setShowForm] = useState(false);
 
     useEffect(() => {
         loadGames();
@@ -21,6 +25,18 @@ const GameManagement = () => {
         }
     };
 
+    const handleSaveGame = async (formData) => {
+        try {
+            await gameApi.createGame(formData);
+            setShowForm(false);
+            await loadGames();
+            alert("Tạo game mới thành công!");
+        } catch (error) {
+            console.error("Error creating game:", error);
+            alert("Có lỗi xảy ra khi tạo game.");
+        }
+    };
+
     if (loading) return (
         <div className="game-mgmt-container">
             <h2 className="login-title">LOADING GAMES...</h2>
@@ -30,9 +46,18 @@ const GameManagement = () => {
     return (
         <div className="game-mgmt-container">
             <div className="header-section">
-                <h1 className="page-title">Game Inventory</h1>
-                <button className="add-btn">+ Create Game</button>
+                <h1 className="page-title">KHO GAME ADMIN</h1>
+                <button className="add-btn" onClick={() => setShowForm(true)}>+ TAO GAME MOI</button>
             </div>
+
+            <AnimatePresence>
+                {showForm && (
+                    <FormCreateGame
+                        onSave={handleSaveGame}
+                        onClose={() => setShowForm(false)}
+                    />
+                )}
+            </AnimatePresence>
 
             <div className="masonry-grid">
                 {games.length > 0 ? (

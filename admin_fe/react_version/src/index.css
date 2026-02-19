@@ -1,10 +1,26 @@
 /* Reset CSS mặc định của Vite để tránh xung đột với style mới */
 :root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Neo-Brutalism Palette */
+  --amber-gold: #ffbe0bff;
+  --blaze-orange: #fb5607ff;
+  --neon-pink: #ff006eff;
+  --blue-violet: #8338ecff;
+  --azure-blue: #3a86ffff;
+  --black: #000000;
+  --white: #ffffff;
+  --bg-color: #f0f0f0;
+
+  /* Borders & Shadows */
+  --border-thick: 4px solid #000;
+  --border-thin: 2px solid #000;
+  --shadow-hard: 8px 8px 0px #000;
+  --shadow-small: 4px 4px 0px #000;
+  --shadow-hover: 2px 2px 0px #000;
+
+  font-family: 'Outfit', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  /* Đảm bảo nền sáng cho phong cách Neo-Brutalism */
   color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -12,8 +28,51 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--black);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: var(--border-thick);
+  background: var(--white);
+  padding: 10px 20px;
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-small);
+  transition: all 0.1s ease;
+}
+
+button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard);
+}
+
+button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #000;
 }

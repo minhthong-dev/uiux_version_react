@@ -1,0 +1,125 @@
+.admin-header {
+    height: 70px;
+    background-color: var(--azure-blue);
+    border-bottom: var(--border-thick);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-logo {
+    font-size: 1.5rem;
+    font-weight: 900;
+    background: var(--white);
+    padding: 5px 15px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+}
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.user-profile {
+    background: var(--white);
+    border: var(--border-thick);
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    box-shadow: var(--shadow-small);
+}
+
+.logout-btn {
+    background: var(--neon-pink);
+    color: var(--white);
+    font-size: 0.8rem;
+}
+
+.admin-sidebar {
+    width: 250px;
+    height: calc(100vh - 70px);
+    background: var(--white);
+    border-right: var(--border-thick);
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 70px;
+    overflow-y: auto;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: var(--white);
+    border: var(--border-thick);
+    font-weight: 800;
+    text-transform: uppercase;
+    transition: all 0.1s ease;
+    box-shadow: var(--shadow-small);
+}
+
+.nav-item:hover,
+.user-profile:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: var(--shadow-hard);
+    background-color: var(--amber-gold);
+}
+
+.nav-item.active {
+    background: var(--neon-pink);
+    color: var(--white);
+    transform: translate(-4px, -4px);
+    box-shadow: var(--shadow-hard);
+}
+
+.nav-item.active svg {
+    stroke: var(--white);
+}
+
+/* Icons styling */
+.nav-item svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 3px;
+}
+
+/* Layout Wrapper */
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.logout-btn:hover {
+    background-color: var(--black) !important;
+    color: var(--neon-pink) !important;
+}
+
+.header-logo:hover {
+    background-color: var(--blaze-orange);
+    color: var(--white);
+    transform: rotate(-1deg);
+}
+
+.admin-content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 40px;
+    background-color: var(--bg-color);
+    min-height: calc(100vh - 70px);
+}
