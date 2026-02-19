@@ -103,11 +103,31 @@
 }
 
 /* Role Tags */
-.role-tag {
+.role-badge {
+    padding: 0.3rem 0.6rem;
+    border: 2px solid var(--black);
     font-weight: 900;
-    color: var(--blue-violet);
+    font-size: 0.7rem;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 2px 2px 0px var(--black);
+}
+
+.role-super_admin {
+    background: var(--amber-gold);
+    color: var(--black);
+}
+
+.role-admin {
+    background: var(--azure-blue);
+    color: var(--white);
+}
+
+.role-user {
+    background: var(--white);
+    color: var(--black);
 }
 
 /* Actions */

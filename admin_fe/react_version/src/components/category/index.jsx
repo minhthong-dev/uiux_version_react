@@ -3,6 +3,7 @@ import categoryApi from '../../api/categoryApi';
 import './category.css';
 import { Plus, Trash2, Edit3, Save } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from '../../components/notification/toast';
 
 const CategoryManagement = () => {
     const [categories, setCategories] = useState([]);
@@ -23,6 +24,7 @@ const CategoryManagement = () => {
             setCategories(data);
         } catch (error) {
             console.error("Failed to fetch categories:", error);
+            toast.error("Failed to fetch categories.");
         } finally {
             setLoading(false);
         }
@@ -38,11 +40,11 @@ const CategoryManagement = () => {
                 // Logic cập nhật
                 const result = await categoryApi.updateCategory(editingCategory._id, { name: categoryName.trim() });
                 if (result) {
-                    alert("Cập nhật danh mục thành công!");
+                    toast.success("Cập nhật danh mục thành công!");
                     handleCancelEdit();
                     await loadCategories();
                 } else {
-                    alert("Lỗi: " + (result.message || "Không thể cập nhật"));
+                    toast.error("Lỗi: " + (result.message || "Không thể cập nhật"));
                 }
             } else {
                 // Logic tạo mới
@@ -50,14 +52,14 @@ const CategoryManagement = () => {
                 if (result.data) {
                     setCategoryName('');
                     await loadCategories();
-                    alert("Thêm danh mục thành công!");
+                    toast.success("Thêm danh mục thành công!");
                 } else {
-                    alert("Lỗi: " + (result.message || "Không thể tạo danh mục"));
+                    toast.error("Lỗi: " + (result.message || "Không thể tạo danh mục"));
                 }
             }
         } catch (error) {
             console.error("Error submitting category:", error);
-            alert("Có lỗi xảy ra.");
+            toast.error("Có lỗi xảy ra.");
         } finally {
             setIsSubmitting(false);
         }
@@ -69,11 +71,14 @@ const CategoryManagement = () => {
             const result = await categoryApi.deleteCategory(categoryId);
             if (result) {
                 await loadCategories();
-                alert("Xóa danh mục thành công!");
+                toast.success("Xóa danh mục thành công!");
             } else {
-                alert("Lỗi: " + (result.message || "Không thể xóa danh mục"));
+                toast.error("Lỗi: " + (result.message || "Không thể xóa danh mục"));
             }
-        } catch (error) { console.error("Lỗi xóa: ", error); }
+        } catch (error) {
+            console.error("Lỗi xóa: ", error);
+            toast.error("Có lỗi xảy ra khi xóa.");
+        }
     }
 
     const handleEditClick = (category) => {

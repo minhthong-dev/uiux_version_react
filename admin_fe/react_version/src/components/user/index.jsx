@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import userApi from '../../api/userApi';
 import './index.css';
-import { ShieldAlert, ShieldCheck, UserX, UserCheck, Search } from 'lucide-react';
+import { ShieldAlert, ShieldCheck, UserX, UserCheck, Search, Crown, User } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from '../../components/notification/toast';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -16,39 +17,65 @@ const UserManagement = () => {
     const loadUsers = async () => {
         try {
             setLoading(true);
-            const data = await userApi.getAllUsers();
+            const response = await userApi.getAllUsers();
+            const data = Array.isArray(response) ? response : (response?.data || response?.users || []);
 
-            // Thêm fake data online status và joined date nếu thiếu
             const enrichedData = data.map(user => ({
                 ...user,
-                isOnline: Math.random() > 0.7, // Fake status online
+                isOnline: Math.random() > 0.7,
                 joinedAt: user.createdAt || new Date(Date.now() - Math.random() * 10000000000).toISOString()
             }));
 
             setUsers(enrichedData);
         } catch (error) {
             console.error("Failed to load users:", error);
+            toast.error("Không thể tải danh sách người dùng.");
         } finally {
             setLoading(false);
         }
     };
 
+    const checkisBlock = (response) => {
+        // Trả về giá trị boolean từ response (tùy thuộc vào cấu trúc backend)
+        return response?.isBlock || response?.data?.isBlock || false;
+    };
+
     const handleToggleBlock = async (user) => {
-        const action = user.isBlocked ? "bỏ chặn" : "chặn";
-        if (!window.confirm(`Bạn có chắc chắn muốn ${action} người dùng này?`)) return;
+        if (!window.confirm(`Bạn có chắc chắn muốn chặn người dùng này?`)) return;
 
         try {
-            // Logic thật: gọi API block
-            // result = await userApi.toggleBlockUser(user._id, !user.isBlocked);
-
-            // Logic tạm thời update UI để demo
+            const result = await userApi.toggleBlockUser(user._id);
+            const isBlock = checkisBlock(result);
             setUsers(prev => prev.map(u =>
-                u._id === user._id ? { ...u, isBlocked: !u.isBlocked } : u
+                u._id === user._id ? { ...u, isBlock: isBlock } : u
+            ));
+            console.log("result :", result);
+            if (result.message === 'block nguoi dung thanh cong') {
+                loadUsers();
+                toast.success("Chặn người dùng thành công!");
+            }
+        } catch (error) {
+            toast.error("Có lỗi xảy ra!");
+        }
+    };
+
+    const handleToggleUnBlock = async (user) => {
+        if (!window.confirm(`Bạn có chắc chắn muốn bỏ chặn người dùng này?`)) return;
+
+        try {
+            const result = await userApi.toggleUnBlockUser(user._id);
+            const isBlock = checkisBlock(result);
+
+            setUsers(prev => prev.map(u =>
+                u._id === user._id ? { ...u, isBlock: isBlock } : u
             ));
 
-            alert(`${user.isBlocked ? "Bỏ chặn" : "Chặn"} người dùng thành công!`);
+            if (result.message === 'bo block nguoi dung thanh cong') {
+                loadUsers();
+                toast.success("Bỏ chặn người dùng thành công!");
+            }
         } catch (error) {
-            alert("Có lỗi xảy ra!");
+            toast.error("Có lỗi xảy ra!");
         }
     };
 
@@ -121,11 +148,23 @@ const UserManagement = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <span className="role-tag">{user.role || 'USER'}</span>
+                                        {user.role === 'super_admin' ? (
+                                            <span className="role-badge role-super_admin">
+                                                <Crown size={14} /> SUPER ADMIN
+                                            </span>
+                                        ) : user.role === 'admin' ? (
+                                            <span className="role-badge role-admin">
+                                                <ShieldCheck size={14} /> ADMIN
+                                            </span>
+                                        ) : (
+                                            <span className="role-badge role-user">
+                                                <User size={14} /> USER
+                                            </span>
+                                        )}
                                     </td>
                                     <td>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                                            {user.isBlocked ? (
+                                            {user.isBlock ? (
                                                 <span className="status-badge status-blocked">ĐÃ CHẶN</span>
                                             ) : (
                                                 <span className={`status-badge ${user.isOnline ? 'status-online' : 'status-offline'}`}>
@@ -139,12 +178,12 @@ const UserManagement = () => {
                                     </td>
                                     <td>
                                         <button
-                                            className={user.isBlocked ? "btn-unblock" : "btn-block"}
-                                            onClick={() => handleToggleBlock(user)}
+                                            className={user.isBlock ? "btn-unblock" : "btn-block"}
+                                            onClick={() => user.isBlock ? handleToggleUnBlock(user) : handleToggleBlock(user)}
                                             style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                                         >
-                                            {user.isBlocked ? <UserCheck size={18} /> : <UserX size={18} />}
-                                            {user.isBlocked ? "BỎ CHẶN" : "CHẶN"}
+                                            {user.isBlock ? <UserCheck size={18} /> : <UserX size={18} />}
+                                            {user.isBlock ? "BỎ CHẶN" : "CHẶN"}
                                         </button>
                                     </td>
                                 </motion.tr>

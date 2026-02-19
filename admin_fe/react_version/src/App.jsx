@@ -6,10 +6,12 @@ import Home from './components/home/index';
 import Category from './components/category/index';
 import User from './components/user/index'
 import Layout from './components/layout/index';
+import ToastContainer from './components/notification/toast';
 
 function App() {
   return (
     <>
+      <ToastContainer />
       <Routes>
         <Route path="/login" element={<Login />} />
 

@@ -35,19 +35,19 @@ const GameManagement = () => {
                 // Logic cập nhật game
                 result = await gameApi.updateGame(editingGame._id, formData);
                 if (result.error) {
-                    alert("Lỗi cập nhật: " + result.error);
+                    toast.error("Lỗi cập nhật: " + result.error);
                     return;
                 }
-                alert("Cập nhật game thành công!");
+                toast.success("Cập nhật game thành công!");
                 setEditingGame(null);
             } else {
                 // Logic tạo mới game
                 result = await gameApi.createGame(formData);
                 if (result.error) {
-                    alert("Lỗi: " + result.error);
+                    toast.error("Lỗi: " + result.error);
                     return;
                 }
-                alert("Tạo game mới thành công! Bây giờ hãy upload hình ảnh cho game.");
+                toast.success("Tạo game mới thành công!");
 
                 // Tự động mở form upload cho game vừa tạo
                 const gameId = result._id || result.data?._id;
@@ -61,7 +61,7 @@ const GameManagement = () => {
             await loadGames();
         } catch (error) {
             console.error("Error saving game:", error);
-            alert("Có lỗi xảy ra khi lưu game.");
+            toast.error("Có lỗi xảy ra khi lưu game.");
         }
     };
 
@@ -70,14 +70,14 @@ const GameManagement = () => {
         try {
             const result = await gameApi.deleteGame(gameID);
             if (result.error) {
-                alert("Lỗi: " + result.error);
+                toast.error("Lỗi: " + result.error);
                 return;
             }
             await loadGames();
-            alert("Xóa game thành công!");
+            toast.success("Xóa game thành công!");
         } catch (error) {
             console.error("Error deleting game:", error);
-            alert("Có lỗi xảy ra khi xóa game.");
+            toast.error("Có lỗi xảy ra khi xóa game.");
         }
     }
 
