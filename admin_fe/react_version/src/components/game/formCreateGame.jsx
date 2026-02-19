@@ -1,71 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './game.css';
-import { Save, X, Plus, Trash2, Upload, Film } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Save, X, Plus } from 'lucide-react';
+import { motion } from 'framer-motion';
+import categoryApi from '../../api/categoryApi';
 
-const FormCreateGame = ({ onSave, onClose }) => {
+const FormCreateGame = ({ onSave, onClose, initialData }) => {
     const [formData, setFormData] = useState({
-        name: '',
-        releaseDate: '',
-        content: '',
-        downloadKey: '',
-        genre: [],
-        price: 0,
-        media: {
-            coverImage: '',
-            screenshots: [],
-            trailer: ''
-        }
+        name: initialData?.name || '',
+        releaseDate: initialData?.releaseDate ? new Date(initialData.releaseDate).toISOString().split('T')[0] : '',
+        content: initialData?.content || '',
+        downloadKey: initialData?.downloadKey || '',
+        genre: initialData?.genre || [],
+        price: initialData?.price || 0
     });
 
+    const [categories, setCategories] = useState([]);
     const [genreInput, setGenreInput] = useState('');
+
+    useEffect(() => {
+        loadCategories();
+    }, []);
+
+    const loadCategories = async () => {
+        try {
+            const result = await categoryApi.getAllCategories();
+            if (result.error) {
+                console.error("Lỗi:", result.error);
+                return;
+            }
+            // Backend trả về config có field data
+            setCategories(result.data || result || []);
+        } catch (error) {
+            console.error("Error loading categories:", error);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name.includes('.')) {
-            const [parent, child] = name.split('.');
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleAddGenre = (name) => {
+        const valueToAdd = name || genreInput.trim();
+        if (valueToAdd && !formData.genre.includes(valueToAdd)) {
             setFormData(prev => ({
                 ...prev,
-                [parent]: {
-                    ...prev[parent],
-                    [child]: value
-                }
-            }));
-        } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
-        }
-    };
-
-    const handleFileChange = (e, type) => {
-        const file = e.target.files[0];
-        if (file) {
-            const url = URL.createObjectURL(file);
-            if (type === 'coverImage') {
-                setFormData(prev => ({
-                    ...prev,
-                    media: { ...prev.media, coverImage: url }
-                }));
-            }
-        }
-    };
-
-    const handleScreenshotUpload = (e) => {
-        const files = Array.from(e.target.files);
-        const urls = files.map(file => URL.createObjectURL(file));
-        setFormData(prev => ({
-            ...prev,
-            media: {
-                ...prev.media,
-                screenshots: [...prev.media.screenshots, ...urls]
-            }
-        }));
-    };
-
-    const handleAddGenre = () => {
-        if (genreInput.trim() && !formData.genre.includes(genreInput.trim())) {
-            setFormData(prev => ({
-                ...prev,
-                genre: [...prev.genre, genreInput.trim()]
+                genre: [...prev.genre, valueToAdd]
             }));
             setGenreInput('');
         }
@@ -75,16 +55,6 @@ const FormCreateGame = ({ onSave, onClose }) => {
         setFormData(prev => ({
             ...prev,
             genre: prev.genre.filter((_, i) => i !== index)
-        }));
-    };
-
-    const handleRemoveScreenshot = (index) => {
-        setFormData(prev => ({
-            ...prev,
-            media: {
-                ...prev.media,
-                screenshots: prev.media.screenshots.filter((_, i) => i !== index)
-            }
         }));
     };
 
@@ -107,7 +77,7 @@ const FormCreateGame = ({ onSave, onClose }) => {
                 exit={{ scale: 0.8, y: 50 }}
             >
                 <div className="form-header">
-                    <h2>THÊM GAME MỚI</h2>
+                    <h2>{initialData ? 'CHỈNH SỬA THÔNG TIN GAME' : 'THÊM GAME MỚI (CHƯA CÓ HÌNH)'}</h2>
                     <button className="close-btn" onClick={onClose}>
                         <X size={24} />
                     </button>
@@ -115,7 +85,6 @@ const FormCreateGame = ({ onSave, onClose }) => {
 
                 <form onSubmit={handleSubmit} className="game-form">
                     <div className="form-grid">
-                        {/* Basic Info */}
                         <div className="form-section">
                             <h3>THÔNG TIN CƠ BẢN</h3>
                             <div className="form-group">
@@ -152,6 +121,22 @@ const FormCreateGame = ({ onSave, onClose }) => {
                                     rows="5"
                                 ></textarea>
                             </div>
+                        </div>
+
+                        <div className="form-section">
+                            <h3>THÔNG SỐ & THỂ LOẠI</h3>
+
+                            <div className="form-group">
+                                <label>Giá (VNĐ)</label>
+                                <input
+                                    type="number"
+                                    name="price"
+                                    value={formData.price}
+                                    onChange={handleChange}
+                                    min="0"
+                                    required
+                                />
+                            </div>
 
                             <div className="form-group">
                                 <label>Download Key / Link</label>
@@ -164,25 +149,6 @@ const FormCreateGame = ({ onSave, onClose }) => {
                                     placeholder="Link Google Drive hoặc Mega..."
                                 />
                             </div>
-                        </div>
-
-                        {/* Stats & Metadata */}
-                        <div className="form-section">
-                            <h3>THÔNG SỐ & THỂ LOẠI</h3>
-
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Giá (VNĐ)</label>
-                                    <input
-                                        type="number"
-                                        name="price"
-                                        value={formData.price}
-                                        onChange={handleChange}
-                                        min="0"
-                                        required
-                                    />
-                                </div>
-                            </div>
 
                             <div className="form-group">
                                 <label>Thể loại</label>
@@ -191,14 +157,40 @@ const FormCreateGame = ({ onSave, onClose }) => {
                                         type="text"
                                         value={genreInput}
                                         onChange={(e) => setGenreInput(e.target.value)}
-                                        placeholder="Hành động, Phiêu lưu..."
+                                        placeholder="Nhập thủ công hoặc chọn bên dưới..."
                                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddGenre())}
                                     />
-                                    <button type="button" onClick={handleAddGenre} className="add-mini">
-                                        <Plus size={18} />
+                                    <button type="button" onClick={() => handleAddGenre()} className="add-mini">
+                                        +
                                     </button>
                                 </div>
-                                <div className="tag-container">
+
+                                {/* Gợi ý danh mục từ DB */}
+                                {categories.length > 0 && (
+                                    <div className="suggested-categories" style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                                        <span style={{ fontSize: '0.7rem', fontWeight: 900, width: '100%', marginBottom: '5px', opacity: 0.6 }}>GỢI Ý:</span>
+                                        {categories.map((cat) => (
+                                            <button
+                                                key={cat._id}
+                                                type="button"
+                                                className={`mini-tag-btn ${formData.genre.includes(cat.name) ? 'selected' : ''}`}
+                                                onClick={() => handleAddGenre(cat.name)}
+                                                style={{
+                                                    fontSize: '0.7rem',
+                                                    padding: '2px 8px',
+                                                    border: '2px solid var(--black)',
+                                                    background: formData.genre.includes(cat.name) ? 'var(--amber-gold)' : 'var(--white)',
+                                                    cursor: 'pointer',
+                                                    fontWeight: 800
+                                                }}
+                                            >
+                                                {cat.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div className="tag-container" style={{ marginTop: '15px', borderTop: '2px dashed #ddd', paddingTop: '10px' }}>
                                     {formData.genre.map((g, i) => (
                                         <span key={i} className="neo-tag">
                                             {g}
@@ -207,72 +199,6 @@ const FormCreateGame = ({ onSave, onClose }) => {
                                             </button>
                                         </span>
                                     ))}
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Trailer (Youtube Link)</label>
-                                <div className="input-with-icon">
-                                    <Film size={20} className="input-icon" />
-                                    <input
-                                        type="text"
-                                        name="media.trailer"
-                                        value={formData.media.trailer}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder="https://youtube.com/watch?v=..."
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Media Section */}
-                        <div className="form-section full-width">
-                            <h3>HÌNH ẢNH (UPLOAD)</h3>
-                            <div className="media-upload-grid">
-                                <div className="upload-box main-cover">
-                                    <label className="upload-label">
-                                        <Upload size={32} />
-                                        <span>CHỌN ẢNH BÌA</span>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, 'coverImage')}
-                                            hidden
-                                        />
-                                    </label>
-                                    {formData.media.coverImage && (
-                                        <div className="preview-overlay">
-                                            <img src={formData.media.coverImage} alt="Cover" />
-                                            <button type="button" onClick={() => setFormData(prev => ({ ...prev, media: { ...prev.media, coverImage: '' } }))}>
-                                                XÓA
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="upload-box multi-screenshots">
-                                    <label className="upload-label">
-                                        <Plus size={32} />
-                                        <span>THÊM ẢNH CHỤP MÀN HÌNH</span>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            multiple
-                                            onChange={handleScreenshotUpload}
-                                            hidden
-                                        />
-                                    </label>
-                                    <div className="screenshots-grid">
-                                        {formData.media.screenshots.map((s, i) => (
-                                            <div key={i} className="screenshot-thumb">
-                                                <img src={s} alt={`Screenshot ${i}`} />
-                                                <button type="button" onClick={() => handleRemoveScreenshot(i)}>
-                                                    <X size={14} />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -284,7 +210,7 @@ const FormCreateGame = ({ onSave, onClose }) => {
                         </button>
                         <button type="submit" className="btn-save shadow-hover">
                             <Save size={20} />
-                            XÁC NHẬN TẠO GAME
+                            {initialData ? 'LƯU THAY ĐỔI' : 'TIẾP TỤC (TẠO GAME)'}
                         </button>
                     </div>
                 </form>

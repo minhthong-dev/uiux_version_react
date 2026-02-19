@@ -3,12 +3,15 @@ import { AnimatePresence } from 'framer-motion';
 import gameApi from '../../api/gameApi';
 import './game.css';
 import FormCreateGame from './formCreateGame';
-
+import FormUploadImageGame from './formUploadImageGame';
 
 const GameManagement = () => {
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+    const [showUploadForm, setShowUploadForm] = useState(false);
+    const [selectedGameForUpload, setSelectedGameForUpload] = useState(null);
+    const [editingGame, setEditingGame] = useState(null);
 
     useEffect(() => {
         loadGames();
@@ -27,14 +30,70 @@ const GameManagement = () => {
 
     const handleSaveGame = async (formData) => {
         try {
-            await gameApi.createGame(formData);
+            let result;
+            if (editingGame) {
+                // Logic cập nhật game
+                result = await gameApi.updateGame(editingGame._id, formData);
+                if (result.error) {
+                    alert("Lỗi cập nhật: " + result.error);
+                    return;
+                }
+                alert("Cập nhật game thành công!");
+                setEditingGame(null);
+            } else {
+                // Logic tạo mới game
+                result = await gameApi.createGame(formData);
+                if (result.error) {
+                    alert("Lỗi: " + result.error);
+                    return;
+                }
+                alert("Tạo game mới thành công! Bây giờ hãy upload hình ảnh cho game.");
+
+                // Tự động mở form upload cho game vừa tạo
+                const gameId = result._id || result.data?._id;
+                if (gameId) {
+                    setSelectedGameForUpload({ _id: gameId, name: formData.name });
+                    setShowUploadForm(true);
+                }
+            }
+
             setShowForm(false);
             await loadGames();
-            alert("Tạo game mới thành công!");
         } catch (error) {
-            console.error("Error creating game:", error);
-            alert("Có lỗi xảy ra khi tạo game.");
+            console.error("Error saving game:", error);
+            alert("Có lỗi xảy ra khi lưu game.");
         }
+    };
+
+    const handlerDeleteGame = async (gameID) => {
+        if (!window.confirm("Bạn có chắc chắn muốn xóa game này?")) return;
+        try {
+            const result = await gameApi.deleteGame(gameID);
+            if (result.error) {
+                alert("Lỗi: " + result.error);
+                return;
+            }
+            await loadGames();
+            alert("Xóa game thành công!");
+        } catch (error) {
+            console.error("Error deleting game:", error);
+            alert("Có lỗi xảy ra khi xóa game.");
+        }
+    }
+
+    const openUploadForm = (game) => {
+        setSelectedGameForUpload(game);
+        setShowUploadForm(true);
+    };
+
+    const handleEditClick = (game) => {
+        setEditingGame(game);
+        setShowForm(true);
+    };
+
+    const handleCloseForm = () => {
+        setShowForm(false);
+        setEditingGame(null);
     };
 
     if (loading) return (
@@ -54,7 +113,16 @@ const GameManagement = () => {
                 {showForm && (
                     <FormCreateGame
                         onSave={handleSaveGame}
-                        onClose={() => setShowForm(false)}
+                        onClose={handleCloseForm}
+                        initialData={editingGame}
+                    />
+                )}
+                {showUploadForm && selectedGameForUpload && (
+                    <FormUploadImageGame
+                        gameId={selectedGameForUpload._id}
+                        gameName={selectedGameForUpload.name}
+                        onClose={() => setShowUploadForm(false)}
+                        onUploadSuccess={loadGames}
                     />
                 )}
             </AnimatePresence>
@@ -69,7 +137,14 @@ const GameManagement = () => {
                                     alt={game.name}
                                     className="game-cover"
                                 />
-                                <div className="card-price-tag">${game.price}</div>
+                                <div className="card-price-tag">{game.price.toLocaleString()}đ</div>
+                                <button
+                                    className="add-btn"
+                                    style={{ position: 'absolute', bottom: '10px', right: '10px', padding: '5px 10px', fontSize: '0.7rem' }}
+                                    onClick={() => openUploadForm(game)}
+                                >
+                                    UPLOAD ẢNH
+                                </button>
                             </div>
 
                             <div className="card-content">
@@ -78,7 +153,7 @@ const GameManagement = () => {
                                     {game.content || "No description available for this awesome game."}
                                 </div>
                                 <div className="genres-list">
-                                    {(game.genere || []).map((g, index) => (
+                                    {(game.genre || []).map((g, index) => (
                                         <span key={index} className="genre-tag">{g}</span>
                                     ))}
                                 </div>
@@ -87,10 +162,14 @@ const GameManagement = () => {
                             <div className="card-footer">
                                 <span className="game-id">{game._id.substring(0, 8)}...</span>
                                 <div className="card-actions">
-                                    <button className="mini-action-btn edit-btn-mini" title="Edit Game">
+                                    <button
+                                        className="mini-action-btn edit-btn-mini"
+                                        title="Edit Game"
+                                        onClick={() => handleEditClick(game)}
+                                    >
                                         ✎
                                     </button>
-                                    <button className="mini-action-btn delete-btn-mini" title="Delete Game">
+                                    <button className="mini-action-btn delete-btn-mini" title="Delete Game" onClick={() => handlerDeleteGame(game._id)}>
                                         🗑
                                     </button>
                                 </div>

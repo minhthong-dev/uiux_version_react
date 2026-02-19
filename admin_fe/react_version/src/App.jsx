@@ -3,7 +3,7 @@ import './App.css';
 import { Routes, Route } from 'react-router-dom';
 import Game from './components/game/index';
 import Home from './components/home/index';
-
+import Category from './components/category/index';
 import Layout from './components/layout/index';
 
 function App() {
@@ -16,6 +16,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/game" element={<Game />} />
+          <Route path="/category" element={<Category />} />
         </Route>
       </Routes>
     </>

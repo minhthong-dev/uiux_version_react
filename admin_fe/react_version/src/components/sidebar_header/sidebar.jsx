@@ -1,12 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Gamepad2, Users, ShoppingCart, Settings, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Gamepad2, Users, ShoppingCart, Settings, BarChart3, Tags } from 'lucide-react';
 import './sidebar_header.css';
 
 const Sidebar = () => {
     const navItems = [
         { path: '/', icon: <LayoutDashboard />, label: 'Dashboard' },
         { path: '/game', icon: <Gamepad2 />, label: 'Quản lý Game' },
+        { path: '/category', icon: <Tags />, label: 'Quản lý Danh mục' },
         { path: '/users', icon: <Users />, label: 'Người dùng' },
         { path: '/orders', icon: <ShoppingCart />, label: 'Đơn hàng' },
         { path: '/stats', icon: <BarChart3 />, label: 'Thống kê' },

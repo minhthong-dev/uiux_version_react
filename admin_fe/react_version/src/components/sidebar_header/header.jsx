@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LogOut, User, Bell } from 'lucide-react';
 import './sidebar_header.css';
-
+import { useNavigate } from 'react-router-dom';
+import { manageToken } from '../../utils/manageToken'
 const Header = () => {
+    const [logout, setLogout] = useState(false);
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        setLogout(true);
+        manageToken.removeToken();
+        navigate('/login');
+    }
     return (
         <header className="admin-header">
             <div className="header-logo">
@@ -19,7 +27,7 @@ const Header = () => {
                     <span>ADMINISTRATOR</span>
                 </div>
 
-                <button className="logout-btn nav-item">
+                <button className="logout-btn nav-item" onClick={handleLogout}>
                     <LogOut size={18} />
                     <span>THOÁT</span>
                 </button>
