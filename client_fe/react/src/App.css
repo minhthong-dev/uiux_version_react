@@ -1,0 +1,6 @@
+/* Dọn dẹp App.css để tránh affecting layout của Login */
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}

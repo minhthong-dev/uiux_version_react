@@ -1,0 +1,329 @@
+[{
+  "_id": {
+    "$oid": "69995bc51bbd5d88bd8ae5c2"
+  },
+  "name": "Hành động",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc51bbd5d88bd8ae5c5"
+  },
+  "name": "Phiêu lưu",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc61bbd5d88bd8ae5c8"
+  },
+  "name": "Phổ thông",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc61bbd5d88bd8ae5cb"
+  },
+  "name": "Indie",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc61bbd5d88bd8ae5ce"
+  },
+  "name": "MMO",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc61bbd5d88bd8ae5d1"
+  },
+  "name": "Đua xe",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc71bbd5d88bd8ae5d5"
+  },
+  "name": "Mô phỏng",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc71bbd5d88bd8ae5d8"
+  },
+  "name": "Thể thao",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc71bbd5d88bd8ae5db"
+  },
+  "name": "Chiến thuật",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc71bbd5d88bd8ae5de"
+  },
+  "name": "Kinh dị",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc71bbd5d88bd8ae5e1"
+  },
+  "name": "Sinh tồn",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc71bbd5d88bd8ae5e4"
+  },
+  "name": "Thế giới mở",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc81bbd5d88bd8ae5e7"
+  },
+  "name": "Sandbox",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc81bbd5d88bd8ae5ea"
+  },
+  "name": "Bắn súng",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc81bbd5d88bd8ae5ed"
+  },
+  "name": "Giải đố",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc81bbd5d88bd8ae5f0"
+  },
+  "name": "Anime",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc81bbd5d88bd8ae5f4"
+  },
+  "name": "Cyberpunk",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc81bbd5d88bd8ae5f7"
+  },
+  "name": "Zombies",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc91bbd5d88bd8ae5fa"
+  },
+  "name": "Platformer",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc91bbd5d88bd8ae5fd"
+  },
+  "name": "Kiếm hiệp",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc91bbd5d88bd8ae600"
+  },
+  "name": "Hài hước",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc91bbd5d88bd8ae603"
+  },
+  "name": "Roguelike",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc91bbd5d88bd8ae606"
+  },
+  "name": "Roguelite",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bc91bbd5d88bd8ae609"
+  },
+  "name": "Metroidvania",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bca1bbd5d88bd8ae60c"
+  },
+  "name": "Soulslike",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bca1bbd5d88bd8ae60f"
+  },
+  "name": "Thủ thành",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bca1bbd5d88bd8ae612"
+  },
+  "name": "Thẻ bài",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bca1bbd5d88bd8ae615"
+  },
+  "name": "Nhịp điệu",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bca1bbd5d88bd8ae618"
+  },
+  "name": "Visual Novel",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bca1bbd5d88bd8ae61b"
+  },
+  "name": "Chiến thuật theo lượt",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcb1bbd5d88bd8ae61e"
+  },
+  "name": "RTS",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcb1bbd5d88bd8ae621"
+  },
+  "name": "Đại chiến thuật",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcb1bbd5d88bd8ae624"
+  },
+  "name": "Quản lý",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcb1bbd5d88bd8ae627"
+  },
+  "name": "Xây dựng thành phố",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcb1bbd5d88bd8ae62a"
+  },
+  "name": "Hẹn hò",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcb1bbd5d88bd8ae62d"
+  },
+  "name": "Tâm lý kinh dị",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcc1bbd5d88bd8ae631"
+  },
+  "name": "Đối kháng",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcc1bbd5d88bd8ae634"
+  },
+  "name": "Thư giãn",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcc1bbd5d88bd8ae637"
+  },
+  "name": "Khám phá",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcc1bbd5d88bd8ae63a"
+  },
+  "name": "Bí ẩn",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcc1bbd5d88bd8ae63d"
+  },
+  "name": "Tàng hình",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcd1bbd5d88bd8ae640"
+  },
+  "name": "Chặt chém",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcd1bbd5d88bd8ae643"
+  },
+  "name": "Idle",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcd1bbd5d88bd8ae646"
+  },
+  "name": "Pixel Art",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bcd1bbd5d88bd8ae649"
+  },
+  "name": "Lịch sử",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bce1bbd5d88bd8ae64c"
+  },
+  "name": "Thần thoại",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69995bce1bbd5d88bd8ae64f"
+  },
+  "name": "Hậu tận thế",
+  "__v": 0
+}]

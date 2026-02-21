@@ -10,7 +10,7 @@ const FormCreateGame = ({ onSave, onClose, initialData }) => {
         releaseDate: initialData?.releaseDate ? new Date(initialData.releaseDate).toISOString().split('T')[0] : '',
         content: initialData?.content || '',
         downloadKey: initialData?.downloadKey || '',
-        genre: initialData?.genre || [],
+        genre: initialData?.genre || initialData?.genre || [],
         price: initialData?.price || 0
     });
 
@@ -40,8 +40,8 @@ const FormCreateGame = ({ onSave, onClose, initialData }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleAddGenre = (name) => {
-        const valueToAdd = name || genreInput.trim();
+    const handleAddGenre = (id) => {
+        const valueToAdd = id;
         if (valueToAdd && !formData.genre.includes(valueToAdd)) {
             setFormData(prev => ({
                 ...prev,
@@ -61,6 +61,7 @@ const FormCreateGame = ({ onSave, onClose, initialData }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         onSave && onSave(formData);
+        console.log("formData: ", formData);
     };
 
     return (
@@ -157,12 +158,9 @@ const FormCreateGame = ({ onSave, onClose, initialData }) => {
                                         type="text"
                                         value={genreInput}
                                         onChange={(e) => setGenreInput(e.target.value)}
-                                        placeholder="Nhập thủ công hoặc chọn bên dưới..."
-                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddGenre())}
+                                        placeholder="Chọn danh mục bên dưới..."
+                                        readOnly
                                     />
-                                    <button type="button" onClick={() => handleAddGenre()} className="add-mini">
-                                        +
-                                    </button>
                                 </div>
 
                                 {/* Gợi ý danh mục từ DB */}
@@ -173,13 +171,13 @@ const FormCreateGame = ({ onSave, onClose, initialData }) => {
                                             <button
                                                 key={cat._id}
                                                 type="button"
-                                                className={`mini-tag-btn ${formData.genre.includes(cat.name) ? 'selected' : ''}`}
-                                                onClick={() => handleAddGenre(cat.name)}
+                                                className={`mini-tag-btn ${formData.genre.includes(cat._id) ? 'selected' : ''}`}
+                                                onClick={() => handleAddGenre(cat._id)}
                                                 style={{
                                                     fontSize: '0.7rem',
                                                     padding: '2px 8px',
                                                     border: '2px solid var(--black)',
-                                                    background: formData.genre.includes(cat.name) ? 'var(--amber-gold)' : 'var(--white)',
+                                                    background: formData.genre.includes(cat._id) ? 'var(--amber-gold)' : 'var(--white)',
                                                     cursor: 'pointer',
                                                     fontWeight: 800
                                                 }}
@@ -191,9 +189,9 @@ const FormCreateGame = ({ onSave, onClose, initialData }) => {
                                 )}
 
                                 <div className="tag-container" style={{ marginTop: '15px', borderTop: '2px dashed #ddd', paddingTop: '10px' }}>
-                                    {formData.genre.map((g, i) => (
+                                    {formData.genre.map((id, i) => (
                                         <span key={i} className="neo-tag">
-                                            {g}
+                                            {categories.find(c => c._id === id)?.name || id}
                                             <button type="button" onClick={() => handleRemoveGenre(i)}>
                                                 <X size={12} />
                                             </button>

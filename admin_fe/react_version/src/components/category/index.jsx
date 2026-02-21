@@ -10,6 +10,7 @@ const CategoryManagement = () => {
     const [loading, setLoading] = useState(true);
     const [categoryName, setCategoryName] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSeeding, setIsSeeding] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
 
     useEffect(() => {
@@ -81,6 +82,49 @@ const CategoryManagement = () => {
         }
     }
 
+    const handleSeedSteamCategories = async () => {
+        const steamGenres = [
+            "Hành động", "Phiêu lưu", "Phổ thông", "Indie", "MMO", "Đua xe",
+            "Nhập vai (RPG)", "Mô phỏng", "Thể thao", "Chiến thuật", "Kinh dị",
+            "Sinh tồn", "Thế giới mở", "Sandbox", "Bắn súng", "Giải đố",
+            "Anime", "Viễn tưởng (Sci-fi)", "Cyberpunk", "Zombies", "Platformer",
+            "Kiếm hiệp", "Hài hước", "Roguelike", "Roguelite", "Metroidvania",
+            "Soulslike", "Thủ thành", "Thẻ bài", "Nhịp điệu", "Visual Novel",
+            "Chiến thuật theo lượt", "RTS", "Đại chiến thuật", "Quản lý",
+            "Xây dựng thành phố", "Hẹn hò", "Tâm lý kinh dị", "Hợp tác (Co-op)",
+            "Đối kháng", "Thư giãn", "Khám phá", "Bí ẩn", "Tàng hình",
+            "Chặt chém", "Idle", "Pixel Art", "Lịch sử", "Thần thoại", "Hậu tận thế"
+        ];
+
+        setIsSeeding(true);
+        let count = 0;
+
+        try {
+            // Lấy danh sách hiện tại để tránh trùng lặp
+            const currentCategories = await categoryApi.getAllCategories() || [];
+            const currentNames = currentCategories.map(c => c.name.toLowerCase());
+
+            for (const genre of steamGenres) {
+                if (!currentNames.includes(genre.toLowerCase())) {
+                    await categoryApi.createCategory({ name: genre });
+                    count++;
+                }
+            }
+
+            if (count > 0) {
+                toast.success(`Đã thêm thành công ${count} thể loại từ Steam!`);
+                await loadCategories();
+            } else {
+                toast.info("Tất cả thể loại Steam đã tồn tại.");
+            }
+        } catch (error) {
+            console.error("Seed error:", error);
+            toast.error("Có lỗi xảy ra khi seed dữ liệu.");
+        } finally {
+            setIsSeeding(false);
+        }
+    };
+
     const handleEditClick = (category) => {
         setEditingCategory(category);
         setCategoryName(category.name);
@@ -101,8 +145,26 @@ const CategoryManagement = () => {
                 >
                     QUẢN LÝ DANH MỤC
                 </motion.h1>
-                <div className="stats-badge">
-                    TỔNG SỐ: {categories.length}
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <button
+                        className="seed-btn shadow-hover"
+                        onClick={handleSeedSteamCategories}
+                        disabled={isSeeding}
+                        style={{
+                            background: 'var(--amber-gold)',
+                            color: 'var(--black)',
+                            border: '2px solid var(--black)',
+                            padding: '8px 15px',
+                            fontWeight: 900,
+                            cursor: 'pointer',
+                            fontSize: '0.8rem'
+                        }}
+                    >
+                        {isSeeding ? 'ĐANG SEEDING...' : '⚡ SEED STEAM GENRES'}
+                    </button>
+                    <div className="stats-badge">
+                        TỔNG SỐ: {categories.length}
+                    </div>
                 </div>
             </header>
 

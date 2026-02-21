@@ -1,0 +1,170 @@
+/* Header & Sidebar Styles - Neo-Retro Theme */
+.client-header {
+    height: 80px;
+    background-color: var(--deep-space-blue);
+    border-bottom: var(--border-thick);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.client-logo {
+    font-size: 1.8rem;
+    font-weight: 950;
+    background: var(--sunflower-gold);
+    color: var(--deep-space-blue);
+    padding: 5px 20px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.search-container {
+    position: relative;
+    width: 350px;
+}
+
+.header-search {
+    width: 100%;
+    padding: 10px 15px 10px 45px;
+    border: var(--border-thick);
+    background: var(--white);
+    font-weight: 700;
+    font-size: 0.9rem;
+    outline: none;
+    box-shadow: var(--shadow-small);
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.store-nav {
+    display: flex;
+    gap: 20px;
+}
+
+.store-nav-link {
+    font-weight: 900;
+    color: var(--vanilla-custard);
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+
+.store-nav-link:hover {
+    color: var(--sunflower-gold);
+}
+
+.header-right {
+    display: flex;
+    gap: 15px;
+}
+
+.user-btn {
+    background: var(--sunflower-gold);
+    border: var(--border-thick);
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    box-shadow: var(--shadow-small);
+    cursor: pointer;
+}
+
+.user-btn:hover {
+    background: var(--flag-red);
+    color: var(--white);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
+}
+
+/* Sidebar */
+.client-sidebar {
+    width: 280px;
+    height: calc(100vh - 80px);
+    background: var(--white);
+    border-right: var(--border-thick);
+    padding: 30px 20px;
+    position: fixed;
+    left: 0;
+    top: 80px;
+    overflow-y: auto;
+}
+
+.sidebar-section {
+    margin-bottom: 30px;
+}
+
+.sidebar-title {
+    font-size: 0.85rem;
+    font-weight: 950;
+    color: var(--deep-space-blue);
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--vanilla-custard);
+    padding-bottom: 5px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.client-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: var(--white);
+    border: 3px solid var(--black);
+    font-weight: 800;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--black);
+    box-shadow: 4px 4px 0px var(--black);
+    transition: all 0.1s;
+}
+
+.client-nav-item:hover {
+    background: var(--sunflower-gold);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px var(--black);
+}
+
+.client-nav-item.active {
+    background: var(--flag-red);
+    color: var(--white);
+    transform: translate(-3px, -3px);
+    box-shadow: 7px 7px 0px var(--black);
+}
+
+/* Base Layout Classes */
+.client-layout {
+    display: flex;
+}
+
+.client-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 40px;
+    background-color: var(--bg-color);
+    min-height: calc(100vh - 80px);
+}
