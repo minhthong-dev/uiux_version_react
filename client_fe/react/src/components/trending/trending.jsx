@@ -12,31 +12,28 @@ const Trending = () => {
     useEffect(() => {
         const fetchTrending = async () => {
             try {
+
                 const data = await gameApi.getAllGames();
-                let sortedGames = [...data];
+                const gamesWithLikes = await Promise.all(data.map(async (game) => {
+                    const count = await gameApi.getCountLike(game._id);
+                    return { ...game, likeCount: count };
+                }));
+
+                let sortedGames = [...gamesWithLikes];
 
                 // Sắp xếp: Ưu tiên Wishlist trước, sau đó đến Like
                 sortedGames.sort((a, b) => {
-                    const wishA = Array.isArray(a.wishlist) ? a.wishlist.length : (a.wishlist || 0);
-                    const wishB = Array.isArray(b.wishlist) ? b.wishlist.length : (b.wishlist || 0);
-                    const wishDiff = wishB - wishA;
+                    const wishDiff = (b.wishlist?.length || 0) - (a.wishlist?.length || 0);
                     if (wishDiff !== 0) return wishDiff;
-
-                    const likeA = Array.isArray(a.like) ? a.like.length : (a.like || 0);
-                    const likeB = Array.isArray(b.like) ? b.like.length : (b.like || 0);
-                    return likeB - likeA;
+                    return (b.likeCount || 0) - (a.likeCount || 0);
                 });
 
                 // Kiểm tra nếu tất cả đều bằng nhau (để trộn ngẫu nhiên)
                 const firstG = sortedGames[0];
-                const firstWish = firstG ? (Array.isArray(firstG.wishlist) ? firstG.wishlist.length : (firstG.wishlist || 0)) : 0;
-                const firstLike = firstG ? (Array.isArray(firstG.like) ? firstG.like.length : (firstG.like || 0)) : 0;
-
-                const allEqual = sortedGames.every(g => {
-                    const wishG = Array.isArray(g.wishlist) ? g.wishlist.length : (g.wishlist || 0);
-                    const likeG = Array.isArray(g.like) ? g.like.length : (g.like || 0);
-                    return wishG === firstWish && likeG === firstLike;
-                });
+                const allEqual = sortedGames.every(g =>
+                    (g.wishlist?.length || 0) === (firstG?.wishlist?.length || 0) &&
+                    (g.likeCount || 0) === (firstG?.likeCount || 0)
+                );
 
                 if (allEqual && sortedGames.length > 0) {
                     sortedGames = sortedGames.sort(() => Math.random() - 0.5);
@@ -73,7 +70,7 @@ const Trending = () => {
                 </div>
                 <div className="podium-info">
                     <h3 className="podium-name">{game.name}</h3>
-                    <div className="podium-likes">🔥 {Array.isArray(game.like) ? game.like.length : (game.like || 0)} LƯỢT THÍCH</div>
+                    <div className="podium-likes">🔥 {game.likeCount || 0} LƯỢT THÍCH</div>
                     <div style={{ fontWeight: 900, marginTop: '10px' }}>{formatCurrency(game.price)}</div>
                 </div>
             </div>
@@ -111,7 +108,7 @@ const Trending = () => {
                                 className="row-img"
                             />
                             <span className="row-name">{game.name}</span>
-                            <span className="row-likes">{Array.isArray(game.like) ? game.like.length : (game.like || 0)} LIKE</span>
+                            <span className="row-likes">{game.likeCount || 0} LIKE</span>
                         </div>
                     ))}
                 </div>

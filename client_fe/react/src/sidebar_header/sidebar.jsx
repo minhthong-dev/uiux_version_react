@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
     Home,
@@ -14,8 +14,33 @@ import {
     Search
 } from 'lucide-react';
 import './sidebar_header.css';
+import useGenreNav from '../hooks/useGenreNav';
+import categoryApi from '../api/categoryApi';
 
 const Sidebar = () => {
+    const { goToGenre } = useGenreNav();
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await categoryApi.getAllCategories();
+                setCategories(data || []);
+            } catch (error) {
+                console.error("Lỗi khi tải thể loại sidebar:", error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    const getIconForCategory = (name) => {
+        const lowerName = name.toLowerCase();
+        if (lowerName.includes('hành động')) return <Sword size={20} />;
+        if (lowerName.includes('phiêu lưu')) return <Gamepad2 size={20} />;
+        if (lowerName.includes('kinh dị')) return <Ghost size={20} />;
+        return <Trophy size={20} />;
+    };
+
     return (
         <aside className="client-sidebar">
             <div className="sidebar-section">
@@ -61,9 +86,22 @@ const Sidebar = () => {
             <div className="sidebar-section">
                 <h3 className="sidebar-title">THỂ LOẠI</h3>
                 <nav className="sidebar-nav">
-                    <div className="client-nav-item"><Sword size={20} /><span>Hành động</span></div>
-                    <div className="client-nav-item"><Gamepad2 size={20} /><span>Phiêu lưu</span></div>
-                    <div className="client-nav-item"><Ghost size={20} /><span>Kinh dị</span></div>
+                    {categories.slice(0, 5).map(cat => (
+                        <div
+                            key={cat._id}
+                            className="client-nav-item"
+                            onClick={() => goToGenre(cat._id)}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            {getIconForCategory(cat.name)}
+                            <span>{cat.name}</span>
+                        </div>
+                    ))}
+                    {categories.length === 0 && (
+                        <div className="client-nav-item" style={{ opacity: 0.5 }}>
+                            <span>... Đang tải thể loại ...</span>
+                        </div>
+                    )}
                 </nav>
             </div>
         </aside>

@@ -15,6 +15,7 @@ const Game = () => {
     const [inWishlist, setInWishlist] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
     const { goToGenre } = useGenreNav();
+    const [coutLike, setCoutLike] = useState(0);
 
     // Hàm helper để chuyển đổi link YouTube thường sang link embed
     const getEmbedUrl = (url) => {
@@ -48,23 +49,23 @@ const Game = () => {
             alert('Thao tác thất bại!');
         }
     };
+    const loadLikeCount = async () => {
+        const count = await gameApi.getCountLike(id);
 
+        setCoutLike(count);
+    };
     const handleToggleLike = async () => {
         try {
             if (isLiked) {
                 await gameApi.unlike(game._id);
                 setIsLiked(false);
-                setGame(prev => {
-                    const prevLikes = Array.isArray(prev.like) ? prev.like.length : (prev.like || 0);
-                    return { ...prev, like: Math.max(0, prevLikes - 1) };
-                });
+                setCoutLike(coutLike - 1);
+                setGame(prev => ({ ...prev, like: Math.max(0, (prev.like || 1) - 1) }));
             } else {
                 await gameApi.like(game._id);
                 setIsLiked(true);
-                setGame(prev => {
-                    const prevLikes = Array.isArray(prev.like) ? prev.like.length : (prev.like || 0);
-                    return { ...prev, like: prevLikes + 1 };
-                });
+                setCoutLike(coutLike + 1);
+                setGame(prev => ({ ...prev, like: (prev.like || 0) + 1 }));
             }
         } catch (error) {
             console.error('Lỗi khi cập nhật lượt thích:', error);
@@ -80,7 +81,7 @@ const Game = () => {
                     gameApi.isWishlist(id),
                     gameApi.isLike(id)
                 ]);
-
+                loadLikeCount();
                 if (wishData === true) {
                     setInWishlist(true);
                 }
@@ -239,7 +240,7 @@ const Game = () => {
                         >
                             <span style={{ fontSize: '2rem', filter: isLiked ? 'none' : 'grayscale(100%) opacity(0.5)' }}>👍</span>
                             <span className="info-value" style={{ fontSize: '1.5rem', margin: 0, fontWeight: 900 }}>
-                                {Array.isArray(game.like) ? game.like.length : (game.like || 0)} LƯỢT THÍCH
+                                {coutLike} LƯỢT THÍCH
                             </span>
                         </div>
                     </div>

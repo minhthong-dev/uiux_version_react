@@ -94,7 +94,7 @@ const like = async (gameId) => {
     return data || [];
 };
 const unlike = async (gameId) => {
-    const response = await fetch(`${GAME_API_URL}/like`, {
+    const response = await fetch(`${GAME_API_URL}/unlike`, {
         method: "DELETE",
         headers: {
             "Authorization": "Bearer " + manageToken.getToken(),
@@ -126,6 +126,17 @@ const isLike = async (gameId) => {
     });
     const data = await response.json();
     return data.isLike;
+};
+const getCountLike = async (gameId) => {
+    const response = await fetch(`${GAME_API_URL}/like/count/${gameId}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+    });
+    const data = await response.json();
+    return data.data;
 };
 // const createGame = async (game) => {
 //     const response = await fetch(`${GAME_API_URL}/create`, {
@@ -209,6 +220,7 @@ export default {
     unlike,
     getLike,
     isLike,
+    getCountLike
     // createGame,
     // uploadCoverImage,
     // uploadScreenshotImage,
