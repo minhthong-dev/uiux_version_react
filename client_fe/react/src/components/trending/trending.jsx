@@ -17,17 +17,26 @@ const Trending = () => {
 
                 // Sắp xếp: Ưu tiên Wishlist trước, sau đó đến Like
                 sortedGames.sort((a, b) => {
-                    const wishDiff = (b.wishlist?.length || b.wishlist || 0) - (a.wishlist?.length || a.wishlist || 0);
+                    const wishA = Array.isArray(a.wishlist) ? a.wishlist.length : (a.wishlist || 0);
+                    const wishB = Array.isArray(b.wishlist) ? b.wishlist.length : (b.wishlist || 0);
+                    const wishDiff = wishB - wishA;
                     if (wishDiff !== 0) return wishDiff;
-                    return (b.like || 0) - (a.like || 0);
+
+                    const likeA = Array.isArray(a.like) ? a.like.length : (a.like || 0);
+                    const likeB = Array.isArray(b.like) ? b.like.length : (b.like || 0);
+                    return likeB - likeA;
                 });
 
                 // Kiểm tra nếu tất cả đều bằng nhau (để trộn ngẫu nhiên)
                 const firstG = sortedGames[0];
-                const allEqual = sortedGames.every(g =>
-                    (g.wishlist?.length || g.wishlist || 0) === (firstG?.wishlist?.length || firstG?.wishlist || 0) &&
-                    (g.like || 0) === (firstG?.like || 0)
-                );
+                const firstWish = firstG ? (Array.isArray(firstG.wishlist) ? firstG.wishlist.length : (firstG.wishlist || 0)) : 0;
+                const firstLike = firstG ? (Array.isArray(firstG.like) ? firstG.like.length : (firstG.like || 0)) : 0;
+
+                const allEqual = sortedGames.every(g => {
+                    const wishG = Array.isArray(g.wishlist) ? g.wishlist.length : (g.wishlist || 0);
+                    const likeG = Array.isArray(g.like) ? g.like.length : (g.like || 0);
+                    return wishG === firstWish && likeG === firstLike;
+                });
 
                 if (allEqual && sortedGames.length > 0) {
                     sortedGames = sortedGames.sort(() => Math.random() - 0.5);
@@ -64,7 +73,7 @@ const Trending = () => {
                 </div>
                 <div className="podium-info">
                     <h3 className="podium-name">{game.name}</h3>
-                    <div className="podium-likes">🔥 {game.like || 0} LƯỢT THÍCH</div>
+                    <div className="podium-likes">🔥 {Array.isArray(game.like) ? game.like.length : (game.like || 0)} LƯỢT THÍCH</div>
                     <div style={{ fontWeight: 900, marginTop: '10px' }}>{formatCurrency(game.price)}</div>
                 </div>
             </div>
@@ -102,7 +111,7 @@ const Trending = () => {
                                 className="row-img"
                             />
                             <span className="row-name">{game.name}</span>
-                            <span className="row-likes">{game.like || 0} LIKE</span>
+                            <span className="row-likes">{Array.isArray(game.like) ? game.like.length : (game.like || 0)} LIKE</span>
                         </div>
                     ))}
                 </div>

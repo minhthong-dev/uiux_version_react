@@ -125,7 +125,7 @@ const isLike = async (gameId) => {
         },
     });
     const data = await response.json();
-    return data.isWishlist;
+    return data.isLike;
 };
 // const createGame = async (game) => {
 //     const response = await fetch(`${GAME_API_URL}/create`, {

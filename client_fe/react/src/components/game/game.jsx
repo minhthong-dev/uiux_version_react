@@ -13,6 +13,7 @@ const Game = () => {
     const [loading, setLoading] = useState(true);
     const [genres, setGenres] = useState([]);
     const [inWishlist, setInWishlist] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
     const { goToGenre } = useGenreNav();
 
     // Hàm helper để chuyển đổi link YouTube thường sang link embed
@@ -48,16 +49,44 @@ const Game = () => {
         }
     };
 
+    const handleToggleLike = async () => {
+        try {
+            if (isLiked) {
+                await gameApi.unlike(game._id);
+                setIsLiked(false);
+                setGame(prev => {
+                    const prevLikes = Array.isArray(prev.like) ? prev.like.length : (prev.like || 0);
+                    return { ...prev, like: Math.max(0, prevLikes - 1) };
+                });
+            } else {
+                await gameApi.like(game._id);
+                setIsLiked(true);
+                setGame(prev => {
+                    const prevLikes = Array.isArray(prev.like) ? prev.like.length : (prev.like || 0);
+                    return { ...prev, like: prevLikes + 1 };
+                });
+            }
+        } catch (error) {
+            console.error('Lỗi khi cập nhật lượt thích:', error);
+            alert('Thao tác thất bại!');
+        }
+    };
+
     useEffect(() => {
         const fetchGameDetail = async () => {
             try {
-                const [data, wishData] = await Promise.all([
+                const [data, wishData, likeData] = await Promise.all([
                     gameApi.getGameById(id),
-                    gameApi.isWishlist(id)
+                    gameApi.isWishlist(id),
+                    gameApi.isLike(id)
                 ]);
 
                 if (wishData === true) {
                     setInWishlist(true);
+                }
+
+                if (likeData === true) {
+                    setIsLiked(true);
                 }
 
                 // Vì API trả về data hoặc [] nếu lỗi, nên check kỹ
@@ -192,9 +221,26 @@ const Game = () => {
                     </div>
                     <div className="info-item">
                         <span className="info-label">PHẢN HỒI CỦA NGƯỜI CHƠI</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ fontSize: '2rem' }}>👍</span>
-                            <span className="info-value" style={{ fontSize: '1.5rem' }}>{game.like} LƯỢT THÍCH</span>
+                        <div
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                cursor: 'pointer',
+                                padding: '5px 15px',
+                                backgroundColor: isLiked ? 'var(--sunflower-gold)' : 'transparent',
+                                border: isLiked ? 'var(--border-thick)' : '2px dashed rgba(0,0,0,0.3)',
+                                boxShadow: isLiked ? 'var(--shadow-small)' : 'none',
+                                transition: 'all 0.2s',
+                                marginTop: '5px'
+                            }}
+                            onClick={handleToggleLike}
+                            title={isLiked ? "Bỏ thích" : "Thích trò chơi này"}
+                        >
+                            <span style={{ fontSize: '2rem', filter: isLiked ? 'none' : 'grayscale(100%) opacity(0.5)' }}>👍</span>
+                            <span className="info-value" style={{ fontSize: '1.5rem', margin: 0, fontWeight: 900 }}>
+                                {Array.isArray(game.like) ? game.like.length : (game.like || 0)} LƯỢT THÍCH
+                            </span>
                         </div>
                     </div>
                     <button
