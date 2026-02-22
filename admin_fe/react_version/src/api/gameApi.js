@@ -73,6 +73,18 @@ const updateGame = async (gameId, gameData) => {
     const data = await response.json();
     return data;
 };
+const deleteImage = async (imageId, type, imageUrl) => {
+    const response = await fetch(`${GAME_API_URL}/delete-image/${imageId}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ type, imageUrl }),
+    });
+    const data = await response.json();
+    return data;
+}
 const deleteGame = async (gameId) => {
     const response = await fetch(`${GAME_API_URL}/${gameId}`, {
         method: "DELETE",
@@ -90,5 +102,6 @@ export default {
     uploadCoverImage,
     uploadScreenshotImage,
     updateGame,
+    deleteImage,
     deleteGame
 };

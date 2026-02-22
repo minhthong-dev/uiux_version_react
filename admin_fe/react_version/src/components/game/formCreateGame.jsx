@@ -11,7 +11,8 @@ const FormCreateGame = ({ onSave, onClose, initialData }) => {
         content: initialData?.content || '',
         downloadKey: initialData?.downloadKey || '',
         genre: initialData?.genre || initialData?.genre || [],
-        price: initialData?.price || 0
+        price: initialData?.price || 0,
+        trailer: initialData?.media?.trailer || '',
     });
 
     const [categories, setCategories] = useState([]);
@@ -121,6 +122,18 @@ const FormCreateGame = ({ onSave, onClose, initialData }) => {
                                     placeholder="Mô tả chi tiết về game..."
                                     rows="5"
                                 ></textarea>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Trailer</label>
+                                <input
+                                    type="text"
+                                    name="trailer"
+                                    value={formData.trailer}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="VD: https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                                />
                             </div>
                         </div>
 

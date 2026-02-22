@@ -1,6 +1,6 @@
 import BASE_API_URL from "../config/configApiUrl";
 const GAME_API_URL = `${BASE_API_URL}/games`;
-import { manageToken } from "../utils/manageToken";
+import { manageToken, getInfor } from "../utils/manageToken";
 
 const getAllGames = async () => {
     const response = await fetch(`${GAME_API_URL}/all`, {
@@ -14,7 +14,6 @@ const getAllGames = async () => {
     return data.data || [];
 };
 const searchGames = async (encryptedQuery) => {
-    // Chỉ mã hóa giá trị và gửi vào tham số q
     const response = await fetch(`${GAME_API_URL}/search?q=${encodeURIComponent(encryptedQuery)}`, {
         method: "GET",
         headers: {
@@ -24,6 +23,109 @@ const searchGames = async (encryptedQuery) => {
     });
     const data = await response.json();
     return data || [];
+};
+const getGameById = async (gameId) => {
+    const response = await fetch(`${GAME_API_URL}/${gameId}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+    });
+    const data = await response.json();
+    return data || [];
+};
+const addWishlist = async (gameId) => {
+    const response = await fetch(`${GAME_API_URL}/wishlist`, {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ gameId: gameId, userId: getInfor().id }),
+    });
+    const data = await response.json();
+    return data || [];
+};
+const removeWishlist = async (gameId) => {
+    const response = await fetch(`${GAME_API_URL}/wishlist`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ gameId: gameId, userId: getInfor().id }),
+    });
+    const data = await response.json();
+    return data || [];
+};
+const getWishlist = async () => {
+    const response = await fetch(`${GAME_API_URL}/wishlist/${getInfor().id}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+    });
+    const data = await response.json();
+    return data || [];
+};
+const isWishlist = async (gameId) => {
+    const response = await fetch(`${GAME_API_URL}/wishlist/${gameId}/${getInfor().id}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+    });
+    const data = await response.json();
+    return data.isWishlist;
+};
+const like = async (gameId) => {
+    const response = await fetch(`${GAME_API_URL}/like`, {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ gameId: gameId, userId: getInfor().id }),
+    });
+    const data = await response.json();
+    return data || [];
+};
+const unlike = async (gameId) => {
+    const response = await fetch(`${GAME_API_URL}/like`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ gameId: gameId, userId: getInfor().id }),
+    });
+    const data = await response.json();
+    return data || [];
+};
+const getLike = async () => {
+    const response = await fetch(`${GAME_API_URL}/like/${getInfor().id}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+    });
+    const data = await response.json();
+    return data || [];
+};
+const isLike = async (gameId) => {
+    const response = await fetch(`${GAME_API_URL}/like/${gameId}/${getInfor().id}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+    });
+    const data = await response.json();
+    return data.isWishlist;
 };
 // const createGame = async (game) => {
 //     const response = await fetch(`${GAME_API_URL}/create`, {
@@ -98,6 +200,15 @@ const searchGames = async (encryptedQuery) => {
 export default {
     getAllGames,
     searchGames,
+    getGameById,
+    addWishlist,
+    removeWishlist,
+    getWishlist,
+    isWishlist,
+    like,
+    unlike,
+    getLike,
+    isLike,
     // createGame,
     // uploadCoverImage,
     // uploadScreenshotImage,

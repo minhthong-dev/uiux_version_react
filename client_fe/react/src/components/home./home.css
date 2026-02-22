@@ -25,14 +25,15 @@
 }
 
 .featured-hero img {
-    width: 65%;
-    height: 100%;
+    width: 360px;
+    /* Cố định width để highlight poster */
+    height: 480px;
     object-fit: cover;
     border-right: 4px solid var(--black);
 }
 
 .hero-info {
-    width: 35%;
+    flex: 1;
     padding: 35px;
     display: flex;
     flex-direction: column;
@@ -119,7 +120,7 @@
 
 .card-media {
     position: relative;
-    height: 180px;
+    aspect-ratio: 3/4;
     border-bottom: 4px solid var(--black);
 }
 

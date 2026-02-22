@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Header from '../../sidebar_header/header';
-import Sidebar from '../../sidebar_header/sidebar';
+import { useLocation, useNavigate } from 'react-router-dom';
 import gameApi from '../../api/gameApi';
 import categoryApi from '../../api/categoryApi';
 import cryptoUtils from '../../../cryptojs';
+import useGenreNav from '../../hooks/useGenreNav';
+import { formatCurrency } from '../../utils/formatCurrency';
 import '../home./home.css';
 import './search.css';
 
@@ -12,6 +12,7 @@ const Search = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const initialName = queryParams.get('q') || '';
+    const initialGenre = queryParams.get('genre') || '';
 
     const [results, setResults] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -20,7 +21,7 @@ const Search = () => {
     // Filter States
     const [filters, setFilters] = useState({
         name: initialName,
-        genre: '',
+        genre: initialGenre,
         minPrice: '',
         maxPrice: ''
     });
@@ -39,8 +40,8 @@ const Search = () => {
     }, []);
 
     useEffect(() => {
-        setFilters(prev => ({ ...prev, name: initialName }));
-    }, [initialName]);
+        setFilters(prev => ({ ...prev, name: initialName, genre: initialGenre }));
+    }, [initialName, initialGenre]);
 
     const handleSearch = async () => {
         setLoading(true);
@@ -61,111 +62,103 @@ const Search = () => {
 
     useEffect(() => {
         handleSearch();
-    }, [filters.name]); // Tự động tìm kiếm khi query từ header thay đổi
+    }, [filters.name, filters.genre]); // Tự động tìm kiếm khi query từ header hoặc thể loại thay đổi
 
     return (
-        <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-color)' }}>
-            <Header />
-            <div className="client-layout">
-                <Sidebar />
-                <main className="client-content">
-                    <div className="search-page-container">
-                        {/* Filter Panel */}
-                        <aside className="filter-panel">
-                            <h2 className="filter-panel-title">BỘ LỌC TÌM KIẾM</h2>
+        <div className="search-page-container">
+            {/* Filter Panel */}
+            <aside className="filter-panel">
+                <h2 className="filter-panel-title">BỘ LỌC TÌM KIẾM</h2>
 
-                            <div className="filter-group-item">
-                                <label>TÊN TRÒ CHƠI</label>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm tên..."
-                                    className="filter-input"
-                                    value={filters.name}
-                                    onChange={(e) => setFilters({ ...filters, name: e.target.value })}
-                                />
-                            </div>
+                <div className="filter-group-item">
+                    <label>TÊN TRÒ CHƠI</label>
+                    <input
+                        type="text"
+                        placeholder="Tìm tên..."
+                        className="filter-input"
+                        value={filters.name}
+                        onChange={(e) => setFilters({ ...filters, name: e.target.value })}
+                    />
+                </div>
 
-                            <div className="filter-group-item">
-                                <label>THỂ LOẠI</label>
-                                <select
-                                    className="filter-select"
-                                    value={filters.genre}
-                                    onChange={(e) => setFilters({ ...filters, genre: e.target.value })}
-                                >
-                                    <option value="">TẤT CẢ THỂ LOẠI</option>
-                                    {categories.map(cat => (
-                                        <option key={cat._id} value={cat._id}>{cat.name}</option>
-                                    ))}
-                                </select>
-                            </div>
+                <div className="filter-group-item">
+                    <label>THỂ LOẠI</label>
+                    <select
+                        className="filter-select"
+                        value={filters.genre}
+                        onChange={(e) => setFilters({ ...filters, genre: e.target.value })}
+                    >
+                        <option value="">TẤT CẢ THỂ LOẠI</option>
+                        {categories.map(cat => (
+                            <option key={cat._id} value={cat._id}>{cat.name}</option>
+                        ))}
+                    </select>
+                </div>
 
-                            <div className="filter-group-item">
-                                <label>GIÁ (USD)</label>
-                                <div className="price-inputs">
-                                    <input
-                                        type="number"
-                                        placeholder="Min"
-                                        className="filter-input-price"
-                                        value={filters.minPrice}
-                                        onChange={(e) => setFilters({ ...filters, minPrice: Number(e.target.value) })}
-                                    />
-                                    <span>-</span>
-                                    <input
-                                        type="number"
-                                        placeholder="Max"
-                                        className="filter-input-price"
-                                        value={filters.maxPrice}
-                                        onChange={(e) => setFilters({ ...filters, maxPrice: Number(e.target.value) })}
-                                    />
-                                </div>
-                            </div>
-
-                            <button className="apply-filter-btn" onClick={handleSearch}>
-                                ÁP DỤNG BỘ LỌC
-                            </button>
-                            <button
-                                className="reset-filter-btn"
-                                onClick={() => setFilters({ name: '', category: '', minPrice: '', maxPrice: '' })}
-                            >
-                                ĐẶT LẠI
-                            </button>
-                        </aside>
-
-                        {/* Results Section */}
-                        <div className="search-results-main">
-                            <h2 className="section-title">
-                                {results.length} KẾT QUẢ ĐƯỢC TÌM THẤY
-                            </h2>
-
-                            {loading ? (
-                                <h1 style={{ color: 'var(--deep-space-blue)', fontWeight: 900, textAlign: 'center', marginTop: '50px' }}>
-                                    ĐANG TÌM KIẾM...
-                                </h1>
-                            ) : results.length > 0 ? (
-                                <div className="game-grid-steam">
-                                    {results.map((game) => (
-                                        <GameCard key={game._id} game={game} />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div style={{ textAlign: 'center', marginTop: '100px' }}>
-                                    <h2 style={{ color: 'var(--flag-red)', fontWeight: 950 }}>
-                                        KHÔNG TÌM THẤY TRÒ CHƠI NÀO.
-                                    </h2>
-                                    <p style={{ fontWeight: 700 }}>Hãy thử thay đổi bộ lọc để tìm kiếm nhé!</p>
-                                </div>
-                            )}
-                        </div>
+                <div className="filter-group-item">
+                    <label>GIÁ (USD)</label>
+                    <div className="price-inputs">
+                        <input
+                            type="number"
+                            placeholder="Min"
+                            className="filter-input-price"
+                            value={filters.minPrice}
+                            onChange={(e) => setFilters({ ...filters, minPrice: Number(e.target.value) })}
+                        />
+                        <span>-</span>
+                        <input
+                            type="number"
+                            placeholder="Max"
+                            className="filter-input-price"
+                            value={filters.maxPrice}
+                            onChange={(e) => setFilters({ ...filters, maxPrice: Number(e.target.value) })}
+                        />
                     </div>
-                </main>
+                </div>
+
+                <button className="apply-filter-btn" onClick={handleSearch}>
+                    ÁP DỤNG BỘ LỌC
+                </button>
+                <button
+                    className="reset-filter-btn"
+                    onClick={() => setFilters({ name: '', category: '', minPrice: '', maxPrice: '' })}
+                >
+                    ĐẶT LẠI
+                </button>
+            </aside>
+
+            {/* Results Section */}
+            <div className="search-results-main">
+                <h2 className="section-title">
+                    {results.length} KẾT QUẢ ĐƯỢC TÌM THẤY
+                </h2>
+
+                {loading ? (
+                    <h1 style={{ color: 'var(--deep-space-blue)', fontWeight: 900, textAlign: 'center', marginTop: '50px' }}>
+                        ĐANG TÌM KIẾM...
+                    </h1>
+                ) : results.length > 0 ? (
+                    <div className="game-grid-steam">
+                        {results.map((game) => (
+                            <GameCard key={game._id} game={game} />
+                        ))}
+                    </div>
+                ) : (
+                    <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                        <h2 style={{ color: 'var(--flag-red)', fontWeight: 950 }}>
+                            KHÔNG TÌM THẤY TRÒ CHƠI NÀO.
+                        </h2>
+                        <p style={{ fontWeight: 700 }}>Hãy thử thay đổi bộ lọc để tìm kiếm nhé!</p>
+                    </div>
+                )}
             </div>
         </div>
     );
 };
 
-// Sub-component cho từng Tag thể loại
 const GenreTag = ({ categoryId }) => {
     const [categoryName, setCategoryName] = useState("...");
+    const { goToGenre } = useGenreNav();
 
     useEffect(() => {
         const fetchCategoryName = async () => {
@@ -183,31 +176,42 @@ const GenreTag = ({ categoryId }) => {
         if (categoryId) fetchCategoryName();
     }, [categoryId]);
 
-    return <span className="tag">{categoryName}</span>;
+    return (
+        <span
+            className="tag"
+            onClick={(e) => { e.stopPropagation(); goToGenre(categoryId); }}
+            style={{ cursor: 'pointer' }}
+        >
+            {categoryName}
+        </span>
+    );
 };
 
 // Sub-component cho thẻ game
-const GameCard = ({ game }) => (
-    <div className="game-card-steam">
-        <div className="card-media">
-            <img src={game.media?.coverImage || 'https://via.placeholder.com/400x225'} alt={game.name} />
-            {game.price === 0 && <span className="free-badge">FREE</span>}
-        </div>
-        <div className="card-details">
-            <h3 className="game-name">{game.name}</h3>
-            <div className="game-tags">
-                {game.genre && game.genre.slice(0, 2).map((genreId, i) => (
-                    <GenreTag key={i} categoryId={genreId} />
-                ))}
+const GameCard = ({ game }) => {
+    const navigate = useNavigate();
+    return (
+        <div className="game-card-steam" onClick={() => navigate(`/game/${game._id}`)}>
+            <div className="card-media">
+                <img src={game.media?.coverImage || 'https://via.placeholder.com/600x800'} alt={game.name} />
+                {game.price === 0 && <span className="free-badge">FREE</span>}
             </div>
-            <div className="card-footer">
-                <div className="feedback">👍 {game.like}</div>
-                <div className="card-price">
-                    {game.price === 0 ? "FREE" : `$${game.price}`}
+            <div className="card-details">
+                <h3 className="game-name">{game.name}</h3>
+                <div className="game-tags">
+                    {game.genre && game.genre.slice(0, 2).map((genreId, i) => (
+                        <GenreTag key={i} categoryId={genreId} />
+                    ))}
+                </div>
+                <div className="card-footer">
+                    <div className="feedback">👍 {game.like}</div>
+                    <div className="card-price">
+                        {formatCurrency(game.price)}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 export default Search;

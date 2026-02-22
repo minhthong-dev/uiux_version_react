@@ -3,14 +3,25 @@ import { Routes, Route } from 'react-router-dom'
 import Home from './components/home./home'
 import Login from './components/auth/auth'
 import Search from './components/search/search'
+import Game from './components/game/game'
+import Trending from './components/trending/trending'
+import Newest from './components/newest/newest'
+import Wishlist from './components/wishlist/wishlist'
+import Layout from './layout/index'
 import './App.css'
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
       <Route path="/auth" element={<Login />} />
-      <Route path="/search" element={<Search />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/game/:id" element={<Game />} />
+        <Route path="/trending" element={<Trending />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/new" element={<Newest />} />
+      </Route>
       {/* Thêm các route khác ở đây */}
     </Routes>
   )

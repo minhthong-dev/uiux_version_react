@@ -6,9 +6,14 @@ export const manageToken = {
     removeToken: () => localStorage.removeItem(TOKEN_KEY),
 }
 export const getInfor = (token) => {
-    if (token) {
-        return jwtDecode(token);
-
+    const activeToken = token || manageToken.getToken();
+    if (activeToken) {
+        try {
+            return jwtDecode(activeToken);
+        } catch (error) {
+            console.error("Invalid token:", error);
+            return null;
+        }
     }
     return null;
 }

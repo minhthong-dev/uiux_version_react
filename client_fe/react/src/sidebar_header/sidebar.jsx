@@ -53,7 +53,7 @@ const Sidebar = () => {
                     </NavLink>
                     <NavLink to="/wishlist" className="client-nav-item">
                         <Heart size={20} />
-                        <span>Yêu thích</span>
+                        <span>DANH SÁCH ƯỚC</span>
                     </NavLink>
                 </nav>
             </div>

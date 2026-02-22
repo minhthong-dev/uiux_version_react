@@ -125,30 +125,30 @@ const GameManagement = () => {
         const loadingToast = toast.info("Đang upload 20 game AAA cực phẩm...");
 
         const aaaGames = [
-            {
-                name: "Elden Ring",
-                releaseDate: "2022-02-25",
-                content: "Sống sót và trở thành Elden Lord trong vùng đất Lands Between. Một siêu phẩm từ FromSoftware và George R. R. Martin.",
-                downloadKey: "https://store.steampowered.com/app/1245620/ELDEN_RING/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bca1bbd5d88bd8ae60c", "69995bc71bbd5d88bd8ae5e4"],
-                price: 1200000
-            },
-            {
-                name: "Cyberpunk 2077",
-                releaseDate: "2020-12-10",
-                content: "Khám phá thành phố Night City rực rỡ nhưng thối nát. Một trải nghiệm nhập vai hành động thế giới mở đầy kịch tính.",
-                downloadKey: "https://store.steampowered.com/app/1091500/Cyberpunk_2077/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc81bbd5d88bd8ae5f4", "69995bc71bbd5d88bd8ae5e4"],
-                price: 990000
-            },
-            {
-                name: "The Witcher 3: Wild Hunt",
-                releaseDate: "2015-05-19",
-                content: "Hành trình tìm kiếm Ciri của Geralt of Rivia qua một thế giới mang đậm màu sắc thần thoại và chính trị.",
-                downloadKey: "https://store.steampowered.com/app/292030/The_Witcher_3_Wild_Hunt/",
-                genre: ["69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5e4", "69995bce1bbd5d88bd8ae64c"],
-                price: 500000
-            },
+            // {
+            //     name: "Elden Ring",
+            //     releaseDate: "2022-02-25",
+            //     content: "Sống sót và trở thành Elden Lord trong vùng đất Lands Between. Một siêu phẩm từ FromSoftware và George R. R. Martin.",
+            //     downloadKey: "https://store.steampowered.com/app/1245620/ELDEN_RING/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bca1bbd5d88bd8ae60c", "69995bc71bbd5d88bd8ae5e4"],
+            //     price: 1200000
+            // },
+            // {
+            //     name: "Cyberpunk 2077",
+            //     releaseDate: "2020-12-10",
+            //     content: "Khám phá thành phố Night City rực rỡ nhưng thối nát. Một trải nghiệm nhập vai hành động thế giới mở đầy kịch tính.",
+            //     downloadKey: "https://store.steampowered.com/app/1091500/Cyberpunk_2077/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc81bbd5d88bd8ae5f4", "69995bc71bbd5d88bd8ae5e4"],
+            //     price: 990000
+            // },
+            // {
+            //     name: "The Witcher 3: Wild Hunt",
+            //     releaseDate: "2015-05-19",
+            //     content: "Hành trình tìm kiếm Ciri của Geralt of Rivia qua một thế giới mang đậm màu sắc thần thoại và chính trị.",
+            //     downloadKey: "https://store.steampowered.com/app/292030/The_Witcher_3_Wild_Hunt/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5e4", "69995bce1bbd5d88bd8ae64c"],
+            //     price: 500000
+            // },
             {
                 name: "Red Dead Redemption 2",
                 releaseDate: "2018-10-26",
@@ -156,135 +156,135 @@ const GameManagement = () => {
                 downloadKey: "https://store.steampowered.com/app/1174180/Red_Dead_Redemption_2/",
                 genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5e4"],
                 price: 1000000
-            },
-            {
-                name: "Ghost of Tsushima",
-                releaseDate: "2020-07-17",
-                content: "Trận chiến bảo vệ hòn đảo Tsushima của chiến binh Samurai Jin Sakai trước sự xâm lược của quân Mông Cổ.",
-                downloadKey: "https://store.steampowered.com/app/2215430/Ghost_of_Tsushima_DIRECTORS_CUT/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc71bbd5d88bd8ae5e4", "69995bcd1bbd5d88bd8ae649"],
-                price: 1100000
-            },
-            {
-                name: "Resident Evil 4 Remake",
-                releaseDate: "2023-03-24",
-                content: "Leon S. Kennedy dấn thân vào một ngôi làng tăm tối tại Tây Ban Nha để giải cứu con gái Tổng thống.",
-                downloadKey: "https://store.steampowered.com/app/2050650/Resident_Evil_4/",
-                genre: ["69995bc71bbd5d88bd8ae5de", "69995bc71bbd5d88bd8ae5e1", "69995bc51bbd5d88bd8ae5c2"],
-                price: 900000
-            },
-            {
-                name: "Black Myth: Wukong",
-                releaseDate: "2024-08-20",
-                content: "Hành trình của Thiên Mệnh Nhân dựa trên nguyên tác Tây Du Ký với đồ họa đỉnh cao và lối chơi cuốn hút.",
-                downloadKey: "https://store.steampowered.com/app/2358720/Black_Myth_Wukong/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bce1bbd5d88bd8ae64c", "69995bcd1bbd5d88bd8ae640"],
-                price: 1300000
-            },
-            {
-                name: "God of War Ragnarök",
-                releaseDate: "2022-11-09",
-                content: "Kratos và Atreus đối mặt với ngày tận thế Ragnarök trong thần thoại Bắc Âu.",
-                downloadKey: "https://store.steampowered.com/app/2322010/God_of_War_Ragnark/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bce1bbd5d88bd8ae64c"],
-                price: 1250000
-            },
-            {
-                name: "Forza Horizon 5",
-                releaseDate: "2021-11-09",
-                content: "Lễ hội đua xe tại Mexico với những cung đường tuyệt đẹp và hàng trăm siêu xe.",
-                downloadKey: "https://store.steampowered.com/app/1551360/Forza_Horizon_5/",
-                genre: ["69995bc61bbd5d88bd8ae5d1", "69995bc71bbd5d88bd8ae5d8", "69995bc71bbd5d88bd8ae5e4"],
-                price: 800000
-            },
-            {
-                name: "Street Fighter 6",
-                releaseDate: "2023-06-02",
-                content: "Kỷ nguyên mới của dòng game đối kháng huyền thoại với chế độ World Tour đầy mới lạ.",
-                downloadKey: "https://store.steampowered.com/app/1364780/Street_Fighter_6/",
-                genre: ["69995bcc1bbd5d88bd8ae631", "69995bc71bbd5d88bd8ae5d8"],
-                price: 1150000
-            },
-            {
-                name: "God of War (2018)",
-                releaseDate: "2018-04-20",
-                content: "Kratos đã để lại quá khứ của mình đằng sau và sống trong vùng đất của các vị thần Bắc Âu cùng con trai Atreus.",
-                downloadKey: "https://store.steampowered.com/app/1593500/God_of_War/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bce1bbd5d88bd8ae64c"],
-                price: 800000
-            },
-            {
-                name: "Sekiro: Shadows Die Twice",
-                releaseDate: "2019-03-22",
-                content: "Chống lại kẻ thù trong một thế giới Sengoku Nhật Bản huyền bí và nguy hiểm. Trải nghiệm hệ thống chiến đấu đỉnh cao.",
-                downloadKey: "https://store.steampowered.com/app/814380/Sekiro_Shadows_Die_Twice__GOTY_Edition/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bca1bbd5d88bd8ae60c", "69995bcd1bbd5d88bd8ae63d"],
-                price: 750000
-            },
-            {
-                name: "Marvel's Spider-Man Remastered",
-                releaseDate: "2022-08-12",
-                content: "Trở thành người nhện và bảo vệ thành phố New York khỏi những siêu tội phạm với khả năng bay lướt mượt mà.",
-                downloadKey: "https://store.steampowered.com/app/1817070/Marvels_SpiderMan_Remastered/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5e4"],
-                price: 1100000
-            },
-            {
-                name: "Horizon Zero Dawn",
-                releaseDate: "2020-08-07",
-                content: "Khám phá thế giới bị thống trị bởi những cỗ máy khổng lồ thông qua đôi mắt của Aloy và bí ẩn về nền văn minh cũ.",
-                downloadKey: "https://store.steampowered.com/app/1151640/Horizon_Zero_Dawn_Complete_Edition/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5e4"],
-                price: 400000
-            },
-            {
-                name: "Monster Hunter: World",
-                releaseDate: "2018-08-09",
-                content: "Săn lùng những quái vật khổng lồ trong hệ sinh thái đa dạng và chế tạo trang bị từ chúng cùng bạn bè.",
-                downloadKey: "https://store.steampowered.com/app/582010/Monster_Hunter_World/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5d5"],
-                price: 600000
-            },
-            {
-                name: "Devil May Cry 5",
-                releaseDate: "2019-03-08",
-                content: "Dante, Nero và V trở lại trong trận chiến chống lại quỷ dữ với phong cách cực ngầu và nhạc nền sôi động.",
-                downloadKey: "https://store.steampowered.com/app/601150/Devil_May_Cry_5/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bcd1bbd5d88bd8ae640", "69995bc91bbd5d88bd8ae600"],
-                price: 550000
-            },
-            {
-                name: "Dying Light 2 Stay Human",
-                releaseDate: "2022-02-04",
-                content: "Parkour và chiến đấu để sinh tồn trong một thế giới hậu tận thế đầy rẫy thây ma, nơi mọi lựa chọn đều có hậu quả.",
-                downloadKey: "https://store.steampowered.com/app/534380/Dying_Light_2_Stay_Human/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc71bbd5d88bd8ae5e1", "69995bc81bbd5d88bd8ae5f7"],
-                price: 900000
-            },
-            {
-                name: "Final Fantasy VII Remake Intergrade",
-                releaseDate: "2021-12-16",
-                content: "Bản làm lại tuyệt đẹp của huyền thoại Cloud Strife chống lại tập đoàn Shinra tại thành phố Midgar.",
-                downloadKey: "https://store.steampowered.com/app/1462040/FINAL_FANTASY_VII_REMAKE_INTERGRADE/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bce1bbd5d88bd8ae64c"],
-                price: 1200000
-            },
-            {
-                name: "Baldur's Gate 3",
-                releaseDate: "2023-08-03",
-                content: "Tập hợp tổ đội và quay trở lại Forgotten Realms trong câu chuyện về tình bạn và sự phản bội, sự hy sinh và sinh tồn.",
-                downloadKey: "https://store.steampowered.com/app/1086940/Baldurs_Gate_3/",
-                genre: ["69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5db", "69995bca1bbd5d88bd8ae61b"],
-                price: 1000000
-            },
-            {
-                name: "Hades",
-                releaseDate: "2020-09-17",
-                content: "Thách thức vị thần chết chóc khi bạn chiến đấu để thoát khỏi thế giới ngầm trong trò chơi roguelike dungeon crawler này.",
-                downloadKey: "https://store.steampowered.com/app/1145360/Hades/",
-                genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc91bbd5d88bd8ae603", "69995bc91bbd5d88bd8ae606"],
-                price: 300000
             }
+            // {
+            //     name: "Ghost of Tsushima",
+            //     releaseDate: "2020-07-17",
+            //     content: "Trận chiến bảo vệ hòn đảo Tsushima của chiến binh Samurai Jin Sakai trước sự xâm lược của quân Mông Cổ.",
+            //     downloadKey: "https://store.steampowered.com/app/2215430/Ghost_of_Tsushima_DIRECTORS_CUT/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc71bbd5d88bd8ae5e4", "69995bcd1bbd5d88bd8ae649"],
+            //     price: 1100000
+            // },
+            // {
+            //     name: "Resident Evil 4 Remake",
+            //     releaseDate: "2023-03-24",
+            //     content: "Leon S. Kennedy dấn thân vào một ngôi làng tăm tối tại Tây Ban Nha để giải cứu con gái Tổng thống.",
+            //     downloadKey: "https://store.steampowered.com/app/2050650/Resident_Evil_4/",
+            //     genre: ["69995bc71bbd5d88bd8ae5de", "69995bc71bbd5d88bd8ae5e1", "69995bc51bbd5d88bd8ae5c2"],
+            //     price: 900000
+            // },
+            // {
+            //     name: "Black Myth: Wukong",
+            //     releaseDate: "2024-08-20",
+            //     content: "Hành trình của Thiên Mệnh Nhân dựa trên nguyên tác Tây Du Ký với đồ họa đỉnh cao và lối chơi cuốn hút.",
+            //     downloadKey: "https://store.steampowered.com/app/2358720/Black_Myth_Wukong/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bce1bbd5d88bd8ae64c", "69995bcd1bbd5d88bd8ae640"],
+            //     price: 1300000
+            // },
+            // {
+            //     name: "God of War Ragnarök",
+            //     releaseDate: "2022-11-09",
+            //     content: "Kratos và Atreus đối mặt với ngày tận thế Ragnarök trong thần thoại Bắc Âu.",
+            //     downloadKey: "https://store.steampowered.com/app/2322010/God_of_War_Ragnark/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bce1bbd5d88bd8ae64c"],
+            //     price: 1250000
+            // },
+            // {
+            //     name: "Forza Horizon 5",
+            //     releaseDate: "2021-11-09",
+            //     content: "Lễ hội đua xe tại Mexico với những cung đường tuyệt đẹp và hàng trăm siêu xe.",
+            //     downloadKey: "https://store.steampowered.com/app/1551360/Forza_Horizon_5/",
+            //     genre: ["69995bc61bbd5d88bd8ae5d1", "69995bc71bbd5d88bd8ae5d8", "69995bc71bbd5d88bd8ae5e4"],
+            //     price: 800000
+            // },
+            // {
+            //     name: "Street Fighter 6",
+            //     releaseDate: "2023-06-02",
+            //     content: "Kỷ nguyên mới của dòng game đối kháng huyền thoại với chế độ World Tour đầy mới lạ.",
+            //     downloadKey: "https://store.steampowered.com/app/1364780/Street_Fighter_6/",
+            //     genre: ["69995bcc1bbd5d88bd8ae631", "69995bc71bbd5d88bd8ae5d8"],
+            //     price: 1150000
+            // },
+            // {
+            //     name: "God of War (2018)",
+            //     releaseDate: "2018-04-20",
+            //     content: "Kratos đã để lại quá khứ của mình đằng sau và sống trong vùng đất của các vị thần Bắc Âu cùng con trai Atreus.",
+            //     downloadKey: "https://store.steampowered.com/app/1593500/God_of_War/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bce1bbd5d88bd8ae64c"],
+            //     price: 800000
+            // },
+            // {
+            //     name: "Sekiro: Shadows Die Twice",
+            //     releaseDate: "2019-03-22",
+            //     content: "Chống lại kẻ thù trong một thế giới Sengoku Nhật Bản huyền bí và nguy hiểm. Trải nghiệm hệ thống chiến đấu đỉnh cao.",
+            //     downloadKey: "https://store.steampowered.com/app/814380/Sekiro_Shadows_Die_Twice__GOTY_Edition/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bca1bbd5d88bd8ae60c", "69995bcd1bbd5d88bd8ae63d"],
+            //     price: 750000
+            // },
+            // {
+            //     name: "Marvel's Spider-Man Remastered",
+            //     releaseDate: "2022-08-12",
+            //     content: "Trở thành người nhện và bảo vệ thành phố New York khỏi những siêu tội phạm với khả năng bay lướt mượt mà.",
+            //     downloadKey: "https://store.steampowered.com/app/1817070/Marvels_SpiderMan_Remastered/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5e4"],
+            //     price: 1100000
+            // },
+            // {
+            //     name: "Horizon Zero Dawn",
+            //     releaseDate: "2020-08-07",
+            //     content: "Khám phá thế giới bị thống trị bởi những cỗ máy khổng lồ thông qua đôi mắt của Aloy và bí ẩn về nền văn minh cũ.",
+            //     downloadKey: "https://store.steampowered.com/app/1151640/Horizon_Zero_Dawn_Complete_Edition/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5e4"],
+            //     price: 400000
+            // },
+            // {
+            //     name: "Monster Hunter: World",
+            //     releaseDate: "2018-08-09",
+            //     content: "Săn lùng những quái vật khổng lồ trong hệ sinh thái đa dạng và chế tạo trang bị từ chúng cùng bạn bè.",
+            //     downloadKey: "https://store.steampowered.com/app/582010/Monster_Hunter_World/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5d5"],
+            //     price: 600000
+            // },
+            // {
+            //     name: "Devil May Cry 5",
+            //     releaseDate: "2019-03-08",
+            //     content: "Dante, Nero và V trở lại trong trận chiến chống lại quỷ dữ với phong cách cực ngầu và nhạc nền sôi động.",
+            //     downloadKey: "https://store.steampowered.com/app/601150/Devil_May_Cry_5/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bcd1bbd5d88bd8ae640", "69995bc91bbd5d88bd8ae600"],
+            //     price: 550000
+            // },
+            // {
+            //     name: "Dying Light 2 Stay Human",
+            //     releaseDate: "2022-02-04",
+            //     content: "Parkour và chiến đấu để sinh tồn trong một thế giới hậu tận thế đầy rẫy thây ma, nơi mọi lựa chọn đều có hậu quả.",
+            //     downloadKey: "https://store.steampowered.com/app/534380/Dying_Light_2_Stay_Human/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc71bbd5d88bd8ae5e1", "69995bc81bbd5d88bd8ae5f7"],
+            //     price: 900000
+            // },
+            // {
+            //     name: "Final Fantasy VII Remake Intergrade",
+            //     releaseDate: "2021-12-16",
+            //     content: "Bản làm lại tuyệt đẹp của huyền thoại Cloud Strife chống lại tập đoàn Shinra tại thành phố Midgar.",
+            //     downloadKey: "https://store.steampowered.com/app/1462040/FINAL_FANTASY_VII_REMAKE_INTERGRADE/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc51bbd5d88bd8ae5c5", "69995bce1bbd5d88bd8ae64c"],
+            //     price: 1200000
+            // },
+            // {
+            //     name: "Baldur's Gate 3",
+            //     releaseDate: "2023-08-03",
+            //     content: "Tập hợp tổ đội và quay trở lại Forgotten Realms trong câu chuyện về tình bạn và sự phản bội, sự hy sinh và sinh tồn.",
+            //     downloadKey: "https://store.steampowered.com/app/1086940/Baldurs_Gate_3/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c5", "69995bc71bbd5d88bd8ae5db", "69995bca1bbd5d88bd8ae61b"],
+            //     price: 1000000
+            // },
+            // {
+            //     name: "Hades",
+            //     releaseDate: "2020-09-17",
+            //     content: "Thách thức vị thần chết chóc khi bạn chiến đấu để thoát khỏi thế giới ngầm trong trò chơi roguelike dungeon crawler này.",
+            //     downloadKey: "https://store.steampowered.com/app/1145360/Hades/",
+            //     genre: ["69995bc51bbd5d88bd8ae5c2", "69995bc91bbd5d88bd8ae603", "69995bc91bbd5d88bd8ae606"],
+            //     price: 300000
+            // }
         ];
 
         try {
@@ -336,6 +336,7 @@ const GameManagement = () => {
                     <FormUploadImageGame
                         gameId={selectedGameForUpload._id}
                         gameName={selectedGameForUpload.name}
+                        initialMedia={selectedGameForUpload.media}
                         onClose={() => setShowUploadForm(false)}
                         onUploadSuccess={loadGames}
                     />
