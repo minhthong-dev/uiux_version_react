@@ -7,6 +7,7 @@ import Game from './components/game/game'
 import Trending from './components/trending/trending'
 import Newest from './components/newest/newest'
 import Wishlist from './components/wishlist/wishlist'
+import Cart from './components/cart/cart'
 import Layout from './layout/index'
 import './App.css'
 
@@ -21,6 +22,7 @@ function App() {
         <Route path="/trending" element={<Trending />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/new" element={<Newest />} />
+        <Route path="/cart" element={<Cart />} />
       </Route>
       {/* Thêm các route khác ở đây */}
     </Routes>

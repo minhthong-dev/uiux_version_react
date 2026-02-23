@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import gameApi from '../../api/gameApi';
 import categoryApi from '../../api/categoryApi';
+import cartApi from '../../api/cartApi';
 import useGenreNav from '../../hooks/useGenreNav';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { manageToken } from '../../utils/manageToken';
 import './game.css';
 
 const Game = () => {
@@ -54,6 +56,26 @@ const Game = () => {
 
         setCoutLike(count);
     };
+    const handleAddToCart = async () => {
+        try {
+            if (!manageToken.getToken()) {
+                alert('Vui lòng đăng nhập để thêm vào giỏ hàng!');
+                navigate('/auth');
+                return;
+            }
+            const result = await cartApi.addToCart(game._id);
+            if (result.status === 200) {
+                alert('Đã thêm vào giỏ hàng thành công!');
+            } else {
+                alert(`${result.message}`);
+            }
+            window.dispatchEvent(new Event('cartUpdated'));
+        } catch (error) {
+            console.error('Lỗi khi thêm vào giỏ hàng:', error);
+            alert('Thêm vào giỏ hàng thất bại!');
+        }
+    };
+
     const handleToggleLike = async () => {
         try {
             if (isLiked) {
@@ -267,7 +289,7 @@ const Game = () => {
                         {formatCurrency(game.price)}
                     </span>
                 </div>
-                <button className="add-to-cart-btn">MUA NGAY</button>
+                <button className="add-to-cart-btn" onClick={handleAddToCart}>THÊM VÀO GIỎ HÀNG</button>
             </section>
         </div>
     );

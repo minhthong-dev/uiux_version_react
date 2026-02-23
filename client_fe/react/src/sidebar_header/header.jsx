@@ -3,6 +3,7 @@ import { Search, ShoppingCart, User, LogOut } from 'lucide-react';
 import './sidebar_header.css';
 import { useNavigate } from 'react-router-dom';
 import { manageToken, getInfor } from '../utils/manageToken';
+import cartApi from '../api/cartApi';
 
 const Header = () => {
     const navigate = useNavigate();
@@ -10,6 +11,22 @@ const Header = () => {
     const [userInfo, setUserInfo] = useState(null);
 
     const [searchQuery, setSearchQuery] = useState('');
+    const [cartCount, setCartCount] = useState(0);
+
+    /* Tải số lượng items trong giỏ hàng */
+    const loadCartCount = async () => {
+        if (!manageToken.getToken()) return;
+        try {
+            const data = await cartApi.getCart();
+            if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0].games)) {
+                setCartCount(data[0].games.length);
+            } else {
+                setCartCount(0);
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải số lượng giỏ hàng:", error);
+        }
+    };
 
     useEffect(() => {
         const token = manageToken.getToken();
@@ -17,10 +34,24 @@ const Header = () => {
             setIsLoggedIn(true);
             try {
                 setUserInfo(getInfor(token));
+                loadCartCount();
             } catch (error) {
                 console.error("Token invalid");
             }
+        } else {
+            setCartCount(0);
         }
+    }, []);
+
+    /* Lắng nghe sự kiện cập nhật giỏ hàng từ các component khác */
+    useEffect(() => {
+        const handleCartUpdated = () => {
+            if (manageToken.getToken()) {
+                loadCartCount();
+            }
+        };
+        window.addEventListener('cartUpdated', handleCartUpdated);
+        return () => window.removeEventListener('cartUpdated', handleCartUpdated);
     }, []);
 
     const handleLogout = () => {
@@ -70,8 +101,24 @@ const Header = () => {
             </nav>
 
             <div className="header-right">
-                <button className="user-btn">
+                <button className="user-btn" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
                     <ShoppingCart size={20} />
+                    {cartCount > 0 && (
+                        <span style={{
+                            position: 'absolute',
+                            top: '-8px',
+                            right: '-8px',
+                            backgroundColor: 'var(--flag-red)',
+                            color: 'white',
+                            borderRadius: '50%',
+                            padding: '2px 6px',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            border: '1px solid black'
+                        }}>
+                            {cartCount}
+                        </span>
+                    )}
                 </button>
 
                 {isLoggedIn ? (
