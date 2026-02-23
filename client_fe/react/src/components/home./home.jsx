@@ -5,13 +5,15 @@ import gameApi from '../../api/gameApi';
 import categoryApi from '../../api/categoryApi';
 import useGenreNav from '../../hooks/useGenreNav';
 import { formatCurrency } from '../../utils/formatCurrency';
-
+import { Eye } from 'lucide-react';
 const Home = () => {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const { goToGenre } = useGenreNav();
+
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -158,7 +160,16 @@ const GenreTag = ({ categoryId }) => {
 
 // Sub-component cho thẻ game để tái sử dụng
 const GameCard = ({ game }) => {
+    const [view, setView] = useState([]);
     const navigate = useNavigate();
+    const randomView = () => {
+        const random = Math.floor(Math.random() * 1000);
+        setView(random);
+    }
+    useEffect(() => {
+        randomView();
+    }, []);
+
     return (
         <div className="game-card-steam" onClick={() => navigate(`/game/${game._id}`)}>
             <div className="card-media">
@@ -172,8 +183,14 @@ const GameCard = ({ game }) => {
                         <GenreTag key={i} categoryId={genreId} />
                     ))}
                 </div>
-                <div className="card-footer">
+                {/* <div className="card-footer">
                     <div className="feedback">👍 {game.like}</div>
+                    <div className="card-price">
+                        {formatCurrency(game.price)}
+                    </div>
+                </div> */}
+                <div className="card-footer">
+                    <div className="view-btn"><Eye style={{ marginRight: '10px' }} size={20} />{view}</div>
                     <div className="card-price">
                         {formatCurrency(game.price)}
                     </div>
@@ -184,3 +201,4 @@ const GameCard = ({ game }) => {
 };
 
 export default Home;
+
