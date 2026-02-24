@@ -11,7 +11,8 @@ import {
     Sword,
     Ghost,
     Trophy,
-    Search
+    Search,
+    History,
 } from 'lucide-react';
 import './sidebar_header.css';
 import useGenreNav from '../hooks/useGenreNav';
@@ -80,13 +81,17 @@ const Sidebar = () => {
                         <Heart size={20} />
                         <span>DANH SÁCH ƯỚC</span>
                     </NavLink>
+                    <NavLink to="/history" className="client-nav-item">
+                        <History size={20} />
+                        <span>LỊCH SỬ</span>
+                    </NavLink>
                 </nav>
             </div>
 
             <div className="sidebar-section">
                 <h3 className="sidebar-title">THỂ LOẠI</h3>
                 <nav className="sidebar-nav">
-                    {categories.slice(0, 5).map(cat => (
+                    {categories.slice(0, 2).map(cat => (
                         <div
                             key={cat._id}
                             className="client-nav-item"
@@ -102,6 +107,15 @@ const Sidebar = () => {
                             <span>... Đang tải thể loại ...</span>
                         </div>
                     )}
+                </nav>
+            </div>
+            <div className="sidebar-section">
+                <h3 className="sidebar-title">HỖ  TRỢ</h3>
+                <nav className="sidebar-nav">
+                    <NavLink to="/support" className="client-nav-item">
+                        <Heart size={20} />
+                        <span>TƯ VẤN</span>
+                    </NavLink>
                 </nav>
             </div>
         </aside>
