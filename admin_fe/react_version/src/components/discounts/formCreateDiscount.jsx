@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createDiscount } from '../../api/discountApi';
 import gameApi from '../../api/gameApi';
 import categoryApi from '../../api/categoryApi';
-import { Plus, X, Gamepad2, Layers } from 'lucide-react';
+import { Plus, X, Gamepad2, Layers, Calendar, Clock, AlertCircle } from 'lucide-react';
 import { toast } from '../notification/toast';
 
 const INITIAL_FORM = {
@@ -16,12 +16,27 @@ const INITIAL_FORM = {
     gamesId: [],
 };
 
+// Helper để lấy chuỗi datetime-local hiện tại (YYYY-MM-DDTHH:mm)
+const getCurrentDateTimeLocal = () => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    const localISOTime = new Date(now - offset).toISOString().slice(0, 16);
+    return localISOTime;
+};
+
 const FormCreateDiscount = ({ onCreated, onClose }) => {
     const [formData, setFormData] = useState(INITIAL_FORM);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [games, setGames] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
+    const [now, setNow] = useState(getCurrentDateTimeLocal());
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setNow(getCurrentDateTimeLocal());
+        }, 60000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -64,15 +79,27 @@ const FormCreateDiscount = ({ onCreated, onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const currentNow = new Date();
+        const start = new Date(formData.startDate);
+        const end = new Date(formData.endDate);
+
         if (!formData.name.trim()) {
             toast.error('Vui lòng nhập tên discount!');
             return;
         }
+
         if (!formData.startDate || !formData.endDate) {
-            toast.error('Vui lòng chọn ngày bắt đầu và kết thúc!');
+            toast.error('Vui lòng chọn thời gian!');
             return;
         }
-        if (new Date(formData.endDate) <= new Date(formData.startDate)) {
+
+        if (start < currentNow && formData.startDate < now) {
+            toast.error('Ngày bắt đầu không được ở trong quá khứ!');
+            return;
+        }
+
+        if (end <= start) {
             toast.error('Ngày kết thúc phải sau ngày bắt đầu!');
             return;
         }
@@ -105,7 +132,7 @@ const FormCreateDiscount = ({ onCreated, onClose }) => {
         <div className="dc-modal-overlay" onClick={onClose}>
             <div className="dc-modal-box dc-modal-box--large" onClick={e => e.stopPropagation()}>
                 <div className="dc-modal-header">
-                    <h2>TẠO DISCOUNT MỚI</h2>
+                    <h2><Plus size={24} /> TẠO DISCOUNT MỚI</h2>
                     <button className="dc-modal-close" onClick={onClose} type="button">
                         <X size={20} />
                     </button>
@@ -146,32 +173,64 @@ const FormCreateDiscount = ({ onCreated, onClose }) => {
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
-                                    placeholder="Mô tả..."
+                                    placeholder="Mô tả chiến dịch giảm giá..."
                                     rows={2}
                                 />
                             </div>
 
-                            <div className="dc-form-row">
-                                <div className="dc-form-group">
-                                    <label>Ngày bắt đầu</label>
-                                    <input
-                                        type="datetime-local"
-                                        name="startDate"
-                                        value={formData.startDate}
-                                        onChange={handleChange}
-                                        required
-                                    />
+                            {/* Section Thời gian trực quan */}
+                            <div className="dc-time-selection-wrapper">
+                                <div className="dc-time-header">
+                                    <Calendar size={18} />
+                                    <span>THỜI GIAN ÁP DỤNG</span>
                                 </div>
-                                <div className="dc-form-group">
-                                    <label>Ngày kết thúc</label>
-                                    <input
-                                        type="datetime-local"
-                                        name="endDate"
-                                        value={formData.endDate}
-                                        onChange={handleChange}
-                                        required
-                                    />
+
+                                <div className="dc-time-inputs-container">
+                                    <div className="dc-time-field">
+                                        <div className="dc-field-label">
+                                            <div className="dot start-dot"></div>
+                                            BẮT ĐẦU
+                                        </div>
+                                        <div className="dc-input-with-icon">
+                                            <input
+                                                type="datetime-local"
+                                                name="startDate"
+                                                value={formData.startDate}
+                                                onChange={handleChange}
+                                                min={now}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="dc-time-divider">
+                                        <div className="line"></div>
+                                    </div>
+
+                                    <div className="dc-time-field">
+                                        <div className="dc-field-label">
+                                            <div className="dot end-dot"></div>
+                                            KẾT THÚC
+                                        </div>
+                                        <div className="dc-input-with-icon">
+                                            <input
+                                                type="datetime-local"
+                                                name="endDate"
+                                                value={formData.endDate}
+                                                onChange={handleChange}
+                                                min={formData.startDate || now}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
+
+                                {(!formData.startDate || !formData.endDate) && (
+                                    <div className="dc-time-hint">
+                                        <AlertCircle size={14} />
+                                        <span>Vui lòng chọn mốc thời gian diễn ra sự kiện</span>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="dc-form-group dc-toggle-group">
@@ -184,7 +243,7 @@ const FormCreateDiscount = ({ onCreated, onClose }) => {
                                         onChange={handleChange}
                                     />
                                     <span className="dc-toggle-label">
-                                        {formData.isActive ? 'Đang hoạt động' : 'Tắt'}
+                                        {formData.isActive ? 'Đang hoạt động' : 'Tạm tắt'}
                                     </span>
                                 </label>
                             </div>
@@ -194,7 +253,9 @@ const FormCreateDiscount = ({ onCreated, onClose }) => {
                             <div className="dc-selection-section">
                                 <label><Layers size={16} /> Áp dụng cho Thể loại</label>
                                 <div className="dc-selection-list">
-                                    {loadingData ? "Đang tải..." : categories.map(cat => (
+                                    {loadingData ? (
+                                        <div className="dc-loading-text">Đang tải danh mục...</div>
+                                    ) : categories.map(cat => (
                                         <div
                                             key={cat._id}
                                             className={`dc-selection-item ${formData.categoriesId.includes(cat._id) ? 'active' : ''}`}
@@ -209,7 +270,9 @@ const FormCreateDiscount = ({ onCreated, onClose }) => {
                             <div className="dc-selection-section">
                                 <label><Gamepad2 size={16} /> Áp dụng cho Game</label>
                                 <div className="dc-selection-list">
-                                    {loadingData ? "Đang tải..." : games.map(game => (
+                                    {loadingData ? (
+                                        <div className="dc-loading-text">Đang tải trò chơi...</div>
+                                    ) : games.map(game => (
                                         <div
                                             key={game._id}
                                             className={`dc-selection-item ${formData.gamesId.includes(game._id) ? 'active' : ''}`}
@@ -223,14 +286,29 @@ const FormCreateDiscount = ({ onCreated, onClose }) => {
                         </div>
                     </div>
 
-                    <button
-                        type="submit"
-                        className="dc-btn-primary"
-                        disabled={isSubmitting}
-                    >
-                        <Plus size={18} />
-                        {isSubmitting ? 'ĐANG TẠO...' : 'TẠO DISCOUNT'}
-                    </button>
+                    <div className="dc-form-actions">
+                        <button
+                            type="button"
+                            className="dc-btn-secondary"
+                            onClick={onClose}
+                        >
+                            HỦY BỎ
+                        </button>
+                        <button
+                            type="submit"
+                            className="dc-btn-primary"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? (
+                                <>ĐANG XỬ LÝ...</>
+                            ) : (
+                                <>
+                                    <Plus size={18} />
+                                    XÁC NHẬN TẠO
+                                </>
+                            )}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

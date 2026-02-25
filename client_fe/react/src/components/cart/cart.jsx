@@ -5,6 +5,7 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { manageToken } from "../../utils/manageToken";
 import { useNavigate } from "react-router-dom";
 import useGameDiscount from "../../hooks/gameDiscount";
+import { toast } from "../notification/toast";
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -74,7 +75,7 @@ const Cart = () => {
             window.dispatchEvent(new Event('cartUpdated'));
         } catch (error) {
             console.error("Lỗi khi xóa khỏi giỏ hàng:", error);
-            alert("Xóa khỏi giỏ hàng thất bại");
+            toast.error("Xóa khỏi giỏ hàng thất bại");
         }
     };
 

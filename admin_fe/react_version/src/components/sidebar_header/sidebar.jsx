@@ -10,9 +10,9 @@ const Sidebar = () => {
         { path: '/category', icon: <Tags />, label: 'Quản lý Danh mục' },
         { path: '/users', icon: <Users />, label: 'Người dùng' },
         { path: '/discount', icon: <Percent />, label: 'Khuyến mãi' },
+        { path: '/support', icon: <Settings />, label: 'Hỗ trợ' },
         { path: '/orders', icon: <ShoppingCart />, label: 'Đơn hàng' },
         { path: '/stats', icon: <BarChart3 />, label: 'Thống kê' },
-        { path: '/settings', icon: <Settings />, label: 'Cài đặt' },
     ];
 
     return (

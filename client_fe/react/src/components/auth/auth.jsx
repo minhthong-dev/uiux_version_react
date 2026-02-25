@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './auth.css';
 import authApi from '../../api/authApi';
 import { manageToken, getInfor } from '../../utils/manageToken';
+import { toast } from '../notification/toast';
 import ForgotPass from './fomrForgotPass';
 
 // Component Login chính
@@ -24,30 +25,31 @@ const Login = () => {
                 if (result.message === 'dang nhap thanh cong') {
                     if (getInfor(result.token)) {
                         manageToken.setToken(result.token);
-                        alert("Đăng nhập thành công!");
+                        toast.success("Đăng nhập thành công!");
                         window.location.href = '/'; // Chuyển hướng và load lại trang để Header nhận token mới
                         return;
                     }
                 } else {
-                    alert(result.message || "Email hoặc mật khẩu không chính xác!");
+                    toast.error(result.message || "Email hoặc mật khẩu không chính xác!");
                 }
             } else {
                 // Xử lý Đăng ký
                 if (password !== confirmPassword) {
-                    alert("Mật khẩu không khớp!");
+                    toast.warning("Mật khẩu không khớp!");
                     setLoading(false);
                     return;
                 }
                 const result = await authApi.resgister(username, email, password);
                 if (result.success || result.message === 'dang ky thanh cong, vui long kiem tra email de xac thuc tai khoan') {
-                    alert("Đăng ký thành công! Hãy đăng nhập.");
+                    toast.success("Đăng ký thành công! Hãy kiểm tra email.");
                     // setIsLogin(true);
                 } else {
-                    alert(result.message || "Đăng ký thất bại");
+                    toast.error(result.message || "Đăng ký thất bại");
                 }
             }
         } catch (error) {
             console.error(error);
+            toast.error("Đã có lỗi xảy ra!");
         } finally {
             setLoading(false);
         }

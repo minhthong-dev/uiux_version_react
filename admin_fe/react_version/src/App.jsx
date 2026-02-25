@@ -7,24 +7,28 @@ import Category from './components/category/index';
 import User from './components/user/index'
 import Layout from './components/layout/index';
 import Discount from './components/discounts/discount';
+import Support from './components/support/support';
 import ToastContainer from './components/notification/toast';
-
+import { SocketProvider } from './context/socketContext'
 function App() {
   return (
     <>
-      <ToastContainer />
-      <Routes>
-        <Route path="/login" element={<Login />} />
+      <SocketProvider>
+        <ToastContainer />
+        <Routes>
+          <Route path="/login" element={<Login />} />
 
-        {/* Các route yêu cầu Layout Admin */}
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/category" element={<Category />} />
-          <Route path="/users" element={<User />} />
-          <Route path="/discount" element={<Discount />} />
-        </Route>
-      </Routes>
+          {/* Các route yêu cầu Layout Admin */}
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/game" element={<Game />} />
+            <Route path="/category" element={<Category />} />
+            <Route path="/users" element={<User />} />
+            <Route path="/discount" element={<Discount />} />
+            <Route path="/support" element={<Support />} />
+          </Route>
+        </Routes>
+      </SocketProvider>
     </>
   );
 }

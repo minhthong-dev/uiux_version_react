@@ -8,12 +8,14 @@ import Trending from './components/trending/trending'
 import Newest from './components/newest/newest'
 import Wishlist from './components/wishlist/wishlist'
 import Cart from './components/cart/cart'
+import Discount from './components/discout/discount'
 import Support from './components/support/support'
 import Layout from './layout/index'
 import './App.css'
 import { SocketProvider } from './context/socketContext'
 import { DiscountProvider } from './context/discountContext'
 import { useNavigate } from 'react-router-dom'
+import ToastContainer from './components/notification/toast'
 function App() {
   const navigate = useNavigate();
   useEffect(() => {
@@ -29,6 +31,7 @@ function App() {
   return (
     <SocketProvider>
       <DiscountProvider>
+        <ToastContainer />
         <Routes>
           <Route path="/auth" element={<Login />} />
           <Route element={<Layout />}>
@@ -39,6 +42,7 @@ function App() {
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/new" element={<Newest />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/discount" element={<Discount />} />
             <Route path="/support" element={<Support />} />
           </Route>
           {/* Thêm các route khác ở đây */}

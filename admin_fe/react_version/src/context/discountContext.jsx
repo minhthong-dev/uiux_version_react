@@ -33,11 +33,11 @@ export const DiscountProvider = ({ children }) => {
             })
 
             const resultMap = { games: gameDiscounts, categories: categoryDiscounts }
-            // console.log(resultMap)
+            console.log(resultMap)
             setDiscountMap(resultMap)
             return resultMap
         } catch (error) {
-            // console.log(error)
+            console.log(error)
         }
     }
 

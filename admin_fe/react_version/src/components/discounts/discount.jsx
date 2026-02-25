@@ -3,7 +3,7 @@ import { getDiscounts, deleteDiscount, updateDiscount } from '../../api/discount
 import gameApi from '../../api/gameApi';
 import categoryApi from '../../api/categoryApi';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Percent, Calendar, ToggleLeft, ToggleRight, Tag, Trash2, Edit3, Save, X, Gamepad2, Layers } from 'lucide-react';
+import { Plus, Percent, Calendar, ToggleLeft, ToggleRight, Tag, Trash2, Edit3, Save, X, Gamepad2, Layers, Info } from 'lucide-react';
 import { toast } from '../notification/toast';
 import FormCreateDiscount from './formCreateDiscount';
 import './discount.css';
@@ -34,6 +34,13 @@ const getStatus = (discount) => {
     return { label: 'ĐANG CHẠY', color: 'status-active' };
 };
 
+const getCurrentDateTimeLocal = () => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    const localISOTime = new Date(now - offset).toISOString().slice(0, 16);
+    return localISOTime;
+};
+
 const FormEditDiscount = ({ discount, onUpdated, onClose }) => {
     const [formData, setFormData] = useState({
         name: discount.name || '',
@@ -49,6 +56,14 @@ const FormEditDiscount = ({ discount, onUpdated, onClose }) => {
     const [games, setGames] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
+    const [now, setNow] = useState(getCurrentDateTimeLocal());
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setNow(getCurrentDateTimeLocal());
+        }, 60000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -90,6 +105,14 @@ const FormEditDiscount = ({ discount, onUpdated, onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const start = new Date(formData.startDate);
+        const end = new Date(formData.endDate);
+
+        if (end <= start) {
+            toast.error('Ngày kết thúc phải sau ngày bắt đầu!');
+            return;
+        }
+
         try {
             setIsSubmitting(true);
             const payload = {
@@ -138,21 +161,54 @@ const FormEditDiscount = ({ discount, onUpdated, onClose }) => {
                                 <label>Mô tả</label>
                                 <textarea name="description" value={formData.description} onChange={handleChange} rows={2} />
                             </div>
-                            <div className="dc-form-row">
-                                <div className="dc-form-group">
-                                    <label>Ngày bắt đầu</label>
-                                    <input type="datetime-local" name="startDate" value={formData.startDate} onChange={handleChange} required />
+
+                            <div className="dc-time-selection-wrapper">
+                                <div className="dc-time-header">
+                                    <Calendar size={18} />
+                                    <span>THỜI GIAN ÁP DỤNG</span>
                                 </div>
-                                <div className="dc-form-group">
-                                    <label>Ngày kết thúc</label>
-                                    <input type="datetime-local" name="endDate" value={formData.endDate} onChange={handleChange} required />
+                                <div className="dc-time-inputs-container">
+                                    <div className="dc-time-field">
+                                        <div className="dc-field-label">
+                                            <div className="dot start-dot"></div>
+                                            BẮT ĐẦU
+                                        </div>
+                                        <div className="dc-input-with-icon">
+                                            <input
+                                                type="datetime-local"
+                                                name="startDate"
+                                                value={formData.startDate}
+                                                onChange={handleChange}
+                                                min={toLocalDatetimeValue(discount.startDate) < now ? toLocalDatetimeValue(discount.startDate) : now}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="dc-time-divider"><div className="line"></div></div>
+                                    <div className="dc-time-field">
+                                        <div className="dc-field-label">
+                                            <div className="dot end-dot"></div>
+                                            KẾT THÚC
+                                        </div>
+                                        <div className="dc-input-with-icon">
+                                            <input
+                                                type="datetime-local"
+                                                name="endDate"
+                                                value={formData.endDate}
+                                                onChange={handleChange}
+                                                min={formData.startDate || now}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
                             <div className="dc-form-group dc-toggle-group">
                                 <label>Trạng thái</label>
                                 <label className="dc-toggle">
                                     <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} />
-                                    <span className="dc-toggle-label">{formData.isActive ? 'Hoạt động' : 'Tắt'}</span>
+                                    <span className="dc-toggle-label">{formData.isActive ? 'Hoạt động' : 'Tạm tắt'}</span>
                                 </label>
                             </div>
                         </div>
@@ -161,7 +217,9 @@ const FormEditDiscount = ({ discount, onUpdated, onClose }) => {
                             <div className="dc-selection-section">
                                 <label><Layers size={16} /> Áp dụng cho Thể loại</label>
                                 <div className="dc-selection-list">
-                                    {loadingData ? "Đang tải..." : categories.map(cat => (
+                                    {loadingData ? (
+                                        <div className="dc-loading-text">Đang tải danh mục...</div>
+                                    ) : categories.map(cat => (
                                         <div
                                             key={cat._id}
                                             className={`dc-selection-item ${formData.categoriesId?.includes(cat._id) ? 'active' : ''}`}
@@ -175,7 +233,9 @@ const FormEditDiscount = ({ discount, onUpdated, onClose }) => {
                             <div className="dc-selection-section">
                                 <label><Gamepad2 size={16} /> Áp dụng cho Game</label>
                                 <div className="dc-selection-list">
-                                    {loadingData ? "Đang tải..." : games.map(game => (
+                                    {loadingData ? (
+                                        <div className="dc-loading-text">Đang tải trò chơi...</div>
+                                    ) : games.map(game => (
                                         <div
                                             key={game._id}
                                             className={`dc-selection-item ${formData.gamesId?.includes(game._id) ? 'active' : ''}`}
@@ -188,10 +248,16 @@ const FormEditDiscount = ({ discount, onUpdated, onClose }) => {
                             </div>
                         </div>
                     </div>
-                    <button type="submit" className="dc-btn-edit-submit" disabled={isSubmitting}>
-                        <Save size={18} />
-                        {isSubmitting ? 'ĐANG LƯU...' : 'LƯU THAY ĐỔI'}
-                    </button>
+
+                    <div className="dc-form-actions">
+                        <button type="button" className="dc-btn-secondary" onClick={onClose}>
+                            ĐÓNG
+                        </button>
+                        <button type="submit" className="dc-btn-edit-submit" disabled={isSubmitting}>
+                            <Save size={18} />
+                            {isSubmitting ? 'ĐANG LƯU...' : 'LƯU THAY ĐỔI'}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -200,12 +266,12 @@ const FormEditDiscount = ({ discount, onUpdated, onClose }) => {
 
 const DiscountManagement = () => {
     const [discounts, setDiscounts] = useState([]);
+    const [games, setGames] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showCreate, setShowCreate] = useState(false);
     const [editingDiscount, setEditingDiscount] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
-    const [allGames, setAllGames] = useState([]);
-    const [allCategories, setAllCategories] = useState([]);
 
     useEffect(() => {
         loadData();
@@ -214,33 +280,21 @@ const DiscountManagement = () => {
     const loadData = async () => {
         try {
             setLoading(true);
-            const [discountsData, gamesData, categoriesData] = await Promise.all([
+            const [discountsRes, gamesRes, categoriesRes] = await Promise.all([
                 getDiscounts(),
                 gameApi.getAllGames(),
                 categoryApi.getAllCategories()
             ]);
-            setDiscounts(Array.isArray(discountsData) ? discountsData : (discountsData?.data || []));
-            setAllGames(gamesData || []);
-            setAllCategories(categoriesData || []);
-        } catch {
+
+            setDiscounts(Array.isArray(discountsRes) ? discountsRes : (discountsRes?.data || []));
+            setGames(Array.isArray(gamesRes) ? gamesRes : []);
+            setCategories(Array.isArray(categoriesRes) ? categoriesRes : []);
+        } catch (error) {
+            console.error("Error loading discounts management data:", error);
             toast.error('Không thể tải danh sách dữ liệu!');
         } finally {
             setLoading(false);
         }
-    };
-
-    const loadDiscounts = async () => {
-        try {
-            const data = await getDiscounts();
-            setDiscounts(Array.isArray(data) ? data : (data?.data || []));
-        } catch {
-            toast.error('Không thể tải danh sách discount!');
-        }
-    };
-
-    const getNameById = (list, id) => {
-        const item = list.find(it => it._id === id);
-        return item ? item.name : 'Unknown';
     };
 
     const handleDelete = async (id) => {
@@ -249,12 +303,22 @@ const DiscountManagement = () => {
             setDeletingId(id);
             await deleteDiscount(id);
             toast.success('Đã xóa discount!');
-            await loadDiscounts();
+            await loadData();
         } catch {
             toast.error('Xóa thất bại!');
         } finally {
             setDeletingId(null);
         }
+    };
+
+    // Helper to get names by IDs
+    const getNames = (ids, source) => {
+        if (!ids || !Array.isArray(ids) || ids.length === 0) return null;
+        if (!Array.isArray(source)) return null;
+        return ids.map(id => {
+            const item = source.find(s => s._id === id);
+            return item ? item.name : null;
+        }).filter(name => name !== null);
     };
 
     return (
@@ -268,7 +332,7 @@ const DiscountManagement = () => {
                         <span className="dc-header-sub">Tổng số: {discounts.length} mã giảm giá</span>
                     </div>
                 </div>
-                <button className="dc-btn-create" onClick={() => setShowCreate(true)} id="btn-open-create-discount">
+                <button className="dc-btn-create" onClick={() => setShowCreate(true)}>
                     <Plus size={20} /> TẠO DISCOUNT
                 </button>
             </motion.header>
@@ -303,6 +367,9 @@ const DiscountManagement = () => {
                         {discounts.map((item, index) => {
                             const status = getStatus(item);
                             const isDeleting = deletingId === item._id;
+                            const catNames = getNames(item.categoriesId, categories);
+                            const gameNames = getNames(item.gamesId, games);
+
                             return (
                                 <motion.div
                                     key={item._id}
@@ -321,29 +388,31 @@ const DiscountManagement = () => {
                                         <p className="dc-card-desc">{item.description}</p>
                                     )}
 
+                                    {/* Hiển thị Game và Thể loại */}
                                     <div className="dc-card-applied">
-                                        {item.categoriesId?.length > 0 && (
-                                            <div className="dc-applied-group">
+                                        {catNames && catNames.length > 0 && (
+                                            <div className="dc-applied-item">
                                                 <Layers size={14} />
-                                                <div className="dc-applied-tags">
-                                                    {item.categoriesId.map(id => (
-                                                        <span key={id} className="dc-tag dc-tag--category">
-                                                            {getNameById(allCategories, id)}
-                                                        </span>
+                                                <div className="dc-applied-list">
+                                                    {catNames.map((name, i) => (
+                                                        <span key={i} className="dc-applied-tag cat">{name}</span>
                                                     ))}
                                                 </div>
                                             </div>
                                         )}
-                                        {item.gamesId?.length > 0 && (
-                                            <div className="dc-applied-group">
+                                        {gameNames && gameNames.length > 0 && (
+                                            <div className="dc-applied-item">
                                                 <Gamepad2 size={14} />
-                                                <div className="dc-applied-tags">
-                                                    {item.gamesId.map(id => (
-                                                        <span key={id} className="dc-tag dc-tag--game">
-                                                            {getNameById(allGames, id)}
-                                                        </span>
+                                                <div className="dc-applied-list">
+                                                    {gameNames.map((name, i) => (
+                                                        <span key={i} className="dc-applied-tag game">{name}</span>
                                                     ))}
                                                 </div>
+                                            </div>
+                                        )}
+                                        {(!catNames || catNames.length === 0) && (!gameNames || gameNames.length === 0) && (
+                                            <div className="dc-applied-none">
+                                                <Info size={14} /> Tất cả sản phẩm
                                             </div>
                                         )}
                                     </div>
@@ -370,7 +439,6 @@ const DiscountManagement = () => {
                                                 className="dc-action-btn dc-btn--edit"
                                                 title="Chỉnh sửa"
                                                 onClick={() => setEditingDiscount(item)}
-                                                id={`btn-edit-${item._id}`}
                                             >
                                                 <Edit3 size={14} />
                                             </button>
@@ -379,7 +447,6 @@ const DiscountManagement = () => {
                                                 title="Xóa"
                                                 onClick={() => handleDelete(item._id)}
                                                 disabled={isDeleting}
-                                                id={`btn-delete-${item._id}`}
                                             >
                                                 {isDeleting ? '...' : <Trash2 size={14} />}
                                             </button>

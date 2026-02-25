@@ -59,7 +59,7 @@ const Sidebar = () => {
                         <Clock size={20} />
                         <span>Mới nhất</span>
                     </NavLink>
-                    <NavLink to="/deals" className="client-nav-item">
+                    <NavLink to="/discount" className="client-nav-item">
                         <Gift size={20} />
                         <span>Ưu đãi</span>
                     </NavLink>

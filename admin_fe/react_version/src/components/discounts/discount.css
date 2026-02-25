@@ -184,6 +184,55 @@
     line-height: 1.5;
 }
 
+.dc-card-applied {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0.5rem 0;
+    border-top: var(--border-thin);
+    border-bottom: var(--border-thin);
+}
+
+.dc-applied-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.dc-applied-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.dc-applied-tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border: 1px solid #000;
+    text-transform: uppercase;
+}
+
+.dc-applied-tag.cat {
+    background-color: var(--azure-blue);
+    color: var(--white);
+}
+
+.dc-applied-tag.game {
+    background-color: var(--amber-gold);
+    color: var(--black);
+}
+
+.dc-applied-none {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #888;
+    font-style: italic;
+}
+
 .dc-card-dates {
     display: flex;
     flex-direction: column;
@@ -199,50 +248,6 @@
     gap: 6px;
     font-size: 0.8rem;
     font-weight: 600;
-}
-
-/* Hiển thị Game / Category đã áp dụng */
-.dc-card-applied {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin: 4px 0;
-}
-
-.dc-applied-group {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    color: var(--black);
-}
-
-.dc-applied-group svg {
-    margin-top: 4px;
-    flex-shrink: 0;
-}
-
-.dc-applied-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.dc-tag {
-    font-size: 0.7rem;
-    font-weight: 800;
-    padding: 2px 8px;
-    border: 2px solid #000;
-    text-transform: uppercase;
-    box-shadow: 2px 2px 0px #000;
-}
-
-.dc-tag--category {
-    background-color: var(--amber-gold);
-}
-
-.dc-tag--game {
-    background-color: var(--azure-blue);
-    color: var(--white);
 }
 
 .dc-card-footer {
@@ -673,6 +678,156 @@
 }
 
 /* ---- RESPONSIVE ---- */
+/* Section Thời gian trực quan */
+.dc-time-selection-wrapper {
+    background: #f8f9fa;
+    border: var(--border-thick);
+    padding: 1.2rem;
+    margin: 0.5rem 0;
+    box-shadow: 4px 4px 0px #000;
+}
+
+.dc-time-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 900;
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+    color: var(--black);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.dc-time-inputs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dc-time-field {
+    flex: 1;
+}
+
+.dc-field-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    margin-bottom: 6px;
+    color: #666;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid #000;
+}
+
+.start-dot {
+    background: #22c55e;
+}
+
+.end-dot {
+    background: var(--neon-pink);
+}
+
+.dc-input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.dc-input-with-icon input {
+    width: 100%;
+    padding-left: 12px !important;
+}
+
+.dc-time-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem 0;
+}
+
+.dc-time-divider .line {
+    width: 2px;
+    height: 20px;
+    background: #000;
+    opacity: 0.2;
+}
+
+.dc-time-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #888;
+    font-style: italic;
+}
+
+/* Form Actions */
+.dc-form-actions {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.dc-btn-secondary {
+    background: #eee;
+    color: #333;
+    border: var(--border-thick);
+    padding: 14px;
+    font-weight: 900;
+    text-transform: uppercase;
+    box-shadow: var(--shadow-small);
+    transition: all 0.1s;
+}
+
+.dc-btn-secondary:hover {
+    background: #e0e0e0;
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
+}
+
+.dc-btn-secondary:active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+}
+
+.dc-loading-text {
+    width: 100%;
+    text-align: center;
+    padding: 2rem;
+    font-weight: 900;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Re-style multi-column layout for time container if on larger screens */
+@media (min-width: 600px) {
+    .dc-time-inputs-container {
+        flex-direction: row;
+        align-items: flex-end;
+    }
+
+    .dc-time-divider {
+        padding: 0 0.5rem;
+        margin-bottom: 12px;
+    }
+
+    .dc-time-divider .line {
+        width: 30px;
+        height: 2px;
+    }
+}
+
 @media (max-width: 900px) {
     .dc-stats-bar {
         grid-template-columns: repeat(2, 1fr);
@@ -703,5 +858,9 @@
 
     .dc-header-left h1 {
         font-size: 1.5rem;
+    }
+
+    .dc-form-actions {
+        grid-template-columns: 1fr;
     }
 }

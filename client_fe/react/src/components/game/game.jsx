@@ -7,6 +7,7 @@ import useGenreNav from '../../hooks/useGenreNav';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { manageToken } from '../../utils/manageToken';
 import useGameDiscount from '../../hooks/gameDiscount';
+import { toast } from '../notification/toast';
 import './game.css';
 
 const Game = () => {
@@ -43,15 +44,15 @@ const Game = () => {
 
                 await gameApi.removeWishlist(game._id);
                 setInWishlist(false);
-                alert('Đã xóa khỏi danh sách ước!');
+                toast.info('Đã xóa khỏi danh sách ước!');
             } else {
                 await gameApi.addWishlist(game._id);
                 setInWishlist(true);
-                alert('Đã thêm vào danh sách ước!');
+                toast.success('Đã thêm vào danh sách ước!');
             }
         } catch (error) {
             console.error('Lỗi khi cập nhật danh sách ước:', error);
-            alert('Thao tác thất bại!');
+            toast.error('Thao tác thất bại!');
         }
     };
     const loadLikeCount = async () => {
@@ -62,20 +63,20 @@ const Game = () => {
     const handleAddToCart = async () => {
         try {
             if (!manageToken.getToken()) {
-                alert('Vui lòng đăng nhập để thêm vào giỏ hàng!');
+                toast.warning('Vui lòng đăng nhập để thêm vào giỏ hàng!');
                 navigate('/auth');
                 return;
             }
             const result = await cartApi.addToCart(game._id);
             if (result.status === 200) {
-                alert('Đã thêm vào giỏ hàng thành công!');
+                toast.success('Đã thêm vào giỏ hàng thành công!');
             } else {
-                alert(`${result.message}`);
+                toast.error(`${result.message}`);
             }
             window.dispatchEvent(new Event('cartUpdated'));
         } catch (error) {
             console.error('Lỗi khi thêm vào giỏ hàng:', error);
-            alert('Thêm vào giỏ hàng thất bại!');
+            toast.error('Thêm vào giỏ hàng thất bại!');
         }
     };
 
@@ -94,7 +95,7 @@ const Game = () => {
             }
         } catch (error) {
             console.error('Lỗi khi cập nhật lượt thích:', error);
-            alert('Thao tác thất bại!');
+            toast.error('Thao tác thất bại!');
         }
     };
 

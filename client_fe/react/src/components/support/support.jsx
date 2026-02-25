@@ -2,29 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { useSocket } from '../../context/socketContext';
 import { Send, User, Server, Zap } from 'lucide-react';
 import './support.css';
-
+import { manageToken, getInfor } from '../../utils/manageToken';
 const Support = () => {
-    // Lấy thông tin socket và trạng thái kết nối từ context
     const { socket, isConnected } = useSocket();
     const [message, setMessage] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
 
     useEffect(() => {
         if (!socket) return;
-
-        // Lắng nghe tin nhắn phản hồi từ backend
+        const handleJoinRoom = () => {
+            const userinfor = getInfor();
+            const data = {
+                room: userinfor.id,
+                infor: {
+                    userId: userinfor.id,
+                    username: userinfor.username,
+                    // avatar: userinfor.avatar
+                    email: userinfor.email,
+                    role: userinfor.role
+                },
+                socketId: socket.id
+            }
+            socket.emit('join_room', data);
+            console.log('da gui socket: ', data);
+        }
+        handleJoinRoom();
         const handleReceiveMessage = (data) => {
+            console.log('da nhan socket: ', data);
             setChatHistory(prev => [...prev, {
                 sender: 'server',
-                text: typeof data === 'string' ? data : data.message || JSON.stringify(data)
+                text: data.text
             }]);
         };
 
-        socket.on('receive_message', handleReceiveMessage);
+        socket.on('receive_admin_message', handleReceiveMessage);
 
-        // Code dọn dẹp (cleanup) khi rời component
         return () => {
-            socket.off('receive_message', handleReceiveMessage);
+            socket.off('receive_admin_message', handleReceiveMessage);
+            socket.emit('leave_room', socket.id);
         };
     }, [socket]);
 
@@ -32,7 +47,20 @@ const Support = () => {
         e.preventDefault();
         if (!message.trim() || !isConnected) return;
         setChatHistory(prev => [...prev, { sender: 'user', text: message }]);
-        socket.emit('send_message', { message });
+        const userinfor = getInfor();
+        const data = {
+            room: userinfor.id,
+            infor: {
+                userId: userinfor.id,
+                username: userinfor.username,
+                // avatar: userinfor.avatar
+                email: userinfor.email,
+                role: userinfor.role
+            },
+            socketId: socket.id
+        }
+        socket.emit('send_message', { data: data, message: message });
+        // console.log('da gui socket: ', { ...data, message });
         setMessage('');
     };
 

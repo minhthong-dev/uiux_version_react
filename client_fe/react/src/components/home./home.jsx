@@ -5,29 +5,37 @@ import gameApi from '../../api/gameApi';
 import categoryApi from '../../api/categoryApi';
 import useGenreNav from '../../hooks/useGenreNav';
 import { formatCurrency } from '../../utils/formatCurrency';
-import { Eye } from 'lucide-react';
+import { Eye, Calendar } from 'lucide-react';
 import useGameDiscount from '../../hooks/gameDiscount';
+import discountApi from '../../api/discountApi';
 const GAMES_PER_PAGE = 8;
 
 const Home = () => {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [discounts, setDiscounts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const { goToGenre } = useGenreNav();
+    const { calculateDiscount } = useGameDiscount();
 
 
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [gamesData, catsData] = await Promise.all([
+                const [gamesData, catsData, discountRes] = await Promise.all([
                     gameApi.getAllGames(),
-                    categoryApi.getAllCategories()
+                    categoryApi.getAllCategories(),
+                    discountApi.getAllDiscount()
                 ]);
                 setGames(gamesData);
                 setCategories(catsData || []);
+
+                const dData = await discountRes.json();
+                const dList = Array.isArray(dData) ? dData : dData?.data || dData?.elements || [];
+                setDiscounts(dList.filter(d => d.isActive).slice(0, 3));
 
             } catch (error) {
                 console.error("Lỗi khi tải dữ liệu:", error);
@@ -47,6 +55,7 @@ const Home = () => {
     }
 
     const featuredGame = games.length > 0 ? games[0] : null;
+    const { finalDiscount: featuredDiscount, discountedPrice: featuredDiscountedPrice } = calculateDiscount(featuredGame);
     const trendingGames = [...games].sort((a, b) => b.like - a.like).slice(0, 4);
     const freeGames = games.filter(g => g.price === 0).slice(0, 4);
 
@@ -59,16 +68,44 @@ const Home = () => {
                     <div className="featured-hero">
                         <img src={featuredGame.media?.coverImage || 'https://via.placeholder.com/600x800'} alt={featuredGame.name} />
                         <div className="hero-info">
-                            <div className="hero-tag">HOT DEAL</div>
+                            <div className="hero-tag">HOT DEAL {featuredDiscount > 0 && `-${featuredDiscount}%`}</div>
                             <h1>{featuredGame.name}</h1>
                             <p>{featuredGame.content?.substring(0, 150)}...</p>
                             <div className="hero-footer">
-                                <span className="price-tag">
-                                    {formatCurrency(featuredGame.price)}
-                                </span>
+                                <div className="price-container">
+                                    {featuredDiscount > 0 ? (
+                                        <>
+                                            <span className="original-price-hero">{formatCurrency(featuredGame.price)}</span>
+                                            <span className="price-tag">{formatCurrency(featuredDiscountedPrice)}</span>
+                                        </>
+                                    ) : (
+                                        <span className="price-tag">{formatCurrency(featuredGame.price)}</span>
+                                    )}
+                                </div>
                                 <button className="play-btn" onClick={() => navigate(`/game/${featuredGame._id}`)}>CHI TIẾT NGAY</button>
                             </div>
                         </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Event Discount Section */}
+            {discounts.length > 0 && (
+                <section className="home-discount-events">
+                    <h2 className="section-title">SỰ KIỆN ĐANG DIỄN RA</h2>
+                    <div className="event-list-home">
+                        {discounts.map((sale) => (
+                            <div key={sale._id} className="event-item-home" onClick={() => navigate('/discount')}>
+                                <div className="event-discount-badge">-{sale.discount}%</div>
+                                <div className="event-details-home">
+                                    <h3 className="event-name-home">{sale.name}</h3>
+                                    <div className="event-time-home">
+                                        <Calendar size={16} />
+                                        <span>{new Date(sale.startDate).toLocaleDateString('vi-VN')} - {new Date(sale.endDate).toLocaleDateString('vi-VN')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </section>
             )}

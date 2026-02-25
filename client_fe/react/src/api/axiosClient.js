@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "../components/notification/toast";
 
 const axiosClient = axios.create({
     baseURL: "http://localhost:3636",
@@ -13,7 +14,7 @@ axiosClient.interceptors.response.use(
         if (error.response.status === 401 || error.response.status === 403) {
             console.log("token het han");
             localStorage.removeItem("token");
-            alert("het phien dang nhap");
+            toast.error("Hết phiên đăng nhập, vui lòng đăng nhập lại!");
             window.dispatchEvent(new Event("token-expired"));
         }
         return Promise.reject(error);
