@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import SOCKET_URL from '../config/configSocketUrl';
-
+import { manageToken } from '../utils/manageToken';
 const SocketContext = createContext();
 
 export const useSocket = () => useContext(SocketContext);
@@ -11,6 +11,7 @@ export const SocketProvider = ({ children }) => {
     const [isConnected, setIsconnected] = useState(false);
 
     useEffect(() => {
+        if (!manageToken.getToken()) return;
         const newSocket = io(SOCKET_URL, {
             reconnection: true,
             reconnectionAttempts: 5,
