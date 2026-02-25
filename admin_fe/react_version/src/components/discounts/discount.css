@@ -1,0 +1,707 @@
+/* =============================================
+   DISCOUNT MANAGEMENT - Neo-Brutalism Style
+   ============================================= */
+
+/* Container chính */
+.dc-container {
+    padding: 2rem;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+}
+
+/* ---- HEADER ---- */
+.dc-header {
+    background-color: var(--blue-violet);
+    color: var(--white);
+    padding: 2rem 2.5rem;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dc-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dc-header-left h1 {
+    font-size: 2.2rem;
+    letter-spacing: 2px;
+}
+
+.dc-header-sub {
+    font-size: 0.9rem;
+    font-weight: 700;
+    opacity: 0.8;
+    display: block;
+    margin-top: 4px;
+}
+
+.dc-btn-create {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--amber-gold);
+    color: var(--black);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    white-space: nowrap;
+}
+
+.dc-btn-create:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: var(--shadow-hard);
+}
+
+.dc-btn-create:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+/* ---- STATS BAR ---- */
+.dc-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.dc-stat-card {
+    border: var(--border-thick);
+    padding: 1.2rem 1.5rem;
+    box-shadow: var(--shadow-small);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: transform 0.1s;
+}
+
+.dc-stat-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
+}
+
+.dc-stat-value {
+    font-size: 2rem;
+    font-weight: 900;
+}
+
+.dc-stat-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.stat-active {
+    background-color: #b7f7c2;
+}
+
+.stat-upcoming {
+    background-color: var(--amber-gold);
+}
+
+.stat-expired {
+    background-color: #e0e0e0;
+}
+
+.stat-off {
+    background-color: var(--neon-pink);
+    color: var(--white);
+}
+
+.stat-off .dc-stat-label {
+    color: var(--white);
+}
+
+/* ---- DISCOUNT GRID ---- */
+.dc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ---- DISCOUNT CARD ---- */
+.dc-card {
+    background-color: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+    padding: 1.5rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.dc-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0px #000;
+}
+
+.dc-card-badge {
+    position: absolute;
+    top: -16px;
+    right: 16px;
+    background-color: var(--blaze-orange);
+    color: var(--white);
+    border: var(--border-thick);
+    padding: 4px 14px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: var(--shadow-small);
+}
+
+.dc-card-name {
+    font-size: 1.2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
+    border-bottom: var(--border-thin);
+    padding-bottom: 0.5rem;
+    word-break: break-all;
+}
+
+.dc-card-desc {
+    font-size: 0.85rem;
+    color: #555;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.dc-card-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background-color: #f8f8f8;
+    border: var(--border-thin);
+    padding: 0.75rem;
+}
+
+.dc-date-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Hiển thị Game / Category đã áp dụng */
+.dc-card-applied {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 4px 0;
+}
+
+.dc-applied-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--black);
+}
+
+.dc-applied-group svg {
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.dc-applied-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.dc-tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border: 2px solid #000;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0px #000;
+}
+
+.dc-tag--category {
+    background-color: var(--amber-gold);
+}
+
+.dc-tag--game {
+    background-color: var(--azure-blue);
+    color: var(--white);
+}
+
+.dc-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+    border-top: var(--border-thin);
+    padding-top: 0.75rem;
+}
+
+.dc-card-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.dc-card-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.dc-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: var(--border-thin);
+    box-shadow: var(--shadow-small);
+    font-size: 0.75rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.dc-action-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
+}
+
+.dc-action-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+}
+
+.dc-btn--edit {
+    background-color: var(--azure-blue);
+    color: var(--white);
+}
+
+.dc-btn--delete {
+    background-color: var(--neon-pink);
+    color: var(--white);
+}
+
+.dc-btn--delete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: var(--shadow-small);
+}
+
+.toggle-on {
+    color: #22c55e;
+}
+
+.toggle-off {
+    color: #aaa;
+}
+
+/* ---- STATUS PILLS ---- */
+.dc-status-pill {
+    display: inline-block;
+    padding: 3px 12px;
+    border: 2px solid #000;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    width: fit-content;
+    letter-spacing: 1px;
+}
+
+.status-active {
+    background-color: #b7f7c2;
+}
+
+.status-upcoming {
+    background-color: var(--amber-gold);
+}
+
+.status-expired {
+    background-color: #e0e0e0;
+    color: #777;
+}
+
+.status-off {
+    background-color: var(--neon-pink);
+    color: var(--white);
+}
+
+/* ---- EMPTY STATE ---- */
+.dc-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    border: 4px dashed var(--black);
+    background-color: #fafafa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dc-empty-state h3 {
+    font-size: 1.5rem;
+}
+
+.dc-empty-state p {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+}
+
+/* =============================================
+   MODAL - FormCreateDiscount
+   ============================================= */
+.dc-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    backdrop-filter: blur(2px);
+}
+
+.dc-modal-box {
+    background-color: var(--white);
+    border: var(--border-thick);
+    box-shadow: 12px 12px 0px #000;
+    width: 100%;
+    max-width: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 2rem;
+    animation: dc-pop-in 0.15s ease;
+}
+
+.dc-modal-box--large {
+    max-width: 1000px;
+}
+
+@keyframes dc-pop-in {
+    from {
+        transform: scale(0.92) translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.dc-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: var(--border-thick);
+    padding-bottom: 1rem;
+}
+
+.dc-modal-header h2 {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Header xanh cho modal edit */
+.dc-modal-header--edit {
+    background-color: var(--azure-blue);
+    color: var(--white);
+    margin: -2rem -2rem 1.5rem -2rem;
+    padding: 1.2rem 2rem;
+    border-bottom: var(--border-thick);
+}
+
+.dc-modal-close {
+    background: var(--neon-pink);
+    color: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Form layout grid */
+.dc-form-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.dc-form-left,
+.dc-form-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+/* Selection list styles */
+.dc-selection-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dc-selection-section label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dc-selection-list {
+    border: var(--border-thick);
+    background: #f0f0f0;
+    padding: 10px;
+    height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-content: flex-start;
+}
+
+.dc-selection-item {
+    background: var(--white);
+    border: var(--border-thin);
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 900;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.1s;
+    user-select: none;
+}
+
+.dc-selection-item:hover {
+    background: #eee;
+}
+
+.dc-selection-item.active {
+    background: var(--blaze-orange);
+    color: var(--white);
+    box-shadow: 2px 2px 0px #000;
+    transform: translate(-1px, -1px);
+}
+
+.dc-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dc-form-group label {
+    font-size: 0.85rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.required {
+    color: var(--neon-pink);
+}
+
+.dc-form-group input[type="text"],
+.dc-form-group input[type="number"],
+.dc-form-group input[type="datetime-local"],
+.dc-form-group textarea {
+    border: var(--border-thick);
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    background-color: #fafafa;
+    outline: none;
+    transition: box-shadow 0.1s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dc-form-group input:focus,
+.dc-form-group textarea:focus {
+    background-color: #fff9e6;
+    box-shadow: 4px 4px 0px #000;
+}
+
+.dc-form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* 2 cột cho ngày */
+.dc-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Toggle */
+.dc-toggle-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.dc-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.dc-toggle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border: var(--border-thin);
+    accent-color: var(--blaze-orange);
+    cursor: pointer;
+}
+
+.dc-toggle-slider {
+    display: none;
+}
+
+.dc-toggle-label {
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+/* Submit button - tạo mới (cam) */
+.dc-btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--blaze-orange);
+    color: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    padding: 14px 24px;
+    font-size: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    margin-top: 0.5rem;
+}
+
+/* Submit button - chỉnh sửa (xanh) */
+.dc-btn-edit-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--azure-blue);
+    color: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    padding: 14px 24px;
+    font-size: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+.dc-btn-edit-submit:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: var(--shadow-hard);
+}
+
+.dc-btn-edit-submit:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+.dc-btn-edit-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: var(--shadow-small);
+}
+
+.dc-btn-primary:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: var(--shadow-hard);
+}
+
+.dc-btn-primary:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+.dc-btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: var(--shadow-small);
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 900px) {
+    .dc-stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dc-form-main-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dc-modal-box--large {
+        max-width: 98%;
+    }
+}
+
+@media (max-width: 600px) {
+    .dc-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dc-stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dc-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .dc-header-left h1 {
+        font-size: 1.5rem;
+    }
+}

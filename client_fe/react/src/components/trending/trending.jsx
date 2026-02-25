@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gameApi from '../../api/gameApi';
 import { formatCurrency } from '../../utils/formatCurrency';
+import useGameDiscount from '../../hooks/gameDiscount';
 import './trending.css';
 
 const Trending = () => {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { calculateDiscount } = useGameDiscount();
 
     useEffect(() => {
         const fetchTrending = async () => {
@@ -61,21 +63,36 @@ const Trending = () => {
     const topGames = games.slice(0, 3);
     const otherGames = games.slice(3);
 
-    const PodiumItem = ({ game, rank }) => (
-        <div className={`podium-item rank-${rank}`} onClick={() => navigate(`/game/${game._id}`)}>
-            <div className="rank-badge">{rank}</div>
-            <div className="podium-card">
-                <div className="podium-img-wrapper">
-                    <img src={game.media?.coverImage || 'https://via.placeholder.com/600x800'} alt={game.name} />
-                </div>
-                <div className="podium-info">
-                    <h3 className="podium-name">{game.name}</h3>
-                    <div className="podium-likes">🔥 {game.likeCount || 0} LƯỢT THÍCH</div>
-                    <div style={{ fontWeight: 900, marginTop: '10px' }}>{formatCurrency(game.price)}</div>
+    const PodiumItem = ({ game, rank }) => {
+        const { finalDiscount, discountedPrice } = calculateDiscount(game);
+        return (
+            <div className={`podium-item rank-${rank}`} onClick={() => navigate(`/game/${game._id}`)}>
+                <div className="rank-badge">{rank}</div>
+                <div className="podium-card">
+                    <div className="podium-img-wrapper">
+                        <img src={game.media?.coverImage || 'https://via.placeholder.com/600x800'} alt={game.name} />
+                        {game.price > 0 && finalDiscount > 0 && (
+                            <div style={{ position: 'absolute', top: 5, left: 5, backgroundColor: '#e53935', color: 'white', padding: '2px 5px', borderRadius: '4px', fontWeight: 'bold' }}>-{finalDiscount}%</div>
+                        )}
+                    </div>
+                    <div className="podium-info">
+                        <h3 className="podium-name">{game.name}</h3>
+                        <div className="podium-likes">🔥 {game.likeCount || 0} LƯỢT THÍCH</div>
+                        <div style={{ fontWeight: 900, marginTop: '10px' }}>
+                            {finalDiscount > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '0.8em' }}>{formatCurrency(game.price)}</span>
+                                    <span style={{ color: '#90EE90' }}>{formatCurrency(discountedPrice)}</span>
+                                </div>
+                            ) : (
+                                formatCurrency(game.price)
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <div className="trending-container">

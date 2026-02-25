@@ -6,6 +6,7 @@ import Home from './components/home/index';
 import Category from './components/category/index';
 import User from './components/user/index'
 import Layout from './components/layout/index';
+import Discount from './components/discounts/discount';
 import ToastContainer from './components/notification/toast';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/game" element={<Game />} />
           <Route path="/category" element={<Category />} />
           <Route path="/users" element={<User />} />
+          <Route path="/discount" element={<Discount />} />
         </Route>
       </Routes>
     </>

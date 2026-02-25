@@ -6,6 +6,7 @@ import cartApi from '../../api/cartApi';
 import useGenreNav from '../../hooks/useGenreNav';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { manageToken } from '../../utils/manageToken';
+import useGameDiscount from '../../hooks/gameDiscount';
 import './game.css';
 
 const Game = () => {
@@ -18,6 +19,8 @@ const Game = () => {
     const [isLiked, setIsLiked] = useState(false);
     const { goToGenre } = useGenreNav();
     const [coutLike, setCoutLike] = useState(0);
+    const { calculateDiscount } = useGameDiscount();
+    const { finalDiscount, discountedPrice } = game ? calculateDiscount(game) : { finalDiscount: 0, discountedPrice: 0 };
 
     // Hàm helper để chuyển đổi link YouTube thường sang link embed
     const getEmbedUrl = (url) => {
@@ -285,9 +288,19 @@ const Game = () => {
             <section className="buy-section">
                 <div className="price-box">
                     <span className="buy-subtitle">SỞ HỮU TRÒ CHƠI {game.name}</span>
-                    <span className="buy-price">
-                        {formatCurrency(game.price)}
-                    </span>
+                    <div className="buy-price" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        {game.price > 0 && finalDiscount > 0 && (
+                            <span style={{ backgroundColor: '#e53935', color: 'white', padding: '5px 10px', borderRadius: '4px', fontSize: '1.2rem', fontWeight: '900' }}>-{finalDiscount}%</span>
+                        )}
+                        {finalDiscount > 0 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                                <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '1.2rem' }}>{formatCurrency(game.price)}</span>
+                                <span style={{ color: '#90EE90', fontSize: '2rem' }}>{formatCurrency(discountedPrice)}</span>
+                            </div>
+                        ) : (
+                            <span style={{ fontSize: '2rem' }}>{formatCurrency(game.price)}</span>
+                        )}
+                    </div>
                 </div>
                 <button className="add-to-cart-btn" onClick={handleAddToCart}>THÊM VÀO GIỎ HÀNG</button>
             </section>

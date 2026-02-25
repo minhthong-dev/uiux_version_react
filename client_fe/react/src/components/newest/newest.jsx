@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gameApi from '../../api/gameApi';
 import { formatCurrency } from '../../utils/formatCurrency';
+import useGameDiscount from '../../hooks/gameDiscount';
 import './newest.css';
 
 const Newest = () => {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { calculateDiscount } = useGameDiscount();
 
     useEffect(() => {
         const fetchNewest = async () => {
@@ -55,27 +57,40 @@ const Newest = () => {
             </header>
 
             <div className="metro-grid">
-                {games.map((game, index) => (
-                    <div
-                        key={game._id}
-                        className={`${getTileClass(index)} tile-${index + 1}`}
-                        onClick={() => navigate(`/game/${game._id}`)}
-                    >
-                        <img
-                            src={game.media?.coverImage || 'https://via.placeholder.com/600x800'}
-                            alt={game.name}
-                        />
-                        <div className="tile-price">
-                            {formatCurrency(game.price)}
+                {games.map((game, index) => {
+                    const { finalDiscount, discountedPrice } = calculateDiscount(game);
+                    return (
+                        <div
+                            key={game._id}
+                            className={`${getTileClass(index)} tile-${index + 1}`}
+                            onClick={() => navigate(`/game/${game._id}`)}
+                        >
+                            <img
+                                src={game.media?.coverImage || 'https://via.placeholder.com/600x800'}
+                                alt={game.name}
+                            />
+                            {game.price > 0 && finalDiscount > 0 && (
+                                <div style={{ position: 'absolute', top: 5, right: 5, backgroundColor: '#e53935', color: 'white', padding: '2px 5px', borderRadius: '4px', fontWeight: 'bold' }}>-{finalDiscount}%</div>
+                            )}
+                            <div className="tile-price">
+                                {finalDiscount > 0 ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                                        <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '0.8em' }}>{formatCurrency(game.price)}</span>
+                                        <span style={{ color: '#90EE90' }}>{formatCurrency(discountedPrice)}</span>
+                                    </div>
+                                ) : (
+                                    formatCurrency(game.price)
+                                )}
+                            </div>
+                            <div className="tile-overlay">
+                                <span className="tile-date">
+                                    {game.releaseDate ? new Date(game.releaseDate).toLocaleDateString() : 'VỪA RA MẮT'}
+                                </span>
+                                <h3 className="tile-name">{game.name}</h3>
+                            </div>
                         </div>
-                        <div className="tile-overlay">
-                            <span className="tile-date">
-                                {game.releaseDate ? new Date(game.releaseDate).toLocaleDateString() : 'VỪA RA MẮT'}
-                            </span>
-                            <h3 className="tile-name">{game.name}</h3>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {games.length === 0 && (

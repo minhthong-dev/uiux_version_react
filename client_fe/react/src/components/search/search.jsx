@@ -5,6 +5,7 @@ import categoryApi from '../../api/categoryApi';
 import cryptoUtils from '../../../cryptojs';
 import useGenreNav from '../../hooks/useGenreNav';
 import { formatCurrency } from '../../utils/formatCurrency';
+import useGameDiscount from '../../hooks/gameDiscount';
 import '../home./home.css';
 import './search.css';
 
@@ -190,11 +191,19 @@ const GenreTag = ({ categoryId }) => {
 // Sub-component cho thẻ game
 const GameCard = ({ game }) => {
     const navigate = useNavigate();
+    const { calculateDiscount } = useGameDiscount(); // Sử dụng Custom Hook vừa được tạo
+
+    // Lấy ra giá trị giảm giá cao nhất và giá trị sau khi giảm  
+    const { finalDiscount, discountedPrice } = calculateDiscount(game);
+
     return (
         <div className="game-card-steam" onClick={() => navigate(`/game/${game._id}`)}>
             <div className="card-media">
                 <img src={game.media?.coverImage || 'https://via.placeholder.com/600x800'} alt={game.name} />
                 {game.price === 0 && <span className="free-badge">FREE</span>}
+                {game.price > 0 && finalDiscount > 0 && (
+                    <span className="free-badge" style={{ backgroundColor: '#e53935' }}>-{finalDiscount}%</span>
+                )}
             </div>
             <div className="card-details">
                 <h3 className="game-name">{game.name}</h3>
@@ -203,10 +212,20 @@ const GameCard = ({ game }) => {
                         <GenreTag key={i} categoryId={genreId} />
                     ))}
                 </div>
-                <div className="card-footer">
-                    <div className="feedback">👍 {game.like}</div>
-                    <div className="card-price">
-                        {formatCurrency(game.price)}
+                <div className="card-footer" style={{ justifyContent: 'flex-end' }}>
+                    <div className="card-price" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                        {finalDiscount > 0 ? (
+                            <>
+                                <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '0.8em', marginBottom: '2px' }}>
+                                    {formatCurrency(game.price)}
+                                </span>
+                                <span style={{ color: '#90EE90' }}>
+                                    {formatCurrency(discountedPrice)}
+                                </span>
+                            </>
+                        ) : (
+                            formatCurrency(game.price)
+                        )}
                     </div>
                 </div>
             </div>

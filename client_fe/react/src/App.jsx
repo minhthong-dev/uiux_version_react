@@ -12,6 +12,7 @@ import Support from './components/support/support'
 import Layout from './layout/index'
 import './App.css'
 import { SocketProvider } from './context/socketContext'
+import { DiscountProvider } from './context/discountContext'
 import { useNavigate } from 'react-router-dom'
 function App() {
   const navigate = useNavigate();
@@ -27,20 +28,22 @@ function App() {
   }, [navigate]);
   return (
     <SocketProvider>
-      <Routes>
-        <Route path="/auth" element={<Login />} />
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/game/:id" element={<Game />} />
-          <Route path="/trending" element={<Trending />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/new" element={<Newest />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/support" element={<Support />} />
-        </Route>
-        {/* Thêm các route khác ở đây */}
-      </Routes>
+      <DiscountProvider>
+        <Routes>
+          <Route path="/auth" element={<Login />} />
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/game/:id" element={<Game />} />
+            <Route path="/trending" element={<Trending />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/new" element={<Newest />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/support" element={<Support />} />
+          </Route>
+          {/* Thêm các route khác ở đây */}
+        </Routes>
+      </DiscountProvider>
     </SocketProvider>
   )
 }

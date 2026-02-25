@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Gamepad2, Users, ShoppingCart, Settings, BarChart3, Tags } from 'lucide-react';
+import { LayoutDashboard, Gamepad2, Users, ShoppingCart, Settings, BarChart3, Tags, Percent } from 'lucide-react';
 import './sidebar_header.css';
 
 const Sidebar = () => {
@@ -9,6 +9,7 @@ const Sidebar = () => {
         { path: '/game', icon: <Gamepad2 />, label: 'Quản lý Game' },
         { path: '/category', icon: <Tags />, label: 'Quản lý Danh mục' },
         { path: '/users', icon: <Users />, label: 'Người dùng' },
+        { path: '/discount', icon: <Percent />, label: 'Khuyến mãi' },
         { path: '/orders', icon: <ShoppingCart />, label: 'Đơn hàng' },
         { path: '/stats', icon: <BarChart3 />, label: 'Thống kê' },
         { path: '/settings', icon: <Settings />, label: 'Cài đặt' },

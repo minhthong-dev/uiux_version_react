@@ -6,11 +6,15 @@ import categoryApi from '../../api/categoryApi';
 import useGenreNav from '../../hooks/useGenreNav';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { Eye } from 'lucide-react';
+import useGameDiscount from '../../hooks/gameDiscount';
+const GAMES_PER_PAGE = 8;
+
 const Home = () => {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
     const { goToGenre } = useGenreNav();
 
 
@@ -114,14 +118,26 @@ const Home = () => {
                 </section>
             )}
 
-            {/* 5. All Games Section */}
+            {/* 5. All Games Section với Pagination */}
             <section className="games-list-section">
                 <h2 className="section-title">TẤT CẢ TRÒ CHƠI</h2>
                 <div className="game-grid-steam">
-                    {games.map((game) => (
-                        <GameCard key={game._id} game={game} />
-                    ))}
+                    {games
+                        .slice((currentPage - 1) * GAMES_PER_PAGE, currentPage * GAMES_PER_PAGE)
+                        .map((game) => (
+                            <GameCard key={game._id} game={game} />
+                        ))
+                    }
                 </div>
+
+                {/* Pagination */}
+                {games.length > GAMES_PER_PAGE && (
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={Math.ceil(games.length / GAMES_PER_PAGE)}
+                        onPageChange={(p) => { setCurrentPage(p); window.scrollTo({ top: document.querySelector('.games-list-section:last-of-type')?.offsetTop - 80 || 0, behavior: 'smooth' }); }}
+                    />
+                )}
             </section>
         </div>
     );
@@ -162,6 +178,11 @@ const GenreTag = ({ categoryId }) => {
 const GameCard = ({ game }) => {
     const [view, setView] = useState([]);
     const navigate = useNavigate();
+    const { calculateDiscount } = useGameDiscount();
+
+    // Tính toán giảm giá
+    const { finalDiscount, discountedPrice } = calculateDiscount(game);
+
     const randomView = () => {
         const random = Math.floor(Math.random() * 1000);
         setView(random);
@@ -175,6 +196,9 @@ const GameCard = ({ game }) => {
             <div className="card-media">
                 <img src={game.media?.coverImage || 'https://via.placeholder.com/600x800'} alt={game.name} />
                 {game.price === 0 && <span className="free-badge">FREE</span>}
+                {game.price > 0 && finalDiscount > 0 && (
+                    <span className="free-badge" style={{ backgroundColor: '#e53935' }}>-{finalDiscount}%</span>
+                )}
             </div>
             <div className="card-details">
                 <h3 className="game-name">{game.name}</h3>
@@ -183,19 +207,74 @@ const GameCard = ({ game }) => {
                         <GenreTag key={i} categoryId={genreId} />
                     ))}
                 </div>
-                {/* <div className="card-footer">
-                    <div className="feedback">👍 {game.like}</div>
-                    <div className="card-price">
-                        {formatCurrency(game.price)}
-                    </div>
-                </div> */}
                 <div className="card-footer">
                     <div className="view-btn"><Eye style={{ marginRight: '10px' }} size={20} />{view}</div>
-                    <div className="card-price">
-                        {formatCurrency(game.price)}
+                    <div className="card-price" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                        {finalDiscount > 0 ? (
+                            <>
+                                <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '0.8em', marginBottom: '2px' }}>
+                                    {formatCurrency(game.price)}
+                                </span>
+                                <span style={{ color: '#90EE90' }}>
+                                    {formatCurrency(discountedPrice)}
+                                </span>
+                            </>
+                        ) : (
+                            formatCurrency(game.price)
+                        )}
                     </div>
                 </div>
             </div>
+        </div>
+    );
+};
+
+// Component Pagination Neo-Brutalism
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+    const buildPages = () => {
+        if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+        const pages = [];
+        pages.push(1);
+        if (currentPage > 3) pages.push('...');
+        for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+            pages.push(i);
+        }
+        if (currentPage < totalPages - 2) pages.push('...');
+        pages.push(totalPages);
+        return pages;
+    };
+
+    return (
+        <div className="pagination-wrap">
+            <button
+                className="pg-btn pg-prev"
+                disabled={currentPage === 1}
+                onClick={() => onPageChange(currentPage - 1)}
+            >
+                ← PREV
+            </button>
+
+            <div className="pg-numbers">
+                {buildPages().map((p, i) =>
+                    p === '...'
+                        ? <span key={`dots-${i}`} className="pg-dots">•••</span>
+                        : <button
+                            key={p}
+                            className={`pg-btn pg-num ${p === currentPage ? 'pg-active' : ''}`}
+                            onClick={() => onPageChange(p)}
+                        >
+                            {p}
+                        </button>
+                )}
+            </div>
+
+            <button
+                className="pg-btn pg-next"
+                disabled={currentPage === totalPages}
+                onClick={() => onPageChange(currentPage + 1)}
+            >
+                NEXT →
+            </button>
         </div>
     );
 };

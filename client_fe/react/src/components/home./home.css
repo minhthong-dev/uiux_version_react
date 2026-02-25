@@ -291,3 +291,81 @@
         border-bottom: 4px solid var(--black);
     }
 }
+/* ===== PAGINATION – Neo-Brutalism ===== */
+.pagination-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.pg-numbers {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.pg-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 14px;
+    font-weight: 900;
+    font-size: 0.85rem;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 3px solid var(--black, #000);
+    background: var(--white, #fff);
+    box-shadow: 4px 4px 0px var(--black, #000);
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.pg-btn:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px var(--black, #000);
+}
+
+.pg-btn:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--black, #000);
+}
+
+.pg-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    box-shadow: 2px 2px 0px var(--black, #000);
+}
+
+.pg-active {
+    background: var(--blaze-orange, #FF6B2B);
+    color: #fff;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px var(--black, #000);
+}
+
+.pg-prev,
+.pg-next {
+    background: var(--black, #000);
+    color: var(--white, #fff);
+}
+
+.pg-prev:hover:not(:disabled),
+.pg-next:hover:not(:disabled) {
+    background: var(--blaze-orange, #FF6B2B);
+}
+
+.pg-dots {
+    font-size: 1.1rem;
+    font-weight: 900;
+    padding: 0 4px;
+    color: var(--black, #000);
+    user-select: none;
+}

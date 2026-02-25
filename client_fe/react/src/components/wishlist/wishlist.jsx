@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gameApi from '../../api/gameApi';
 import { formatCurrency } from '../../utils/formatCurrency';
+import useGameDiscount from '../../hooks/gameDiscount';
 import './wishlist.css';
 
 const Wishlist = () => {
     const navigate = useNavigate();
     const [wishlistItems, setWishlistItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { calculateDiscount } = useGameDiscount();
 
     useEffect(() => {
         const fetchWishlist = async () => {
@@ -69,31 +71,44 @@ const Wishlist = () => {
 
             {wishlistItems.length > 0 ? (
                 <div className="wishlist-metro-grid">
-                    {wishlistItems.map((game, index) => (
-                        <div
-                            key={game._id}
-                            className={`wishlist-tile ${getTileClass(index)}`}
-                            onClick={() => navigate(`/game/${game._id}`)}
-                        >
-                            <img
-                                src={game.media?.coverImage || 'https://via.placeholder.com/600x800'}
-                                alt={game.name}
-                            />
-                            <button
-                                className="btn-remove-wishlist"
-                                onClick={(e) => handleRemove(e, game._id)}
+                    {wishlistItems.map((game, index) => {
+                        const { finalDiscount, discountedPrice } = calculateDiscount(game);
+                        return (
+                            <div
+                                key={game._id}
+                                className={`wishlist-tile ${getTileClass(index)}`}
+                                onClick={() => navigate(`/game/${game._id}`)}
                             >
-                                XÓA
-                            </button>
+                                <img
+                                    src={game.media?.coverImage || 'https://via.placeholder.com/600x800'}
+                                    alt={game.name}
+                                />
+                                {game.price > 0 && finalDiscount > 0 && (
+                                    <div style={{ position: 'absolute', top: 5, right: 5, backgroundColor: '#e53935', color: 'white', padding: '2px 5px', borderRadius: '4px', fontWeight: 'bold' }}>-{finalDiscount}%</div>
+                                )}
+                                <button
+                                    className="btn-remove-wishlist"
+                                    onClick={(e) => handleRemove(e, game._id)}
+                                >
+                                    XÓA
+                                </button>
 
-                            <div className="wishlist-overlay">
-                                <h3 className="wishlist-name">{game.name}</h3>
-                                <div className="wishlist-price">
-                                    {formatCurrency(game.price)}
+                                <div className="wishlist-overlay">
+                                    <h3 className="wishlist-name">{game.name}</h3>
+                                    <div className="wishlist-price">
+                                        {finalDiscount > 0 ? (
+                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                                                <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '0.8em' }}>{formatCurrency(game.price)}</span>
+                                                <span style={{ color: '#90EE90' }}>{formatCurrency(discountedPrice)}</span>
+                                            </div>
+                                        ) : (
+                                            formatCurrency(game.price)
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             ) : (
                 <div className="wishlist-empty">

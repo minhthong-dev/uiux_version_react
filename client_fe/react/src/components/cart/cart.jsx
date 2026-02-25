@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { manageToken } from "../../utils/manageToken";
 import { useNavigate } from "react-router-dom";
+import useGameDiscount from "../../hooks/gameDiscount";
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
+    const { calculateDiscount } = useGameDiscount();
 
     const fetchCart = async () => {
         if (!manageToken.getToken()) return;
@@ -79,7 +81,8 @@ const Cart = () => {
     const calculateTotal = () => {
         return cartItems.reduce((total, item) => {
             const game = item.game || item;
-            return total + (game.price || 0) * (item.quantity || 1);
+            const { discountedPrice } = calculateDiscount(game);
+            return total + (discountedPrice || 0) * (item.quantity || 1);
         }, 0);
     };
 
@@ -140,6 +143,8 @@ const Cart = () => {
                     <div style={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column', gap: '25px' }}>
                         {cartItems.map((item, index) => {
                             const game = item.game || item;
+                            const { finalDiscount, discountedPrice } = calculateDiscount(game);
+
                             return (
                                 <div key={game._id || item.id || index} style={{ display: 'flex', padding: '25px', backgroundColor: 'var(--white)', border: '4px solid var(--black)', boxShadow: '6px 6px 0 var(--black)', borderRadius: '0', alignItems: 'center', justifyContent: 'space-between', transition: 'transform 0.2s ease', position: 'relative' }}>
 
@@ -150,16 +155,31 @@ const Cart = () => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '30px', flex: 1 }}>
                                         <div style={{ width: '140px', height: '140px', flexShrink: 0, borderRadius: '8px', overflow: 'hidden', border: '3px solid var(--black)' }}>
                                             <img src={game.media?.coverImage || 'https://via.placeholder.com/150'} alt={game.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            {game.price > 0 && finalDiscount > 0 && (
+                                                <div style={{ position: 'absolute', top: 5, left: 5, backgroundColor: '#e53935', color: 'white', padding: '2px 5px', borderRadius: '4px', fontWeight: 'bold' }}>-{finalDiscount}%</div>
+                                            )}
                                         </div>
                                         <div style={{ flex: 1 }}>
                                             <h2 style={{ margin: '0 0 15px 0', fontSize: '2rem', fontWeight: '900', lineHeight: '1.1' }}>{game.name || 'Trò chơi'}</h2>
                                             <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                                                <span style={{ fontWeight: '900', fontSize: '1.4rem', color: 'var(--flag-red)', backgroundColor: '#ffe5e5', padding: '5px 15px', borderRadius: '6px', border: '2px solid var(--flag-red)' }}>
-                                                    {game.price !== undefined ? formatCurrency(game.price * item.quantity) : '0 VNĐ'}
-                                                </span>
+                                                {finalDiscount > 0 ? (
+                                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                        <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '1rem', fontWeight: 600 }}>
+                                                            {game.price !== undefined ? formatCurrency(game.price * item.quantity) : '0 VNĐ'}
+                                                        </span>
+                                                        <span style={{ fontWeight: '900', fontSize: '1.4rem', color: 'var(--flag-red)' }}>
+                                                            {game.price !== undefined ? formatCurrency(discountedPrice * item.quantity) : '0 VNĐ'}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <span style={{ fontWeight: '900', fontSize: '1.4rem', color: 'var(--flag-red)' }}>
+                                                        {game.price !== undefined ? formatCurrency(game.price * item.quantity) : '0 VNĐ'}
+                                                    </span>
+                                                )}
+
                                                 {item.quantity > 1 && (
                                                     <span style={{ fontWeight: '600', fontSize: '1rem', color: '#666' }}>
-                                                        ({formatCurrency(game.price)} / món)
+                                                        ({formatCurrency(discountedPrice)} / món)
                                                     </span>
                                                 )}
                                             </div>
