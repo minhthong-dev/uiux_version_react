@@ -228,7 +228,7 @@ const UserManagement = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        {new Date(user.joinedAt).toLocaleDateString('vi-VN')}
+                                        {new Date(user.createdAt).toLocaleDateString('vi-VN')}
                                     </td>
                                     <td>
                                         <button

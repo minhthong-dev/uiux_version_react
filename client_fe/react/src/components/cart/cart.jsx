@@ -9,6 +9,7 @@ import { toast } from "../notification/toast";
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
+    const [selectedItems, setSelectedItems] = useState([]); // Theo dõi các item được chọn (gameId)
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     const { calculateDiscount } = useGameDiscount();
@@ -53,6 +54,8 @@ const Cart = () => {
             );
 
             setCartItems(detailedItems);
+            // Mặc định chọn tất cả khi mới load
+            setSelectedItems(detailedItems.map(item => item.gameId));
         } catch (error) {
             console.error("Lỗi khi tải giỏ hàng:", error);
         } finally {
@@ -71,6 +74,7 @@ const Cart = () => {
     const handleRemoveFromCart = async (gameId) => {
         try {
             await cartApi.removeFromCart(gameId);
+            setSelectedItems(prev => prev.filter(id => id !== gameId));
             fetchCart();
             window.dispatchEvent(new Event('cartUpdated'));
         } catch (error) {
@@ -79,15 +83,37 @@ const Cart = () => {
         }
     };
 
+    const toggleSelectItem = (gameId) => {
+        setSelectedItems(prev =>
+            prev.includes(gameId)
+                ? prev.filter(id => id !== gameId)
+                : [...prev, gameId]
+        );
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedItems.length === cartItems.length) {
+            setSelectedItems([]);
+        } else {
+            setSelectedItems(cartItems.map(item => item.gameId));
+        }
+    };
+
+    const getSelectedCartItems = () => {
+        return cartItems.filter(item => selectedItems.includes(item.gameId));
+    };
+
     const calculateTotal = () => {
-        return cartItems.reduce((total, item) => {
+        const selectedProducts = getSelectedCartItems();
+        return selectedProducts.reduce((total, item) => {
             const game = item.game || item;
             const { discountedPrice } = calculateDiscount(game);
             return total + (discountedPrice || 0) * (item.quantity || 1);
         }, 0);
     };
 
-    const totalItems = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+    const totalInCart = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+    const selectedTotalItems = getSelectedCartItems().reduce((total, item) => total + (item.quantity || 1), 0);
 
     return (
         <div style={{ padding: '40px', maxWidth: '1300px', margin: '0 auto', color: 'var(--black)', fontFamily: 'Inter, sans-serif' }}>
@@ -107,16 +133,50 @@ const Cart = () => {
                 }}>
                     GIỎ HÀNG
                 </h1>
-                {totalItems > 0 && (
-                    <div style={{
-                        fontSize: '1.5rem',
-                        fontWeight: '900',
-                        backgroundColor: 'var(--white)',
-                        padding: '10px 20px',
-                        border: 'var(--border-thick, 4px solid #000)',
-                        boxShadow: 'var(--shadow-small, 4px 4px 0px #000)'
-                    }}>
-                        CHỌN MUA: <span style={{ color: 'var(--flag-red)' }}>{totalItems} MÓN</span>
+                {totalInCart > 0 && (
+                    <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                        <div
+                            onClick={toggleSelectAll}
+                            style={{
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                fontSize: '1.2rem',
+                                fontWeight: '800',
+                                backgroundColor: 'var(--white)',
+                                padding: '10px 20px',
+                                border: 'var(--border-thick, 4px solid #000)',
+                                boxShadow: 'var(--shadow-small, 4px 4px 0px #000)',
+                                userSelect: 'none'
+                            }}
+                        >
+                            <div style={{
+                                width: '24px',
+                                height: '24px',
+                                border: '3px solid #000',
+                                backgroundColor: selectedItems.length === cartItems.length && cartItems.length > 0 ? 'var(--sunflower-gold)' : 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                {selectedItems.length === cartItems.length && cartItems.length > 0 && (
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                )}
+                            </div>
+                            CHỌN TẤT CẢ
+                        </div>
+
+                        <div style={{
+                            fontSize: '1.5rem',
+                            fontWeight: '900',
+                            backgroundColor: 'var(--white)',
+                            padding: '10px 20px',
+                            border: 'var(--border-thick, 4px solid #000)',
+                            boxShadow: 'var(--shadow-small, 4px 4px 0px #000)'
+                        }}>
+                            ĐÃ CHỌN: <span style={{ color: 'var(--flag-red)' }}>{selectedTotalItems}/{totalInCart} MÓN</span>
+                        </div>
                     </div>
                 )}
             </div>
@@ -146,8 +206,44 @@ const Cart = () => {
                             const game = item.game || item;
                             const { finalDiscount, discountedPrice } = calculateDiscount(game);
 
+                            const isSelected = selectedItems.includes(item.gameId);
+
                             return (
-                                <div key={game._id || item.id || index} style={{ display: 'flex', padding: '25px', backgroundColor: 'var(--white)', border: '4px solid var(--black)', boxShadow: '6px 6px 0 var(--black)', borderRadius: '0', alignItems: 'center', justifyContent: 'space-between', transition: 'transform 0.2s ease', position: 'relative' }}>
+                                <div key={game._id || item.id || index} style={{
+                                    display: 'flex',
+                                    padding: '25px',
+                                    backgroundColor: 'var(--white)',
+                                    border: '4px solid var(--black)',
+                                    boxShadow: isSelected ? '10px 10px 0 var(--sunflower-gold)' : '6px 6px 0 var(--black)',
+                                    borderRadius: '0',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    transition: 'all 0.2s ease',
+                                    position: 'relative',
+                                    opacity: isSelected ? 1 : 0.7,
+                                    transform: isSelected ? 'translate(-2px, -2px)' : 'none'
+                                }}>
+                                    {/* Checkbox */}
+                                    <div
+                                        onClick={() => toggleSelectItem(item.gameId)}
+                                        style={{
+                                            marginRight: '20px',
+                                            cursor: 'pointer',
+                                            width: '35px',
+                                            height: '35px',
+                                            border: '4px solid #000',
+                                            backgroundColor: isSelected ? 'var(--sunflower-gold)' : 'white',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            flexShrink: 0,
+                                            boxShadow: '3px 3px 0 #000'
+                                        }}
+                                    >
+                                        {isSelected && (
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        )}
+                                    </div>
 
                                     <div style={{ position: 'absolute', top: '-15px', left: '-15px', backgroundColor: 'var(--sunflower-gold)', border: '3px solid var(--black)', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: '900', fontSize: '1.2rem', zIndex: 2 }}>
                                         x{item.quantity}
@@ -205,8 +301,8 @@ const Cart = () => {
                         <h2 style={{ fontSize: '1.8rem', fontWeight: '900', margin: '0 0 25px 0', borderBottom: '3px solid var(--black)', paddingBottom: '15px' }}>TÓM TẮT ĐƠN HÀNG</h2>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '1.1rem', fontWeight: '600' }}>
-                            <span>Tổng số lượng:</span>
-                            <span>{totalItems} món</span>
+                            <span>Số lượng đã chọn:</span>
+                            <span>{selectedTotalItems} món</span>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px', fontSize: '1.1rem', fontWeight: '600' }}>
@@ -219,10 +315,35 @@ const Cart = () => {
                             <span style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--flag-red)' }}>{formatCurrency(calculateTotal())}</span>
                         </div>
 
-                        <button style={{ width: '100%', marginTop: '30px', padding: '18px', backgroundColor: 'var(--sunflower-gold)', color: 'var(--black)', border: '3px solid var(--black)', fontSize: '1.2rem', fontWeight: '900', cursor: 'pointer', boxShadow: '4px 4px 0 var(--black)', borderRadius: '8px', transition: 'all 0.2s' }}
-                            onMouseOver={(e) => { e.currentTarget.style.transform = 'translate(2px, 2px)'; e.currentTarget.style.boxShadow = '2px 2px 0 var(--black)'; }}
-                            onMouseOut={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '4px 4px 0 var(--black)'; }}>
-                            THANH TOÁN NGAY
+                        <button
+                            disabled={selectedItems.length === 0}
+                            style={{
+                                width: '100%',
+                                marginTop: '30px',
+                                padding: '18px',
+                                backgroundColor: selectedItems.length === 0 ? '#ccc' : 'var(--sunflower-gold)',
+                                color: 'var(--black)',
+                                border: '3px solid var(--black)',
+                                fontSize: '1.2rem',
+                                fontWeight: '900',
+                                cursor: selectedItems.length === 0 ? 'not-allowed' : 'pointer',
+                                boxShadow: selectedItems.length === 0 ? 'none' : '4px 4px 0 var(--black)',
+                                borderRadius: '8px',
+                                transition: 'all 0.2s'
+                            }}
+                            onMouseOver={(e) => {
+                                if (selectedItems.length > 0) {
+                                    e.currentTarget.style.transform = 'translate(2px, 2px)';
+                                    e.currentTarget.style.boxShadow = '2px 2px 0 var(--black)';
+                                }
+                            }}
+                            onMouseOut={(e) => {
+                                if (selectedItems.length > 0) {
+                                    e.currentTarget.style.transform = 'translate(0, 0)';
+                                    e.currentTarget.style.boxShadow = '4px 4px 0 var(--black)';
+                                }
+                            }}>
+                            THANH TOÁN NGAY {selectedTotalItems > 0 && `(${formatCurrency(calculateTotal())})`}
                         </button>
                     </div>
 

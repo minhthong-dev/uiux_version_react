@@ -13,6 +13,7 @@ import {
     Trophy,
     Search,
     History,
+    CircleDollarSign
 } from 'lucide-react';
 import './sidebar_header.css';
 import useGenreNav from '../hooks/useGenreNav';
@@ -84,6 +85,10 @@ const Sidebar = () => {
                     <NavLink to="/history" className="client-nav-item">
                         <History size={20} />
                         <span>LỊCH SỬ</span>
+                    </NavLink>
+                    <NavLink to="/payment" className="client-nav-item">
+                        <CircleDollarSign size={20} />
+                        <span>NẠP TIỀN</span>
                     </NavLink>
                 </nav>
             </div>

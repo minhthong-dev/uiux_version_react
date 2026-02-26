@@ -10,6 +10,7 @@ import Wishlist from './components/wishlist/wishlist'
 import Cart from './components/cart/cart'
 import Discount from './components/discout/discount'
 import Support from './components/support/support'
+import Payment from './components/payment/payment'
 import Layout from './layout/index'
 import './App.css'
 import { SocketProvider } from './context/socketContext'
@@ -44,6 +45,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/discount" element={<Discount />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/payment" element={<Payment />} />
           </Route>
           {/* Thêm các route khác ở đây */}
         </Routes>

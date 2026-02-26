@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3636',
+        target: 'https://node-version-webbangame.onrender.com',
         changeOrigin: true,
         secure: false,
       }

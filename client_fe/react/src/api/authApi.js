@@ -1,4 +1,5 @@
 import BASE_API_URL from "../config/configApiUrl";
+import { getInfor } from "../utils/manageToken";
 
 const AUTH_API_URL = `${BASE_API_URL}/users`;
 
@@ -32,9 +33,21 @@ const forgotPassword = async (email) => {
     });
     return response.json();
 };
-
+const updateMoney = async (amount) => {
+    const description = getInfor().id;
+    console.log(amount)
+    const response = await fetch(`${AUTH_API_URL}/payment-link`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount: amount, description: description }),
+    });
+    return response.json();
+}
 export default {
     login,
     resgister,
-    forgotPassword
+    forgotPassword,
+    updateMoney
 };
