@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Gamepad2, Users, ShoppingCart, Settings, BarChart3, Tags, Percent } from 'lucide-react';
 import './sidebar_header.css';
+import { useSocket } from '../../context/socketContext';
 
 const Sidebar = () => {
     const navItems = [
@@ -14,6 +15,8 @@ const Sidebar = () => {
         { path: '/orders', icon: <ShoppingCart />, label: 'Đơn hàng' },
         { path: '/stats', icon: <BarChart3 />, label: 'Thống kê' },
     ];
+
+    const { pendingCount } = useSocket();
 
     return (
         <aside className="admin-sidebar">
@@ -28,6 +31,9 @@ const Sidebar = () => {
                     >
                         {item.icon}
                         <span>{item.label}</span>
+                        {item.path === '/support' && pendingCount > 0 && (
+                            <span className="nav-badge">{pendingCount}</span>
+                        )}
                     </NavLink>
                 ))}
             </nav>

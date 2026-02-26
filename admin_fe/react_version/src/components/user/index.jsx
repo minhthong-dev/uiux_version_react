@@ -1,32 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import userApi from '../../api/userApi';
 import './index.css';
-import { ShieldAlert, ShieldCheck, UserX, UserCheck, Search, Crown, User } from 'lucide-react';
+import { ShieldAlert, ShieldCheck, UserX, UserCheck, Search, Crown, User, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from '../../components/notification/toast';
-
+import { useSocket } from '../../context/socketContext';
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const { socket, isConnected } = useSocket();
+    const listenerRegistered = useRef(false);
 
     useEffect(() => {
         loadUsers();
-    }, []);
+    }, [socket]);
 
     const loadUsers = async () => {
         try {
             setLoading(true);
-            const response = await userApi.getAllUsers();
-            const data = Array.isArray(response) ? response : (response?.data || response?.users || []);
 
-            const enrichedData = data.map(user => ({
-                ...user,
-                isOnline: Math.random() > 0.7,
-                joinedAt: user.createdAt || new Date(Date.now() - Math.random() * 10000000000).toISOString()
-            }));
+            // Lấy toàn bộ danh sách user từ DB
+            const allUsersRes = await userApi.getAllUsers();
+            const allUsers = Array.isArray(allUsersRes)
+                ? allUsersRes
+                : (allUsersRes?.data || allUsersRes?.users || []);
 
-            setUsers(enrichedData);
+            if (!socket) {
+                // Không có socket: hiển thị toàn bộ user, tất cả offline
+                setUsers(allUsers.map(u => ({ ...u, isOnline: false })));
+                return;
+            }
+
+            // Chỉ đăng ký listener 1 lần
+            if (!listenerRegistered.current) {
+                listenerRegistered.current = true;
+                socket.on('receive_user_online_list', (data) => {
+                    console.log('Danh sách user online:', data);
+                    // Tạo Set chứa ID các user đang online
+                    const onlineIds = new Set(data.map(item => item.data.id));
+
+                    // Merge isOnline vào toàn bộ danh sách user
+                    setUsers(prev => prev.map(u => ({
+                        ...u,
+                        isOnline: onlineIds.has(u._id),
+                    })));
+                });
+            }
+
+            // Hiển thị tất cả user trước (mặc định offline), rồi socket sẽ cập nhật
+            setUsers(allUsers.map(u => ({ ...u, isOnline: false })));
+            socket.emit('user_online_list', 'toi can danh sach user');
+
         } catch (error) {
             console.error("Failed to load users:", error);
             toast.error("Không thể tải danh sách người dùng.");
@@ -35,8 +61,16 @@ const UserManagement = () => {
         }
     };
 
+    /* Chỉ refresh trạng thái online, không reload toàn bộ */
+    const handleRefreshOnline = () => {
+        if (!socket) return;
+        setRefreshing(true);
+        socket.emit('user_online_list', 'toi can danh sach user');
+        setTimeout(() => setRefreshing(false), 1000);
+    };
+
     const checkisBlock = (response) => {
-        // Trả về giá trị boolean từ response (tùy thuộc vào cấu trúc backend)
+        console.log('response:', response);
         return response?.isBlock || response?.data?.isBlock || false;
     };
 
@@ -44,7 +78,7 @@ const UserManagement = () => {
         if (!window.confirm(`Bạn có chắc chắn muốn chặn người dùng này?`)) return;
 
         try {
-            const result = await userApi.toggleBlockUser(user._id);
+            const result = await userApi.toggleBlockUser(user._id, socket);
             const isBlock = checkisBlock(result);
             setUsers(prev => prev.map(u =>
                 u._id === user._id ? { ...u, isBlock: isBlock } : u
@@ -63,7 +97,7 @@ const UserManagement = () => {
         if (!window.confirm(`Bạn có chắc chắn muốn bỏ chặn người dùng này?`)) return;
 
         try {
-            const result = await userApi.toggleUnBlockUser(user._id);
+            const result = await userApi.toggleUnBlockUser(user._id, socket);
             const isBlock = checkisBlock(result);
 
             setUsers(prev => prev.map(u =>
@@ -101,16 +135,36 @@ const UserManagement = () => {
                     QUẢN LÝ NGƯỜI DÙNG
                 </motion.h1>
 
-                <div className="search-box-wrapper" style={{ position: 'relative' }}>
-                    <Search style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }} size={20} />
-                    <input
-                        type="text"
-                        placeholder="Tìm theo tên, email..."
-                        className="neo-input"
-                        style={{ paddingLeft: '45px', margin: 0, minWidth: '300px' }}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                <div className="user-header-controls">
+                    {/* Search box */}
+                    <div className="search-box-wrapper" style={{ position: 'relative' }}>
+                        <Search style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }} size={20} />
+                        <input
+                            type="text"
+                            placeholder="Tìm theo tên, email..."
+                            className="neo-input"
+                            style={{ paddingLeft: '45px', margin: 0, minWidth: '300px' }}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    {/* Nút refresh online */}
+                    <motion.button
+                        className="btn-refresh-online"
+                        onClick={handleRefreshOnline}
+                        disabled={refreshing}
+                        whileTap={{ scale: 0.95, x: 3, y: 3 }}
+                        title="Cập nhật trạng thái online"
+                    >
+                        <RefreshCw
+                            size={18}
+                            style={{
+                                animation: refreshing ? 'spin 0.8s linear infinite' : 'none',
+                            }}
+                        />
+                        {refreshing ? 'ĐANG CẬP NHẬT...' : 'REFRESH ONLINE'}
+                    </motion.button>
                 </div>
             </header>
 

@@ -4,9 +4,7 @@ import { Send, User, MessageCircle, Clock, Zap, Users } from 'lucide-react';
 import './support.css';
 
 const Support = () => {
-    const { socket, isConnected } = useSocket();
-    const [users, setUsers] = useState([]); // [{id, name, lastMessage, timestamp, isWaiting}]
-    const [messages, setMessages] = useState({}); // {userId: [{sender, text, timestamp}]}
+    const { socket, isConnected, supportUsers, supportMessages, setPendingCount, upsertSupportUser, addAdminMessage } = useSocket();
     const [activeUserId, setActiveUserId] = useState(null);
     const [inputText, setInputText] = useState('');
     const [isSending, setIsSending] = useState(false);
@@ -20,58 +18,17 @@ const Support = () => {
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages, activeUserId]);
+    }, [supportMessages, activeUserId]);
 
-    // Helper: thêm/cập nhật user trong danh sách
-    const upsertUser = useCallback((userId, name, lastMessage, timestamp, isWaiting = false) => {
-        setUsers(prev => {
-            const updatedUser = {
-                id: userId,
-                name: name || `User #${userId.slice(-4)}`,
-                lastMessage: lastMessage || '',
-                timestamp: timestamp || new Date().toISOString(),
-                isWaiting,
-            };
-            const exists = prev.find(u => u.id === userId);
-            if (exists) {
-                return [updatedUser, ...prev.filter(u => u.id !== userId)];
-            }
-            return [updatedUser, ...prev];
-        });
-    }, []);
-
+    // Reset pending count khi vào trang hoặc chat
     useEffect(() => {
-        if (!socket) return;
+        setPendingCount(0);
+    }, [setPendingCount, activeUserId]);
 
-        // User vào hàng chờ (chưa gửi tin nhắn)
-        const handleUserWaiting = (data) => {
-            const { userId, username, timestamp } = data?.data?.infor || {};
-            if (!userId) return;
-            upsertUser(userId, username, 'Đang chờ hỗ trợ...', timestamp, true);
-        };
+    // Chú ý: Lắng nghe socket đã được chuyển lên SocketContext
 
-        // Nhận tin nhắn từ user
-        const handleUserMessage = (data) => {
-            const { userId, username, timestamp } = data?.data?.infor || {};
-            const text = data?.message;
-            if (!userId || !text) return;
-
-            upsertUser(userId, username, text, timestamp, false);
-
-            setMessages(prev => ({
-                ...prev,
-                [userId]: [...(prev[userId] || []), { sender: 'user', text, timestamp: timestamp || new Date().toISOString() }]
-            }));
-        };
-
-        socket.on('new_user_waiting', handleUserWaiting);
-        socket.on('receive_user_message', handleUserMessage);
-
-        return () => {
-            socket.off('new_user_waiting', handleUserWaiting);
-            socket.off('receive_user_message', handleUserMessage);
-        };
-    }, [socket, upsertUser]);
+    const activeUser = supportUsers.find(u => u.id === activeUserId);
+    const activeHistory = activeUserId ? (supportMessages[activeUserId] || []) : [];
 
     const handleSendMessage = useCallback((e) => {
         e?.preventDefault();
@@ -89,14 +46,12 @@ const Support = () => {
         // Nếu server không gọi ack callback, tự reset sau 3s
         setTimeout(() => setIsSending(false), 3000);
 
-        setMessages(prev => ({
-            ...prev,
-            [activeUserId]: [...(prev[activeUserId] || []), { sender: 'admin', text: trimmed, timestamp }]
-        }));
+        addAdminMessage(activeUserId, trimmed, timestamp);
+        upsertSupportUser(activeUserId, activeUser?.name, trimmed, timestamp, false);
 
         setInputText('');
         inputRef.current?.focus();
-    }, [inputText, activeUserId, socket, isSending]);
+    }, [inputText, activeUserId, socket, isSending, addAdminMessage, upsertSupportUser, activeUser?.name]);
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -104,9 +59,6 @@ const Support = () => {
             handleSendMessage();
         }
     };
-
-    const activeUser = users.find(u => u.id === activeUserId);
-    const activeHistory = activeUserId ? (messages[activeUserId] || []) : [];
 
     return (
         <div className="sp-container">
@@ -127,13 +79,13 @@ const Support = () => {
                 {/* Danh sách User */}
                 <aside className="sp-sidebar">
                     <div className="sp-sidebar-title">
-                        <Users size={14} /> ĐOẠN CHAT ({users.length})
+                        <Users size={14} /> ĐOẠN CHAT ({supportUsers.length})
                     </div>
                     <div className="sp-user-list">
-                        {users.length === 0 ? (
+                        {supportUsers.length === 0 ? (
                             <div className="sp-empty-users">Chưa có user liên hệ</div>
                         ) : (
-                            users.map(user => (
+                            supportUsers.map(user => (
                                 <div
                                     key={user.id}
                                     className={`sp-user-item ${activeUserId === user.id ? 'active' : ''} ${user.isWaiting ? 'waiting' : ''}`}

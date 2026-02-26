@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import SOCKET_URL from '../config/configSocketUrl';
-import { manageToken } from '../utils/manageToken';
+import { manageToken, getInfor } from '../utils/manageToken';
 const SocketContext = createContext();
 
 export const useSocket = () => useContext(SocketContext);
@@ -9,8 +9,13 @@ export const useSocket = () => useContext(SocketContext);
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsconnected] = useState(false);
-
+    const dataUser = () => {
+        return {
+            data: getInfor()
+        }
+    }
     useEffect(() => {
+        const data = dataUser();
         if (!manageToken.getToken()) return;
         const newSocket = io(SOCKET_URL, {
             reconnection: true,
@@ -20,14 +25,19 @@ export const SocketProvider = ({ children }) => {
             withCredentials: true
         });
         newSocket.on("connect", () => {
-            console.log("connected", newSocket.id);
             setIsconnected(true);
         });
         newSocket.on("disconnect", () => {
-            console.log("disconnected", newSocket.id);
             setIsconnected(false);
         });
+        newSocket.emit('user_infor_connected', data);
         setSocket(newSocket);
+        newSocket.on('receive_user_block', (data) => {
+            console.log(data);
+            alert(data);
+            manageToken.removeToken();
+            window.location.href = '/auth';
+        })
         return () => newSocket.close();
     }, []);
 

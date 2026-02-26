@@ -13,7 +13,7 @@ const getAllUsers = async () => {
     return await response.json();
 };
 
-const toggleBlockUser = async (userId, isBlocked) => {
+const toggleBlockUser = async (userId, socket) => {
     const response = await fetch(`${USER_API_URL}/block/${userId}`, {
         method: "PATCH",
         headers: {
@@ -21,10 +21,12 @@ const toggleBlockUser = async (userId, isBlocked) => {
             "Content-Type": "application/json",
         },
     });
-    return await response.json();
+    const result = await response.json();
+    if (socket) socket.emit('user_block', { userId, isBlocked: true });
+    return result;
 };
 
-const toggleUnBlockUser = async (userId, isBlocked) => {
+const toggleUnBlockUser = async (userId, socket) => {
     const response = await fetch(`${USER_API_URL}/unblock/${userId}`, {
         method: "PATCH",
         headers: {
@@ -32,7 +34,9 @@ const toggleUnBlockUser = async (userId, isBlocked) => {
             "Content-Type": "application/json",
         },
     });
-    return await response.json();
+    const result = await response.json();
+    if (socket) socket.emit('user_unblock', { userId, isBlocked: false });
+    return result;
 };
 export default {
     getAllUsers,

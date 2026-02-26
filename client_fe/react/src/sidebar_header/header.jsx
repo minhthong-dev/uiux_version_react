@@ -4,6 +4,7 @@ import './sidebar_header.css';
 import { useNavigate } from 'react-router-dom';
 import { manageToken, getInfor } from '../utils/manageToken';
 import cartApi from '../api/cartApi';
+import { useSocket } from '../context/socketContext';
 
 const Header = () => {
     const navigate = useNavigate();
@@ -12,7 +13,7 @@ const Header = () => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [cartCount, setCartCount] = useState(0);
-
+    const { socket } = useSocket();
     /* Tải số lượng items trong giỏ hàng */
     const loadCartCount = async () => {
         if (!manageToken.getToken()) return;
@@ -55,6 +56,12 @@ const Header = () => {
     }, []);
 
     const handleLogout = () => {
+        const dataUser = () => {
+            return {
+                data: getInfor()
+            }
+        }
+        socket.emit('user_logout', dataUser());
         manageToken.removeToken();
         setIsLoggedIn(false);
         setUserInfo(null);
