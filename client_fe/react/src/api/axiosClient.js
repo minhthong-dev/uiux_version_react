@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "../components/notification/toast";
 
 const axiosClient = axios.create({
-    baseURL: "http://localhost:3636",
+    baseURL: "https://node-version-webbangame.onrender.com/api",
     headers: {
         "Content-Type": "application/json",
     },

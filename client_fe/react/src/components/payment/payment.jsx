@@ -1,16 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./payment.css";
 import authApi from "../../api/authApi";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { toast } from "../notification/toast";
 import { CircleDollarSign, Wallet, Coins } from "lucide-react";
 import { getInfor } from "../../utils/manageToken";
-
+import { useSocket } from "../../context/socketContext";
 const Payment = () => {
     const [selectedAmount, setSelectedAmount] = useState(50000);
     const [customAmount, setCustomAmount] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-
+    const [amount, setAmount] = useState(0);
+    const { socket } = useSocket();
+    const loadAmount = async () => {
+        const response = await authApi.getAmoutById(getInfor().id);
+        setAmount(response.amount);
+        console.log(response);
+    }
+    useEffect(() => {
+        loadAmount();
+    }, []);
+    useEffect(() => {
+        if (!socket) return;
+        socket.on('nap_tien_thanh_cong', () => {
+            toast.success("Nạp tiền thành công");
+            loadAmount();
+        })
+    }, [socket]);
     const predefinedAmounts = [10000, 20000, 50000, 100000, 200000, 500000];
 
     const handleAmountClick = (amount) => {
@@ -62,7 +78,7 @@ const Payment = () => {
                     SỐ DƯ HIỆN TẠI
                 </div>
                 <div className="balance-value">
-                    {formatCurrency(getInfor()?.amount || 0)}
+                    {formatCurrency(amount || 0)}
                 </div>
             </div>
 

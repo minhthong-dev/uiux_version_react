@@ -1,6 +1,5 @@
 import BASE_API_URL from "../config/configApiUrl";
-import { getInfor } from "../utils/manageToken";
-
+import { manageToken, getInfor } from "../utils/manageToken";
 const AUTH_API_URL = `${BASE_API_URL}/users`;
 
 const login = async (email, password) => {
@@ -35,13 +34,23 @@ const forgotPassword = async (email) => {
 };
 const updateMoney = async (amount) => {
     const description = getInfor().id;
-    console.log(amount)
     const response = await fetch(`${AUTH_API_URL}/payment-link`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "Authorization": "Bearer " + manageToken.getToken(),
         },
         body: JSON.stringify({ amount: amount, description: description }),
+    });
+    return response.json();
+}
+const getAmoutById = async (id) => {
+    const response = await fetch(`${AUTH_API_URL}/amount/${id}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
     });
     return response.json();
 }
@@ -49,5 +58,6 @@ export default {
     login,
     resgister,
     forgotPassword,
-    updateMoney
+    updateMoney,
+    getAmoutById
 };

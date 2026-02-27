@@ -11,6 +11,7 @@ export const SocketProvider = ({ children }) => {
     const [isConnected, setIsconnected] = useState(false);
     const dataUser = () => {
         return {
+            room: getInfor().id,
             data: getInfor()
         }
     }
@@ -30,6 +31,8 @@ export const SocketProvider = ({ children }) => {
         newSocket.on("disconnect", () => {
             setIsconnected(false);
         });
+        // newSocket.emit('join_room', dataUser());
+        // console.log(dataUser());
         newSocket.emit('user_infor_connected', data);
         setSocket(newSocket);
         newSocket.on('receive_user_block', (data) => {
