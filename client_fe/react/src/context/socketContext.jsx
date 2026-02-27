@@ -31,7 +31,7 @@ export const SocketProvider = ({ children }) => {
         newSocket.on("disconnect", () => {
             setIsconnected(false);
         });
-        // newSocket.emit('join_room', dataUser());
+        newSocket.emit('join_room', dataUser());
         // console.log(dataUser());
         newSocket.emit('user_infor_connected', data);
         setSocket(newSocket);

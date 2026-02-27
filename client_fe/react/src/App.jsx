@@ -11,6 +11,8 @@ import Cart from './components/cart/cart'
 import Discount from './components/discout/discount'
 import Support from './components/support/support'
 import Payment from './components/payment/payment'
+import History from './components/history/history'
+import Checkout from './components/checkout/checkout'
 import Layout from './layout/index'
 import './App.css'
 import { SocketProvider } from './context/socketContext'
@@ -45,7 +47,9 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/discount" element={<Discount />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/history" element={<History />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/checkout" element={<Checkout />} />
           </Route>
           {/* Thêm các route khác ở đây */}
         </Routes>

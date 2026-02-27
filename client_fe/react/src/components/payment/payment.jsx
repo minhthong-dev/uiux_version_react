@@ -56,7 +56,7 @@ const Payment = () => {
             if (response && response.checkoutUrl) {
                 toast.success("Đang chuyển hướng đến trang thanh toán...");
                 // Chuyển hướng đến URL thanh toán
-                window.location.href = response.checkoutUrl;
+                window.open(response.checkoutUrl, '_blank');
             } else {
                 toast.error(response.message || "Không thể tạo link thanh toán");
             }

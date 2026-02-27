@@ -74,10 +74,10 @@ const Sidebar = () => {
             <div className="sidebar-section">
                 <h3 className="sidebar-title">CỦA BẠN</h3>
                 <nav className="sidebar-nav">
-                    <NavLink to="/library" className="client-nav-item">
+                    {/* <NavLink to="/history" className="client-nav-item">
                         <Compass size={20} />
-                        <span>Thư viện</span>
-                    </NavLink>
+                        <span>Lich su Giao Dich</span>
+                    </NavLink> */}
                     <NavLink to="/wishlist" className="client-nav-item">
                         <Heart size={20} />
                         <span>DANH SÁCH ƯỚC</span>

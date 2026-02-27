@@ -317,6 +317,21 @@ const Cart = () => {
 
                         <button
                             disabled={selectedItems.length === 0}
+                            onClick={() => {
+                                const products = getSelectedCartItems();
+                                const total = calculateTotal();
+                                // Chuẩn bị dữ liệu chi tiết cho checkout
+                                const checkoutData = products.map(item => {
+                                    const { discountedPrice } = calculateDiscount(item.game || item);
+                                    return {
+                                        gameId: item.gameId,
+                                        quantity: item.quantity,
+                                        game: item.game,
+                                        discountedPrice: discountedPrice
+                                    };
+                                });
+                                navigate("/checkout", { state: { selectedGames: checkoutData, totalAmount: total } });
+                            }}
                             style={{
                                 width: '100%',
                                 marginTop: '30px',
