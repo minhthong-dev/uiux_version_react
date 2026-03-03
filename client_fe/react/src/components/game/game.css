@@ -193,6 +193,16 @@
     color: var(--white);
 }
 
+.add-to-cart-btn.in-cart {
+    background-color: #4CAF50; /* Green color for in-cart state */
+    color: var(--white);
+}
+
+.add-to-cart-btn.in-cart:hover {
+    background-color: var(--black);
+    color: var(--white);
+}
+
 @media (max-width: 1000px) {
     .game-header {
         flex-direction: column;

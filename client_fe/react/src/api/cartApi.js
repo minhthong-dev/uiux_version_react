@@ -52,8 +52,21 @@ const removeFromCart = async (gameId) => {
     }
     return { status: response.status, ...data };
 };
+const inCart = async (userId, gameId) => {
+    const response = await fetch(`${CART_API_URL}/incart/${userId}/${gameId}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+    });
+    const data = await response.json();
+    console.log(data);
+    return data;
+}
 export default {
     getCart,
     addToCart,
     removeFromCart,
+    inCart,
 };

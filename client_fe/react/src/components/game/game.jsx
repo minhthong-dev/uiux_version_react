@@ -5,7 +5,7 @@ import categoryApi from '../../api/categoryApi';
 import cartApi from '../../api/cartApi';
 import useGenreNav from '../../hooks/useGenreNav';
 import { formatCurrency } from '../../utils/formatCurrency';
-import { manageToken } from '../../utils/manageToken';
+import { manageToken, getInfor } from '../../utils/manageToken';
 import useGameDiscount from '../../hooks/gameDiscount';
 import { toast } from '../notification/toast';
 import './game.css';
@@ -18,6 +18,7 @@ const Game = () => {
     const [genres, setGenres] = useState([]);
     const [inWishlist, setInWishlist] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
+    const [isInCart, setIsInCart] = useState(false);
     const { goToGenre } = useGenreNav();
     const [coutLike, setCoutLike] = useState(0);
     const { calculateDiscount } = useGameDiscount();
@@ -67,9 +68,16 @@ const Game = () => {
                 navigate('/auth');
                 return;
             }
+
+            if (isInCart) {
+                toast.info('Sản phẩm này đã có trong giỏ hàng!');
+                return;
+            }
+
             const result = await cartApi.addToCart(game._id);
             if (result.status === 200) {
                 toast.success('Đã thêm vào giỏ hàng thành công!');
+                setIsInCart(true);
             } else {
                 toast.error(`${result.message}`);
             }
@@ -102,10 +110,12 @@ const Game = () => {
     useEffect(() => {
         const fetchGameDetail = async () => {
             try {
-                const [data, wishData, likeData] = await Promise.all([
+                const userId = manageToken.getToken() ? getInfor()?.id : null;
+                const [data, wishData, likeData, cartData] = await Promise.all([
                     gameApi.getGameById(id),
                     gameApi.isWishlist(id),
-                    gameApi.isLike(id)
+                    gameApi.isLike(id),
+                    userId ? cartApi.inCart(userId, id) : Promise.resolve(false)
                 ]);
                 loadLikeCount();
                 if (wishData === true) {
@@ -114,6 +124,10 @@ const Game = () => {
 
                 if (likeData === true) {
                     setIsLiked(true);
+                }
+
+                if (cartData === true || cartData?.isInCart === true) {
+                    setIsInCart(true);
                 }
 
                 // Vì API trả về data hoặc [] nếu lỗi, nên check kỹ
@@ -303,7 +317,12 @@ const Game = () => {
                         )}
                     </div>
                 </div>
-                <button className="add-to-cart-btn" onClick={handleAddToCart}>THÊM VÀO GIỎ HÀNG</button>
+                <button
+                    className={`add-to-cart-btn ${isInCart ? 'in-cart' : ''}`}
+                    onClick={isInCart ? () => navigate('/cart') : handleAddToCart}
+                >
+                    {isInCart ? '✓ ĐÃ TRONG GIỎ HÀNG' : 'THÊM VÀO GIỎ HÀNG'}
+                </button>
             </section>
         </div>
     );

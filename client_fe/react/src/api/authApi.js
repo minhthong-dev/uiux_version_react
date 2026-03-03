@@ -22,13 +22,23 @@ const resgister = async (username, email, password) => {
     });
     return response.json();
 };
-const forgotPassword = async (email) => {
+const forgotPassword = async (email, username) => {
     const response = await fetch(`${AUTH_API_URL}/forgot-password`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: email }),
+        body: JSON.stringify({ email: email, username: username }),
+    });
+    return response.json();
+};
+const resetPassword = async (otp, newPassword) => {
+    const response = await fetch(`${AUTH_API_URL}/reset-password`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ otp: otp, newPassword: newPassword }),
     });
     return response.json();
 };
@@ -58,6 +68,7 @@ export default {
     login,
     resgister,
     forgotPassword,
+    resetPassword,
     updateMoney,
     getAmoutById
 };

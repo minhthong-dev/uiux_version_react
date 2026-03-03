@@ -16,7 +16,13 @@ export const SocketProvider = ({ children }) => {
         }
     }
     useEffect(() => {
-        const data = dataUser();
+        let data;
+        try {
+            data = dataUser();
+        } catch (err) {
+            console.log(err);
+            return;
+        }
         if (!manageToken.getToken()) return;
         const newSocket = io(SOCKET_URL, {
             reconnection: true,

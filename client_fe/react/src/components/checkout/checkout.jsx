@@ -57,7 +57,7 @@ const Checkout = () => {
             );
 
             if (response.status === "success" || response.message?.includes("thành công") || response.success) {
-                toast.success("Thanh toán thành công! Chúc bạn chơi game vui vẻ.");
+                toast.success("Thanh toán thành công! Vui lòng kiểm tra email để nhận key.");
                 // Dispatch sự kiện cập nhật giỏ hàng nếu cần
                 window.dispatchEvent(new Event('cartUpdated'));
                 navigate("/history");
