@@ -10,6 +10,7 @@ const getAllUsers = async () => {
             "Content-Type": "application/json",
         },
     });
+    //console.log("response:", await response.json());
     return await response.json();
 };
 
