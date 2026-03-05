@@ -13,6 +13,7 @@ import Support from './components/support/support'
 import Payment from './components/payment/payment'
 import History from './components/history/history'
 import Checkout from './components/checkout/checkout'
+import AuthSuccess from './components/auth/authSuccess'
 import Layout from './layout/index'
 import './App.css'
 import { SocketProvider } from './context/socketContext'
@@ -37,6 +38,7 @@ function App() {
         <ToastContainer />
         <Routes>
           <Route path="/auth" element={<Login />} />
+          <Route path="/auth-success" element={<AuthSuccess />} />
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<Search />} />

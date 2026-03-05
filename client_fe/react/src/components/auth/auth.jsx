@@ -55,6 +55,10 @@ const Login = () => {
         }
     };
 
+    const handleGoogleLogin = () => {
+        authApi.loginWithGoogle();
+    };
+
     if (view === 'forgot') {
         return <ForgotPass onBack={() => setView('auth')} />;
     }
@@ -192,6 +196,18 @@ const Login = () => {
                         <button type="submit" className="login-btn" disabled={loading}>
                             {loading ? "ĐANG XỬ LÝ..." : (isLogin ? "Login Now" : "Register Now")}
                         </button>
+
+                        {isLogin && (
+                            <div className="social-login">
+                                <div className="divider">
+                                    <span>HOẶC</span>
+                                </div>
+                                <button type="button" className="google-btn" onClick={handleGoogleLogin}>
+                                    <span className="google-icon">G</span>
+                                    Tiếp tục với Google
+                                </button>
+                            </div>
+                        )}
                     </form>
                 </div>
             </div>

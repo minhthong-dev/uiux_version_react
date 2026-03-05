@@ -64,11 +64,16 @@ const getAmoutById = async (id) => {
     });
     return response.json();
 }
+const loginWithGoogle = () => {
+    window.location.href = `${AUTH_API_URL}/google`;
+};
+
 export default {
     login,
     resgister,
     forgotPassword,
     resetPassword,
     updateMoney,
-    getAmoutById
+    getAmoutById,
+    loginWithGoogle
 };

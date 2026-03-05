@@ -1,9 +1,10 @@
 import BASE_API_URL from "../config/configApiUrl";
 const CATEGORY_API_URL = `${BASE_API_URL}/categories`;
-import { manageToken } from "../utils/manageToken";
+import { manageToken, getInfor } from "../utils/manageToken";
 import axiosClient from "./axiosClient";
 const getAllCategories = async () => {
 
+    console.log(getInfor());
     const response = await axiosClient.get(`${CATEGORY_API_URL}`, {
         headers: {
             "Authorization": "Bearer " + manageToken.getToken(),

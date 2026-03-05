@@ -479,3 +479,106 @@ body {
     letter-spacing: 3px;
   }
 }
+
+/* ===== SOCIAL LOGIN - Premium Neo-Brutalism ===== */
+.social-login {
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 3px solid #000;
+}
+
+.divider span {
+  padding: 0 15px;
+  font-weight: 900;
+  font-size: 0.9rem;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  background-color: var(--white, #fff);
+  border: 4px solid #000;
+  box-shadow: 6px 6px 0px #000;
+  font-weight: 900;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.google-btn:hover {
+  background-color: #f8f8f8;
+  transform: translate(-3px, -3px);
+  box-shadow: 10px 10px 0px #000;
+}
+
+.google-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0px #000;
+}
+
+.google-icon {
+  background: white;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #000;
+  box-shadow: 2px 2px 0px #000;
+  border-radius: 4px;
+  /* Brutalist thường dùng bo góc nhẹ hoặc vuông */
+  font-size: 1.2rem;
+  font-weight: 900;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.google-btn:hover .google-icon {
+  transform: rotate(-8deg) scale(1.1);
+  background: #4285F4;
+  /* Màu Google Blue khi hover */
+  color: white;
+}
+
+/* Thêm hiệu ứng sọc chéo tinh tế khi hover */
+.google-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent);
+  transition: 0.5s;
+}
+
+.google-btn:hover::after {
+  left: 100%;
+}
