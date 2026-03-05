@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Home from './components/home./home'
+import Home from './components/home/home'
 import Login from './components/auth/auth'
 import Search from './components/search/search'
 import Game from './components/game/game'

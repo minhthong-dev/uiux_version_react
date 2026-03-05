@@ -6,7 +6,7 @@ import cryptoUtils from '../../../cryptojs';
 import useGenreNav from '../../hooks/useGenreNav';
 import { formatCurrency } from '../../utils/formatCurrency';
 import useGameDiscount from '../../hooks/gameDiscount';
-import '../home./home.css';
+import '../home/home.css';
 import './search.css';
 
 const Search = () => {

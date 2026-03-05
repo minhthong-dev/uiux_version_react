@@ -45,6 +45,7 @@ const addWishlist = async (gameId) => {
         body: JSON.stringify({ gameId: gameId, userId: getInfor().id }),
     });
     const data = await response.json();
+
     return data || [];
 };
 const removeWishlist = async (gameId) => {
