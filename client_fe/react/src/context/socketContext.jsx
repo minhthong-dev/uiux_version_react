@@ -16,39 +16,76 @@ export const SocketProvider = ({ children }) => {
         }
     }
     useEffect(() => {
-        let data;
+    let socketInstance = null;
+    const token = manageToken.getToken();
+    if (!token) return;
+
+    const data = dataUser();
+
+
+    const connectJavaWS = () => {
+        console.log("Đang thử kết nối Java WebSocket...");
+        const wsUrl = `ws://localhost:3636/ws/webbamegame?token=${token}`;
+        let ws;
         try {
-            data = dataUser();
-        } catch (err) {
-            console.log(err);
-            return;
+             ws = new WebSocket(`ws://localhost:3636/ws/webbamegame?token=${token}`);
+             console.log("WebSocket Java đã được tạo:", ws);
+            } catch (error) {
+            console.error("Lỗi khi tạo WebSocket:", error);
         }
-        if (!manageToken.getToken()) return;
-        const newSocket = io(SOCKET_URL, {
-            reconnection: true,
-            reconnectionAttempts: 5,
-            reconnectionDelay: 1000,
-            transports: ['polling', 'websocket'],
-            withCredentials: true
-        });
-        newSocket.on("connect", () => {
+
+        ws.onopen = () => {
             setIsconnected(true);
-        });
-        newSocket.on("disconnect", () => {
-            setIsconnected(false);
-        });
-        newSocket.emit('join_room', dataUser());
-        // console.log(dataUser());
-        newSocket.emit('user_infor_connected', data);
-        setSocket(newSocket);
-        newSocket.on('receive_user_block', (data) => {
-            console.log(data);
-            alert(data);
-            manageToken.removeToken();
-            window.location.href = '/auth';
-        })
-        return () => newSocket.close();
-    }, []);
+            setSocket(ws);
+           
+            ws.send(JSON.stringify({ event: 'join_room', data: data }));
+        };
+
+        ws.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg.event === 'receive_user_block') {
+                handleUserBlock(msg.data);
+            }
+        };
+
+        ws.onclose = () => setIsconnected(false);
+        socketInstance = ws;
+    };
+
+   
+    const handleUserBlock = (msg) => {
+        alert(msg);
+        manageToken.removeToken();
+        window.location.href = '/auth';
+    };
+
+   
+    const ioSocket = io(SOCKET_URL, {
+        token: token, 
+        transports: ['websocket'],
+        reconnectionAttempts: 2, 
+        timeout: 5000 
+    });
+
+    ioSocket.on("connect", () => {
+    
+        setIsconnected(true);
+        setSocket(ioSocket);
+        ioSocket.emit('join_room', data);
+    });
+    ioSocket.on("connect_error", (err) => {
+        ioSocket.close(); 
+        console.error("Lỗi kết nối Socket.IO:", err);
+        connectJavaWS(); 
+    });
+
+    ioSocket.on('receive_user_block', (data) => handleUserBlock(data));
+
+    return () => {
+        if (socketInstance && socketInstance.close) socketInstance.close();
+        if (ioSocket) ioSocket.close();
+    };
+}, []);
 
 
     return (
