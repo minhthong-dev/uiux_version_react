@@ -44,6 +44,7 @@ const resetPassword = async (otp, newPassword) => {
 };
 const updateMoney = async (amount) => {
     const description = getInfor().id;
+    console.log(getInfor());
     const response = await fetch(`${AUTH_API_URL}/payment-link`, {
         method: "POST",
         headers: {
@@ -65,7 +66,12 @@ const getAmoutById = async (id) => {
     return response.json();
 }
 const loginWithGoogle = () => {
-    window.location.href = `${AUTH_API_URL}/google`;
+    window.location.href = `http://localhost:3636/oauth2/authorize/google`;
+    // try {
+    //     window.location.href = `${AUTH_API_URL}/google`;
+    // } catch (error) {
+    //     window.location.href = `http://localhost:3636/oauth2/authorize/google`;
+    // }
 };
 
 export default {
