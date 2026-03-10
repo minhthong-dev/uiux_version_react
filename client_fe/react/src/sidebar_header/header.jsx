@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, ShoppingCart, User, LogOut } from 'lucide-react';
 import './sidebar_header.css';
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
 import { manageToken, getInfor } from '../utils/manageToken';
 import cartApi from '../api/cartApi';
 import { useSocket } from '../context/socketContext';
@@ -61,7 +61,11 @@ const Header = () => {
                 data: getInfor()
             }
         }
-        socket.emit('user_logout', dataUser());
+        try {
+            socket.emit('user_logout', dataUser());
+        } catch (error) {
+            socket.send(JSON.stringify({ event: 'user_logout', data: dataUser() }));
+        }
         manageToken.removeToken();
         setIsLoggedIn(false);
         setUserInfo(null);

@@ -23,7 +23,11 @@ const Support = () => {
                 },
                 socketId: socket.id
             }
-            socket.emit('join_room', data);
+           try {
+             socket.emit('join_room', data);
+           } catch (error) {
+             socket.send(JSON.stringify({ event: 'join_room', data: data }));
+           }
             console.log('da gui socket: ', data);
         }
         handleJoinRoom();
@@ -35,11 +39,30 @@ const Support = () => {
             }]);
         };
 
-        socket.on('receive_admin_message', handleReceiveMessage);
+        try {
+            socket.on('receive_admin_message', handleReceiveMessage);
+        } catch (error) {
+            // socket.onmessage(JSON.stringify({ event: 'receive_admin_message', handleReceiveMessage }));
+            socket.onmessage = (event) => {
+                console.log(event);
+                const msg = JSON.parse(event.data);
+                if (msg.event === 'receive_admin_message') {
+                    handleReceiveMessage(msg.data);
+                }
+            }
+        }
 
         return () => {
-            socket.off('receive_admin_message', handleReceiveMessage);
-            socket.emit('leave_room', socket.id);
+            try {
+                socket.off('receive_admin_message', handleReceiveMessage);
+            } catch (error) {
+                socket.send(JSON.stringify({ event: 'join_room', data: data }));
+            }
+            try {
+                socket.emit('leave_room', socket.id);
+            } catch (error) {
+                socket.send(JSON.stringify({ event: 'join_room', data: data }));
+            }
         };
     }, [socket]);
 
@@ -59,7 +82,11 @@ const Support = () => {
             },
             socketId: socket.id
         }
-        socket.emit('send_message', { data: data, message: message });
+        try {
+            socket.emit('send_message', { data: data, message: message });
+        } catch (error) {
+            socket.send(JSON.stringify({ event: 'send_message', data: data, message: message}));
+        }
         // console.log('da gui socket: ', { ...data, message });
         setMessage('');
     };

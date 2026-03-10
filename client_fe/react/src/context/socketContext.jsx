@@ -28,7 +28,7 @@ export const SocketProvider = ({ children }) => {
         const wsUrl = `ws://localhost:3636/ws/webbamegame?token=${token}`;
         let ws;
         try {
-             ws = new WebSocket(`ws://localhost:3636/ws/webbamegame?token=${token}`);
+             ws = new WebSocket(`ws://localhost:3636/ws/webbangame?token=${token}`);
              console.log("WebSocket Java đã được tạo:", ws);
             } catch (error) {
             console.error("Lỗi khi tạo WebSocket:", error);
@@ -37,7 +37,7 @@ export const SocketProvider = ({ children }) => {
         ws.onopen = () => {
             setIsconnected(true);
             setSocket(ws);
-           
+            console.log("WebSocket Java đã kết nối:", ws);
             ws.send(JSON.stringify({ event: 'join_room', data: data }));
         };
 
