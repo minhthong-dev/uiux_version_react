@@ -66,7 +66,8 @@ const getAmoutById = async (id) => {
     return response.json();
 }
 const loginWithGoogle = () => {
-    window.location.href = `http://localhost:3636/oauth2/authorize/google`;
+    //window.location.href = `http://localhost:3636/oauth2/authorize/google`;
+    window.location.href = `${AUTH_API_URL}/google`;
     // try {
     //     window.location.href = `${AUTH_API_URL}/google`;
     // } catch (error) {
