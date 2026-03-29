@@ -203,6 +203,7 @@
     border: 2px solid #000;
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 .sp-active-name {
@@ -298,6 +299,72 @@
 .sp-chat-input button:active:not(:disabled) {
     transform: translate(1px, 1px);
     box-shadow: none;
+}
+
+/* Loading states */
+.sp-loading-users, .sp-loading-history {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 12px;
+    color: #666;
+}
+
+.sp-loading-icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Empty states */
+.sp-empty-users, .sp-empty-chat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 12px;
+    color: #999;
+    text-align: center;
+}
+
+.sp-empty-users, .sp-empty-chat {
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* User item variants */
+.sp-user-item.realtime {
+    border-right: 3px solid var(--sp-neon-green);
+}
+
+.sp-user-item.history {
+    border-right: 3px solid var(--sp-neon-cyan);
+    opacity: 0.8;
+}
+
+.sp-user-email {
+    font-size: 0.7rem;
+    color: #777;
+    font-weight: 600;
+}
+
+/* Online indicator */
+.sp-online-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    background: var(--sp-neon-green);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px #000;
 }
 
 .sp-chat-input button:disabled {

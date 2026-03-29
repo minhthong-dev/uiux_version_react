@@ -21,6 +21,7 @@ export const SocketProvider = ({ children }) => {
         const saved = sessionStorage.getItem('supportMessages');
         return saved ? JSON.parse(saved) : {};
     });
+    const [onlineUsers, setOnlineUsers] = useState([]); // danh sách user đang online từ socket
     const [pendingCount, setPendingCount] = useState(0);        // số tin nhắn chưa đọc
 
     const upsertSupportUser = useCallback((userId, name, lastMessage, timestamp, isWaiting = false) => {
@@ -88,6 +89,34 @@ export const SocketProvider = ({ children }) => {
             toast.info(`🙋 ${username || 'Người dùng'} đang chờ hỗ trợ!`);
         });
 
+        /* Lắng nghe danh sách user online */
+        newSocket.on('receive_user_online_list', (payload) => {
+            if (!payload) return;
+
+            const rawUsers = Array.isArray(payload) ? payload : [payload];
+            const onlineList = rawUsers
+                .map(item => {
+                    const userData = item?.data || item;
+                    const id = userData?.userId || userData?.id || item?.room;
+                    if (!id) return null;
+                    return {
+                        id,
+                        userId: userData?.userId || userData?.id,
+                        username: userData?.username || userData?.name || 'Unknown',
+                        email: userData?.email || '',
+                        role: userData?.role || 'user'
+                    };
+                })
+                .filter(Boolean);
+
+            setOnlineUsers(onlineList);
+
+            // Cập nhật bổ sung supportUsers nếu cần, dễ tìm khi click
+            onlineList.forEach(u => {
+                upsertSupportUser(u.id, u.username, 'Đang online', new Date().toISOString(), false);
+            });
+        });
+
         /* Lắng nghe tin nhắn từ user */
         newSocket.on('receive_user_message', (data) => {
             const { userId, username, timestamp } = data?.data?.infor || {};
@@ -119,6 +148,7 @@ export const SocketProvider = ({ children }) => {
             isConnected,
             supportUsers, setSupportUsers,
             supportMessages, setSupportMessages,
+            onlineUsers, setOnlineUsers,
             pendingCount, setPendingCount,
             upsertSupportUser,
             addAdminMessage,

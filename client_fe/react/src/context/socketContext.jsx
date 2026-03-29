@@ -54,6 +54,7 @@ export const SocketProvider = ({ children }) => {
 
    
     const handleUserBlock = (msg) => {
+        console.log("Người dùng bị block:", msg);
         alert(msg);
         manageToken.removeToken();
         window.location.href = '/auth';

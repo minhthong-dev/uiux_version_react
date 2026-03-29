@@ -37,9 +37,13 @@ const UserManagement = () => {
             if (!listenerRegistered.current) {
                 listenerRegistered.current = true;
                 socket.on('receive_user_online_list', (data) => {
+                    let onlineIds = new Set();
                     console.log('Danh sách user online:', data);
                     // Tạo Set chứa ID các user đang online
-                    const onlineIds = new Set(data.map(item => item.data.id));
+                    for (const item of data) {
+                        console.log('item:', item);
+                        onlineIds.add(item.data.id);
+                    }
 
                     // Merge isOnline vào toàn bộ danh sách user
                     setUsers(prev => prev.map(u => ({
