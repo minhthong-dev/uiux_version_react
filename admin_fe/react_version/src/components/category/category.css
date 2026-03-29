@@ -1,0 +1,126 @@
+.category-container {
+    padding: 2rem;
+}
+
+.category-header {
+    background-color: var(--blue-violet);
+    color: var(--white);
+    padding: 2rem;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+    margin-bottom: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.category-content-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 3rem;
+}
+
+.category-form-card {
+    background-color: var(--white);
+    border: var(--border-thick);
+    padding: 2rem;
+    box-shadow: var(--shadow-hard);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+}
+
+.category-form-card h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    border-bottom: var(--border-thin);
+    padding-bottom: 0.5rem;
+}
+
+.category-list-card {
+    background-color: var(--white);
+    border: var(--border-thick);
+    padding: 2rem;
+    box-shadow: var(--shadow-hard);
+}
+
+.category-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.category-table th {
+    text-align: left;
+    background-color: var(--amber-gold);
+    padding: 1rem;
+    border: var(--border-thin);
+    text-transform: uppercase;
+    font-weight: 900;
+}
+
+.category-table td {
+    padding: 1rem;
+    border: var(--border-thin);
+    font-weight: 700;
+}
+
+.category-table tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+.category-table tr:hover {
+    background-color: #fff9e6;
+}
+
+.action-btns {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-edit {
+    background-color: var(--azure-blue);
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+.btn-delete {
+    background-color: var(--neon-pink);
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+.category-tag {
+    display: inline-block;
+    background-color: var(--blaze-orange);
+    color: white;
+    padding: 5px 15px;
+    border: var(--border-thin);
+    box-shadow: var(--shadow-small);
+    font-weight: 900;
+    margin: 10px;
+    text-transform: uppercase;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    border: 3px dashed var(--black);
+    background-color: #fafafa;
+}
+
+@media (max-width: 1000px) {
+    .category-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .category-form-card {
+        position: static;
+    }
+}

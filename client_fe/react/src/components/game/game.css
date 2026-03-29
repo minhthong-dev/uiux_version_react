@@ -1,0 +1,219 @@
+.game-detail-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    color: var(--black);
+}
+
+.game-header {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 50px;
+    align-items: flex-start;
+}
+
+.game-main-info {
+    flex: 1;
+}
+
+.game-sidebar-cover {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    margin-bottom: 30px;
+}
+
+.game-title {
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 25px;
+    color: var(--black);
+    background-color: var(--sunflower-gold);
+    display: inline-block;
+    padding: 10px 20px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+}
+
+.game-description {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    background: var(--white);
+    padding: 30px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    margin-bottom: 40px;
+    white-space: pre-wrap;
+    font-weight: 500;
+}
+
+.game-sidebar-info {
+    width: 380px;
+    background-color: var(--white);
+    padding: 30px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+    position: sticky;
+    top: 100px;
+}
+
+.info-item {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: var(--border-thin);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.info-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--deep-space-blue);
+    font-weight: 950;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--black);
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.tag-item {
+    background-color: var(--vanilla-custard);
+    padding: 5px 12px;
+    border: var(--border-thin);
+    font-size: 0.9rem;
+    font-weight: 800;
+    box-shadow: 2px 2px 0px #000;
+}
+
+.section-title {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    background: var(--flag-red);
+    color: var(--white);
+    display: inline-block;
+    padding: 8px 20px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+}
+
+.trailer {
+    margin-bottom: 40px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+    background: var(--black);
+    line-height: 0;
+}
+
+.trailer iframe {
+    width: 100%;
+    display: block;
+}
+
+.screenshots-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.screenshot-item {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.screenshot-item:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: var(--shadow-hard);
+}
+
+.buy-section {
+    background: var(--vivid-tangerine);
+    padding: 40px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+}
+
+.price-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.buy-subtitle {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--black);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.buy-price {
+    font-size: 3rem;
+    font-weight: 950;
+    color: var(--black);
+    line-height: 1;
+}
+
+.add-to-cart-btn {
+    background-color: var(--sunflower-gold);
+    color: var(--black);
+    padding: 20px 50px;
+    font-size: 1.5rem;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+}
+
+.add-to-cart-btn:hover {
+    background-color: var(--flag-red);
+    color: var(--white);
+}
+
+.add-to-cart-btn.in-cart {
+    background-color: #4CAF50; /* Green color for in-cart state */
+    color: var(--white);
+}
+
+.add-to-cart-btn.in-cart:hover {
+    background-color: var(--black);
+    color: var(--white);
+}
+
+@media (max-width: 1000px) {
+    .game-header {
+        flex-direction: column;
+    }
+
+    .game-sidebar-info {
+        width: 100%;
+        position: static;
+    }
+
+    .game-title {
+        font-size: 2.5rem;
+    }
+}

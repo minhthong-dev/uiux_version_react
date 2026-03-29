@@ -1,0 +1,122 @@
+.checkout-container {
+    padding: 60px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.checkout-title {
+    font-size: 3rem;
+    background-color: var(--azure-blue);
+    color: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+    display: inline-block;
+    padding: 15px 40px;
+    transform: rotate(1deg);
+    margin-bottom: 50px;
+    text-transform: uppercase;
+}
+
+.checkout-card {
+    background: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.checkout-section-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    border-bottom: var(--border-thick);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.game-item-mini {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: var(--border-thin);
+    margin-bottom: 10px;
+    background: var(--vanilla-custard);
+}
+
+.game-name-mini {
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+.game-price-mini {
+    font-weight: 900;
+    color: var(--flag-red);
+}
+
+.balance-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background: var(--sunflower-gold);
+    border: var(--border-thick);
+    font-weight: 900;
+    font-size: 1.2rem;
+}
+
+.total-payment-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+    background: var(--black);
+    color: var(--white);
+    border: var(--border-thick);
+    margin-top: 10px;
+}
+
+.total-value-big {
+    font-size: 2.5rem;
+    color: var(--sunflower-gold);
+}
+
+.confirm-btn {
+    width: 100%;
+    padding: 25px;
+    font-size: 1.8rem;
+    background: var(--vivid-tangerine);
+    color: var(--black);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+    margin-top: 20px;
+    transition: all 0.1s;
+}
+
+.confirm-btn:hover:not(:disabled) {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0px #000;
+}
+
+.confirm-btn:active:not(:disabled) {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+}
+
+.confirm-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.error-message {
+    background: #ffebee;
+    color: #c62828;
+    padding: 15px;
+    border: var(--border-thick);
+    font-weight: 800;
+    text-align: center;
+}

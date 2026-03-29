@@ -1,0 +1,5 @@
+--deep-space-blue: #003049ff;
+--flag-red: #d62828ff;
+--vivid-tangerine: #f77f00ff;
+--sunflower-gold: #fcbf49ff;
+--vanilla-custard: #eae2b7ff;

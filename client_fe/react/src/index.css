@@ -1,0 +1,84 @@
+:root {
+  /* Bảng màu Neo-Retro mới */
+  --deep-space-blue: #003049ff;
+  --flag-red: #d62828ff;
+  --vivid-tangerine: #f77f00ff;
+  --sunflower-gold: #fcbf49ff;
+  --vanilla-custard: #eae2b7ff;
+
+  /* Map lại các biến cũ sang mới để duy trì cấu trúc */
+  --azure-blue: var(--deep-space-blue);
+  --neon-pink: var(--flag-red);
+  --blaze-orange: var(--vivid-tangerine);
+  --amber-gold: var(--sunflower-gold);
+  --bg-color: var(--vanilla-custard);
+
+  --black: #000000;
+  --white: #ffffff;
+
+  /* Borders & Shadows */
+  --border-thick: 4px solid #000;
+  --border-thin: 2px solid #000;
+  --shadow-hard: 8px 8px 0px #000;
+  --shadow-small: 4px 4px 0px #000;
+  --shadow-hover: 2px 2px 0px #000;
+
+  font-family: 'Outfit', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--black);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: var(--border-thick);
+  background: var(--white);
+  padding: 10px 20px;
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-small);
+  transition: all 0.1s ease;
+}
+
+button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard);
+}
+
+button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #000;
+}

@@ -1,0 +1,283 @@
+import React, { useEffect, useState } from 'react';
+import categoryApi from '../../api/categoryApi';
+import './category.css';
+import { Plus, Trash2, Edit3, Save } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from '../../components/notification/toast';
+
+const CategoryManagement = () => {
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [categoryName, setCategoryName] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSeeding, setIsSeeding] = useState(false);
+    const [editingCategory, setEditingCategory] = useState(null);
+
+    useEffect(() => {
+        loadCategories();
+    }, []);
+
+    const loadCategories = async () => {
+        try {
+            setLoading(true);
+            const data = await categoryApi.getAllCategories();
+            console.log('du lieu category : ', data);
+            setCategories(data);
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+            toast.error("Failed to fetch categories.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!categoryName.trim()) return;
+
+        try {
+            setIsSubmitting(true);
+            if (editingCategory) {
+                // Logic cập nhật
+                const result = await categoryApi.updateCategory(editingCategory._id, { name: categoryName.trim() });
+                if (result) {
+                    toast.success("Cập nhật danh mục thành công!");
+                    handleCancelEdit();
+                    await loadCategories();
+                } else {
+                    toast.error("Lỗi: " + (result.message || "Không thể cập nhật"));
+                }
+            } else {
+                // Logic tạo mới
+                const result = await categoryApi.createCategory({ name: categoryName.trim() });
+                if (result.data) {
+                    setCategoryName('');
+                    await loadCategories();
+                    toast.success("Thêm danh mục thành công!");
+                } else {
+                    toast.error("Lỗi: " + (result.message || "Không thể tạo danh mục"));
+                }
+            }
+        } catch (error) {
+            console.error("Error submitting category:", error);
+            toast.error("Có lỗi xảy ra.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDeleteCategory = async (categoryId) => {
+        if (!window.confirm("Bạn có chắc chắn muốn xóa danh mục này?")) return;
+        try {
+            const result = await categoryApi.deleteCategory(categoryId);
+            if (result) {
+                await loadCategories();
+                toast.success("Xóa danh mục thành công!");
+            } else {
+                toast.error("Lỗi: " + (result.message || "Không thể xóa danh mục"));
+            }
+        } catch (error) {
+            console.error("Lỗi xóa: ", error);
+            toast.error("Có lỗi xảy ra khi xóa.");
+        }
+    }
+
+    const handleSeedSteamCategories = async () => {
+        const steamGenres = [
+            "Hành động", "Phiêu lưu", "Phổ thông", "Indie", "MMO", "Đua xe",
+            "Nhập vai (RPG)", "Mô phỏng", "Thể thao", "Chiến thuật", "Kinh dị",
+            "Sinh tồn", "Thế giới mở", "Sandbox", "Bắn súng", "Giải đố",
+            "Anime", "Viễn tưởng (Sci-fi)", "Cyberpunk", "Zombies", "Platformer",
+            "Kiếm hiệp", "Hài hước", "Roguelike", "Roguelite", "Metroidvania",
+            "Soulslike", "Thủ thành", "Thẻ bài", "Nhịp điệu", "Visual Novel",
+            "Chiến thuật theo lượt", "RTS", "Đại chiến thuật", "Quản lý",
+            "Xây dựng thành phố", "Hẹn hò", "Tâm lý kinh dị", "Hợp tác (Co-op)",
+            "Đối kháng", "Thư giãn", "Khám phá", "Bí ẩn", "Tàng hình",
+            "Chặt chém", "Idle", "Pixel Art", "Lịch sử", "Thần thoại", "Hậu tận thế"
+        ];
+
+        setIsSeeding(true);
+        let count = 0;
+
+        try {
+            // Lấy danh sách hiện tại để tránh trùng lặp
+            const currentCategories = await categoryApi.getAllCategories() || [];
+            const currentNames = currentCategories.map(c => c.name.toLowerCase());
+
+            for (const genre of steamGenres) {
+                if (!currentNames.includes(genre.toLowerCase())) {
+                    await categoryApi.createCategory({ name: genre });
+                    count++;
+                }
+            }
+
+            if (count > 0) {
+                toast.success(`Đã thêm thành công ${count} thể loại từ Steam!`);
+                await loadCategories();
+            } else {
+                toast.info("Tất cả thể loại Steam đã tồn tại.");
+            }
+        } catch (error) {
+            console.error("Seed error:", error);
+            toast.error("Có lỗi xảy ra khi seed dữ liệu.");
+        } finally {
+            setIsSeeding(false);
+        }
+    };
+
+    const handleEditClick = (category) => {
+        setEditingCategory(category);
+        setCategoryName(category.name);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleCancelEdit = () => {
+        setEditingCategory(null);
+        setCategoryName('');
+    };
+
+    return (
+        <div className="category-container">
+            <header className="category-header">
+                <motion.h1
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                >
+                    QUẢN LÝ DANH MỤC
+                </motion.h1>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <button
+                        className="seed-btn shadow-hover"
+                        onClick={handleSeedSteamCategories}
+                        disabled={isSeeding}
+                        style={{
+                            background: 'var(--amber-gold)',
+                            color: 'var(--black)',
+                            border: '2px solid var(--black)',
+                            padding: '8px 15px',
+                            fontWeight: 900,
+                            cursor: 'pointer',
+                            fontSize: '0.8rem'
+                        }}
+                    >
+                        {isSeeding ? 'ĐANG SEEDING...' : '⚡ SEED STEAM GENRES'}
+                    </button>
+                    <div className="stats-badge">
+                        TỔNG SỐ: {categories.length}
+                    </div>
+                </div>
+            </header>
+
+            <div className="category-content-grid">
+                {/* Form Section */}
+                <motion.div
+                    className="category-form-card"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                >
+                    <h2>{editingCategory ? 'CHỈNH SỬA' : 'THÊM MỚI'}</h2>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label>Tên danh mục</label>
+                            <input
+                                type="text"
+                                value={categoryName}
+                                onChange={(e) => setCategoryName(e.target.value)}
+                                placeholder="VD: Hành động, Kinh dị..."
+                                required
+                            />
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button
+                                type="submit"
+                                className="btn-save shadow-hover"
+                                style={{ flex: 1, marginTop: '1rem', background: editingCategory ? 'var(--azure-blue)' : 'var(--blaze-orange)' }}
+                                disabled={isSubmitting}
+                            >
+                                {editingCategory ? <Save size={20} /> : <Plus size={20} />}
+                                {isSubmitting ? 'ĐANG LƯU...' : (editingCategory ? 'CẬP NHẬT' : 'THÊM DANH MỤC')}
+                            </button>
+
+                            {editingCategory && (
+                                <button
+                                    type="button"
+                                    className="btn-cancel shadow-hover"
+                                    style={{ marginTop: '1rem', padding: '0 15px' }}
+                                    onClick={handleCancelEdit}
+                                >
+                                    HỦY
+                                </button>
+                            )}
+                        </div>
+                    </form>
+                </motion.div>
+
+                {/* List Section */}
+                <motion.div
+                    className="category-list-card"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <h2>DANH SÁCH HIỆN CÓ</h2>
+                    {loading ? (
+                        <div className="empty-state">Đang tải dữ liệu...</div>
+                    ) : categories.length > 0 ? (
+                        <table className="category-table">
+                            <thead>
+                                <tr>
+                                    <th>Tên Danh Mục</th>
+                                    <th>ID</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <AnimatePresence mode="wait">
+                                    {categories.map((cat) => (
+                                        <motion.tr
+                                            key={cat._id}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                        >
+                                            <td>
+                                                <span className="category-tag">{cat.name}</span>
+                                            </td>
+                                            <td style={{ fontSize: '0.8rem', opacity: 0.6 }}>{cat._id}</td>
+                                            <td>
+                                                <div className="action-btns">
+                                                    <button
+                                                        className="mini-action-btn edit-btn-mini"
+                                                        title="Sửa"
+                                                        onClick={() => handleEditClick(cat)}
+                                                    >
+                                                        <Edit3 size={14} />
+                                                    </button>
+                                                    <button
+                                                        className="mini-action-btn delete-btn-mini"
+                                                        title="Xóa"
+                                                        onClick={() => handleDeleteCategory(cat._id)}
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    ))}
+                                </AnimatePresence>
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="empty-state">
+                            <h3>CHƯA CÓ DANH MỤC NÀO</h3>
+                            <p>Hãy thêm danh mục đầu tiên ở bên trái.</p>
+                        </div>
+                    )}
+                </motion.div>
+            </div>
+        </div>
+    );
+};
+
+export default CategoryManagement;

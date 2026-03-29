@@ -14,9 +14,10 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const result = await authApi.login(email, password);
+        console.log("result: ", result.message);
         if (result.message === 'dang nhap thanh cong') {
             if (getInfor(result.token)) {
-                if (getInfor(result.token).role == 'admin') {
+                if (getInfor(result.token).role == 'admin' || getInfor(result.token).role == 'super_admin') {
                     console.log("token dep qa: ", getInfor(result.token));
                     manageToken.setToken(result.token);
                     navigate('/');
