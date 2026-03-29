@@ -1,0 +1,35 @@
+name: Deploy Client React App
+
+on:
+  push:
+    branches:
+      - ui_admin_client
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ⚙️
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: client_fe/react/package-lock.json
+
+      - name: Install and Build 🏗️
+        run: |
+          cd client_fe/react
+          npm install
+          npm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: client_fe/react/dist # Nếu dùng Vite là dist, dùng Create React App là build
+          branch: gh-pages # GitHub sẽ tự tạo nhánh này để chứa file đã buildname: Deploy React App
