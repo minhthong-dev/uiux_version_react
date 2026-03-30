@@ -101,29 +101,33 @@ const Support = () => {
             }]);
         };
 
-        try {
-            socket.send('receive_admin_message', handleReceiveMessage);
-        } catch (error) {
-            // socket.onmessage(JSON.stringify({ event: 'receive_admin_message', handleReceiveMessage }));
-            socket.onmessage = (event) => {
-                console.log(event);
+        const handleReceiveNativeMessage = (event) => {
+            try {
                 const msg = JSON.parse(event.data);
                 if (msg.event === 'receive_admin_message') {
                     handleReceiveMessage(msg.data);
                 }
+            } catch (e) {
+                console.error("Lỗi parse message Java tại Support:", e);
             }
+        };
+
+        try {
+            socket.on('receive_admin_message', handleReceiveMessage);
+        } catch (error) {
+            socket.addEventListener('message', handleReceiveNativeMessage);
         }
 
         return () => {
             try {
                 socket.off('receive_admin_message', handleReceiveMessage);
             } catch (error) {
-                socket.send(JSON.stringify({ event: 'join_room', data: data }));
+                socket.removeEventListener('message', handleReceiveNativeMessage);
             }
             try {
                 socket.emit('leave_room', socket.id);
             } catch (error) {
-                socket.send(JSON.stringify({ event: 'join_room', data: data }));
+                // Ignore for Native WS if any
             }
         };
     }, [socket]);

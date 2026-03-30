@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
-import SOCKET_URL from '../config/configSocketUrl';
 import { manageToken, getInfor } from '../utils/manageToken';
 
 const SocketContext = createContext();
@@ -21,9 +19,8 @@ export const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         let javaWsInstance = null;
-        let ioSocketInstance = null;
         const token = manageToken.getToken();
-        
+
         if (!token) return;
 
         const userData = dataUser();
@@ -32,36 +29,47 @@ export const SocketProvider = ({ children }) => {
             const javaWsHost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
                 ? "ws://localhost:3636"
                 : "wss://java-version-webbangame.onrender.com";
-            
+
             const wsUrl = `${javaWsHost}/ws/webbangame?token=${token}`;
             const ws = new WebSocket(wsUrl);
+            javaWsInstance = ws;
 
             ws.onopen = () => {
-                javaWsInstance = ws;
                 setSocket(ws);
-                setIsconnected(true);
+                // Gửi thông tin để server xác nhận kết nối
                 ws.send(JSON.stringify({ event: 'xin chao minh thong', data: userData }));
                 ws.send(JSON.stringify({ event: 'join_room', data: userData }));
-                console.log("Connected to Java WebSocket server");
+                ws.send(JSON.stringify({ event: 'isConnected', data: userData }));
+                console.log("Java WebSocket opened, waiting for confirmation...");
             };
 
-            ws.onmessage = (event) => {
+            const handleMessage = (event) => {
                 try {
                     const msg = JSON.parse(event.data);
+                    // Xác nhận kết nối từ server Java
+                    if (msg.event === 'server_confirm_connection') {
+                        setIsconnected(true);
+                        console.log("Server confirmed connection:", msg.message);
+                    }
                     if (msg.event === 'receive_user_block') {
                         handleUserBlock(msg.data);
                     }
                 } catch (e) {
-                    console.error(e);
+                    console.error("Lỗi parse message Java:", e);
                 }
             };
 
+            ws.addEventListener('message', handleMessage);
+
             ws.onclose = () => {
                 setIsconnected(false);
+                ws.removeEventListener('message', handleMessage);
             };
 
-            ws.onerror = () => {
+            ws.onerror = (error) => {
+                console.error("WebSocket Error:", error);
                 setIsconnected(false);
+                ws.removeEventListener('message', handleMessage);
             };
         };
 
@@ -71,32 +79,13 @@ export const SocketProvider = ({ children }) => {
             window.location.href = '/auth';
         };
 
-        const ioSocket = io(SOCKET_URL, {
-            token: token,
-            transports: ['websocket'],
-            reconnectionAttempts: 1,
-            timeout: 5000
-        });
-
-        ioSocket.on("connect", () => {
-            ioSocketInstance = ioSocket;
-            setSocket(ioSocket);
-            setIsconnected(true);
-            ioSocket.emit('join_room', userData);
-        });
-
-        ioSocket.on("connect_error", () => {
-            ioSocket.close();
-            if (!javaWsInstance) {
-                connectJavaWS();
-            }
-        });
-
-        ioSocket.on('receive_user_block', (data) => handleUserBlock(data));
+        // Kết nối thẳng tới Java hoàn toàn
+        connectJavaWS();
 
         return () => {
-            if (ioSocketInstance) ioSocketInstance.disconnect();
-            if (javaWsInstance) javaWsInstance.close();
+            if (javaWsInstance) {
+                javaWsInstance.close();
+            }
         };
     }, []);
 

@@ -61,11 +61,8 @@ const Header = () => {
                 data: getInfor()
             }
         }
-        try {
-            socket.emit('user_logout', dataUser());
-        } catch (error) {
-            socket.send(JSON.stringify({ event: 'user_logout', data: dataUser() }));
-        }
+        socket.send(JSON.stringify({ event: 'user_logout', data: dataUser() }));
+
         manageToken.removeToken();
         setIsLoggedIn(false);
         setUserInfo(null);
