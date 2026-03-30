@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import SOCKET_URL from '../config/configSocketUrl';
 import { manageToken, getInfor } from '../utils/manageToken';
+
 const SocketContext = createContext();
 
 export const useSocket = () => useContext(SocketContext);
@@ -9,85 +10,95 @@ export const useSocket = () => useContext(SocketContext);
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsconnected] = useState(false);
+
     const dataUser = () => {
+        const info = getInfor();
         return {
-            room: getInfor().id,
-            data: getInfor()
-        }
-    }
+            room: info?.id,
+            data: info
+        };
+    };
+
     useEffect(() => {
-    let socketInstance = null;
-    const token = manageToken.getToken();
-    if (!token) return;
+        let javaWsInstance = null;
+        let ioSocketInstance = null;
+        const token = manageToken.getToken();
+        
+        if (!token) return;
 
-    const data = dataUser();
+        const userData = dataUser();
 
+        const connectJavaWS = () => {
+            const javaWsHost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+                ? "ws://localhost:3636"
+                : "wss://java-version-webbangame.onrender.com";
+            
+            const wsUrl = `${javaWsHost}/ws/webbangame?token=${token}`;
+            const ws = new WebSocket(wsUrl);
 
-    const connectJavaWS = () => {
-        console.log("Đang thử kết nối Java WebSocket...");
-        const wsUrl = `ws://localhost:3636/ws/webbamegame?token=${token}`;
-        let ws;
-        try {
-             ws = new WebSocket(`ws://localhost:3636/ws/webbangame?token=${token}`);
-             console.log("WebSocket Java đã được tạo:", ws);
-            } catch (error) {
-            console.error("Lỗi khi tạo WebSocket:", error);
-        }
+            ws.onopen = () => {
+                javaWsInstance = ws;
+                setSocket(ws);
+                setIsconnected(true);
+                ws.send(JSON.stringify({ event: 'xin chao minh thong', data: userData }));
+                ws.send(JSON.stringify({ event: 'join_room', data: userData }));
+                console.log("Connected to Java WebSocket server");
+            };
 
-        ws.onopen = () => {
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.event === 'receive_user_block') {
+                        handleUserBlock(msg.data);
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            };
+
+            ws.onclose = () => {
+                setIsconnected(false);
+            };
+
+            ws.onerror = () => {
+                setIsconnected(false);
+            };
+        };
+
+        const handleUserBlock = (msg) => {
+            alert(msg);
+            manageToken.removeToken();
+            window.location.href = '/auth';
+        };
+
+        const ioSocket = io(SOCKET_URL, {
+            token: token,
+            transports: ['websocket'],
+            reconnectionAttempts: 1,
+            timeout: 5000
+        });
+
+        ioSocket.on("connect", () => {
+            ioSocketInstance = ioSocket;
+            setSocket(ioSocket);
             setIsconnected(true);
-            setSocket(ws);
-            console.log("WebSocket Java đã kết nối:", ws);
-            ws.send(JSON.stringify({ event: 'join_room', data: data }));
-        };
+            ioSocket.emit('join_room', userData);
+        });
 
-        ws.onmessage = (event) => {
-            const msg = JSON.parse(event.data);
-            if (msg.event === 'receive_user_block') {
-                handleUserBlock(msg.data);
+        ioSocket.on("connect_error", () => {
+            ioSocket.close();
+            if (!javaWsInstance) {
+                connectJavaWS();
             }
+        });
+
+        ioSocket.on('receive_user_block', (data) => handleUserBlock(data));
+
+        return () => {
+            if (ioSocketInstance) ioSocketInstance.disconnect();
+            if (javaWsInstance) javaWsInstance.close();
         };
-
-        ws.onclose = () => setIsconnected(false);
-        socketInstance = ws;
-    };
-
-   
-    const handleUserBlock = (msg) => {
-        console.log("Người dùng bị block:", msg);
-        alert(msg);
-        manageToken.removeToken();
-        window.location.href = '/auth';
-    };
-
-   
-    const ioSocket = io(SOCKET_URL, {
-        token: token, 
-        transports: ['websocket'],
-        reconnectionAttempts: 2, 
-        timeout: 5000 
-    });
-
-    ioSocket.on("connect", () => {
-    
-        setIsconnected(true);
-        setSocket(ioSocket);
-        ioSocket.emit('join_room', data);
-    });
-    ioSocket.on("connect_error", (err) => {
-        ioSocket.close(); 
-        console.error("Lỗi kết nối Socket.IO:", err);
-        connectJavaWS(); 
-    });
-
-    ioSocket.on('receive_user_block', (data) => handleUserBlock(data));
-
-    return () => {
-        if (socketInstance && socketInstance.close) socketInstance.close();
-        if (ioSocket) ioSocket.close();
-    };
-}, []);
-
+    }, []);
 
     return (
         <SocketContext.Provider value={{ socket, isConnected }}>

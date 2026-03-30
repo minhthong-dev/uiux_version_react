@@ -14,7 +14,7 @@ const Support = () => {
     const [showScrollButton, setShowScrollButton] = useState(false);
     const [isUserAtBottom, setIsUserAtBottom] = useState(true);
     const chatHistoryRef = useRef(null);
-
+    let data
     // Load lịch sử chat khi component mount
     useEffect(() => {
         const loadChatHistory = async () => {
@@ -73,7 +73,7 @@ const Support = () => {
         if (!socket) return;
         const handleJoinRoom = () => {
             const userinfor = getInfor();
-            const data = {
+            data = {
                 room: userinfor.id,
                 infor: {
                     userId: userinfor.id,
@@ -102,7 +102,7 @@ const Support = () => {
         };
 
         try {
-            socket.on('receive_admin_message', handleReceiveMessage);
+            socket.send('receive_admin_message', handleReceiveMessage);
         } catch (error) {
             // socket.onmessage(JSON.stringify({ event: 'receive_admin_message', handleReceiveMessage }));
             socket.onmessage = (event) => {

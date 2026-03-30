@@ -22,7 +22,7 @@ const Payment = () => {
     }, []);
     useEffect(() => {
         if (!socket) return;
-        socket.on('nap_tien_thanh_cong', () => {
+        socket.send('nap_tien_thanh_cong', () => {
             toast.success("Nạp tiền thành công");
             loadAmount();
         })
