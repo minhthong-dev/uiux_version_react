@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/uiux_version_react/',
+  base: '/',
   plugins: [react()],
   server: {
     proxy: {
