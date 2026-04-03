@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
+import { useSocket } from '../../context/socketContext';
 const GoogleAuthSuccess = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-
+    const { socket, isConnected } = useSocket();
     useEffect(() => {
         const token = searchParams.get('token');
 
