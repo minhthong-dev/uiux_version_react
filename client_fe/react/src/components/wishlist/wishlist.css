@@ -134,7 +134,7 @@
 .btn-remove-wishlist {
     position: absolute;
     top: 15px;
-    right: 15px;
+    left: 15px;
     background: var(--flag-red);
     color: var(--white);
     border: 2px solid var(--black);
