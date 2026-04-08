@@ -11,6 +11,7 @@ import {
     Globe
 } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { toast } from '../notification/toast';
 import walletApi from '../../api/walletApi';
 import authApi from '../../api/authApi';
 import { createBuyWallet } from '../../api/buyApi';
