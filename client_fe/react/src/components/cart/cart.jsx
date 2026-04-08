@@ -20,42 +20,49 @@ const Cart = () => {
         try {
             const data = await cartApi.getCart();
 
-            let items = [];
-            if (Array.isArray(data.products) && data.products.length > 0 && Array.isArray(data.products)) {
-                items = data.products.pro;
-            }
-            console.log("items: ", items);
-            if (!items || items.length === 0) {
+            const items = Array.isArray(data?.products) ? data.products : [];
+            if (items.length === 0) {
                 setCartItems([]);
                 setIsLoading(false);
                 return;
             }
 
-            // Đếm số lượng của mỗi game
-            const gameCounts = items.reduce((acc, gameId) => {
-                acc[gameId] = (acc[gameId] || 0) + 1;
-                return acc;
-            }, {});
+            const normalized = items.map((it) => ({
+                // Support both new+legacy shapes:
+                // - { product: ObjectId | Game }
+                // - { gameId: ObjectId } (legacy)
+                gameId: it?.product?._id || it?.product || it?.gameId || it?.productId || it?._id,
+                quantity: it?.quantity || 1,
+                game: it?.product && typeof it.product === 'object' ? it.product : null,
+            }));
 
-            const uniqueGameIds = Object.keys(gameCounts);
+            const safeNormalized = normalized.filter((x) => x.gameId);
 
-            // Lấy chi tiết từng game đồng thời
-            const detailedItems = await Promise.all(
-                uniqueGameIds.map(async (gameId) => {
-                    try {
-                        const gameRes = await gameApi.getGameById(gameId);
-                        const gameData = gameRes.data ? gameRes.data : gameRes;
-                        return { gameId: gameId, quantity: gameCounts[gameId], game: gameData };
-                    } catch (err) {
-                        console.error('Lỗi lấy thông tin game:', err);
-                        return { gameId: gameId, quantity: gameCounts[gameId], game: { _id: gameId, name: 'Game lỗi hoặc đã xoá', price: 0 } };
-                    }
-                })
-            );
+            // If backend didn't populate product, fetch game details by ids
+            const needFetchIds = [...new Set(safeNormalized.filter(x => !x.game).map(x => x.gameId))];
+            if (needFetchIds.length > 0) {
+                const fetched = await Promise.all(
+                    needFetchIds.map(async (gid) => {
+                        try {
+                            const res = await gameApi.getGameById(gid);
+                            return [gid, res?.data && typeof res.data === 'object' ? res.data : res];
+                        } catch {
+                            return [gid, null];
+                        }
+                    })
+                );
+                const map = new Map(fetched);
+                safeNormalized.forEach((x) => {
+                    if (!x.game) x.game = map.get(x.gameId) || null;
+                });
+            }
 
-            setCartItems(detailedItems);
-            // Mặc định chọn tất cả khi mới load
-            setSelectedItems(detailedItems.map(item => item.gameId));
+            if (safeNormalized.length !== normalized.length) {
+                toast.warning('Một vài mục trong giỏ hàng bị lỗi dữ liệu (thiếu gameId) và đã được bỏ qua.');
+            }
+
+            setCartItems(safeNormalized);
+            setSelectedItems(safeNormalized.map(item => item.gameId));
         } catch (error) {
             console.error("Lỗi khi tải giỏ hàng:", error);
         } finally {
@@ -203,7 +210,7 @@ const Cart = () => {
 
                     <div style={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column', gap: '25px' }}>
                         {cartItems.map((item, index) => {
-                            const game = item.game || item;
+                            const game = item.game || { _id: item.gameId, name: 'Game', price: 0, media: {} };
                             const { finalDiscount, discountedPrice } = calculateDiscount(game);
 
                             const isSelected = selectedItems.includes(item.gameId);
@@ -322,11 +329,12 @@ const Cart = () => {
                                 const total = calculateTotal();
                                 // Chuẩn bị dữ liệu chi tiết cho checkout
                                 const checkoutData = products.map(item => {
-                                    const { discountedPrice } = calculateDiscount(item.game || item);
+                                    const safeGame = item.game || { _id: item.gameId, name: 'Game', price: 0, media: {} };
+                                    const { discountedPrice } = calculateDiscount(safeGame);
                                     return {
                                         gameId: item.gameId,
                                         quantity: item.quantity,
-                                        game: item.game,
+                                        game: safeGame,
                                         discountedPrice: discountedPrice
                                     };
                                 });
