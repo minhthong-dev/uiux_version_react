@@ -9,7 +9,7 @@ const isLocalhost = Boolean(
 );
 
 const API_URL = isLocalhost
-    ? 'http://localhost:3000/api'
+    ? 'http://localhost:3636/api'
     : 'https://node-version-webbangame.onrender.com/api';
 
 const axiosClient = axios.create({

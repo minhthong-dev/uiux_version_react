@@ -4,6 +4,7 @@ const walletApi = {
     getAllWallets: async () => {
         try {
             const response = await axiosClient.get('/wallets');
+            console.log(response)
             return response.data;
         } catch (error) {
             console.error("Error in getAllWallets:", error);
