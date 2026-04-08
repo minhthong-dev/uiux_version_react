@@ -117,6 +117,7 @@ const Game = () => {
                     gameApi.isLike(id),
                     userId ? cartApi.inCart(userId, id) : Promise.resolve(false)
                 ]);
+                console.log(data);
                 loadLikeCount();
                 if (wishData === true) {
                     setInWishlist(true);
