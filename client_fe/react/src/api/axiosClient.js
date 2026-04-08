@@ -15,6 +15,7 @@ const API_URL = isLocalhost
 const axiosClient = axios.create({
     baseURL: API_URL,
     headers: {
+
         "Content-Type": "application/json",
     },
 });
