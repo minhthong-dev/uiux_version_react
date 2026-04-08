@@ -1,6 +1,17 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Gamepad2, Users, ShoppingCart, Settings, BarChart3, Tags, Percent } from 'lucide-react';
+import {
+    LayoutDashboard,
+    Gamepad2,
+    Users,
+    ShoppingCart,
+    Settings,
+    BarChart3,
+    Tags,
+    Percent,
+    Wallet,
+    Globe
+} from 'lucide-react';
 import './sidebar_header.css';
 import { useSocket } from '../../context/socketContext';
 
@@ -9,6 +20,8 @@ const Sidebar = () => {
         { path: '/', icon: <LayoutDashboard />, label: 'Dashboard' },
         { path: '/game', icon: <Gamepad2 />, label: 'Quản lý Game' },
         { path: '/category', icon: <Tags />, label: 'Quản lý Danh mục' },
+        { path: '/wallet', icon: <Wallet />, label: 'Quản lý Wallet' },
+        { path: '/wallet-category', icon: <Globe />, label: 'Wallet Region' },
         { path: '/users', icon: <Users />, label: 'Người dùng' },
         { path: '/discount', icon: <Percent />, label: 'Khuyến mãi' },
         { path: '/support', icon: <Settings />, label: 'Hỗ trợ' },
