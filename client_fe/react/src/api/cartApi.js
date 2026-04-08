@@ -11,6 +11,7 @@ const getCart = async () => {
         },
     });
     const data = await response.json();
+    console.log("hello", data);
     return data || [];
 };
 const addToCart = async (gameId) => {

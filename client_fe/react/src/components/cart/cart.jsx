@@ -21,10 +21,10 @@ const Cart = () => {
             const data = await cartApi.getCart();
 
             let items = [];
-            if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0].games)) {
-                items = data[0].games; // Đây sẽ là mảng chứa các gameId string
+            if (Array.isArray(data.products) && data.products.length > 0 && Array.isArray(data.products)) {
+                items = data.products.pro;
             }
-
+            console.log("items: ", items);
             if (!items || items.length === 0) {
                 setCartItems([]);
                 setIsLoading(false);
