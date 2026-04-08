@@ -13,10 +13,12 @@ const WalletSelection = () => {
     useEffect(() => {
         const fetchWallets = async () => {
             try {
-                const data = await walletApi.getAllWallets();
-                setWallets(data || []);
+                const res = await walletApi.getAllWallets();
+                const actualData = Array.isArray(res) ? res : (res.data || []);
+                setWallets(actualData);
             } catch (error) {
                 console.error("Lỗi khi tải danh sách ví:", error);
+                setWallets([]);
             } finally {
                 setIsLoading(false);
             }
@@ -24,7 +26,6 @@ const WalletSelection = () => {
         fetchWallets();
     }, []);
 
-    // Hàm chọn màu ngẫu nhiên/theo thứ tự cho đẹp
     const getAccentColor = (index) => {
         const colors = ["#3a86ffff", "#d62828ff", "#8338ecff", "#ff006eff", "#fb5607ff"];
         return colors[index % colors.length];
