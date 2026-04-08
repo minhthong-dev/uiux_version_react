@@ -11,8 +11,10 @@ import {
     Globe
 } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatCurrency';
-import { toast } from '../notification/toast';
 import walletApi from '../../api/walletApi';
+import authApi from '../../api/authApi';
+import { createBuyWallet } from '../../api/buyApi';
+import { getInfor } from '../../utils/manageToken';
 
 const WalletDetail = () => {
     const { id } = useParams();
@@ -38,17 +40,44 @@ const WalletDetail = () => {
         fetchWalletDetail();
     }, [id]);
 
-    const handlePurchase = () => {
+    const handlePurchase = async () => {
+        const userInfo = getInfor();
+        if (!userInfo || !userInfo.id) {
+            toast.error("Vui lòng đăng nhập để thực hiện giao dịch!");
+            navigate('/login');
+            return;
+        }
+
         setIsLoading(true);
-        // Ở đây có thể gọi API mua thẻ thật nếu Backend đã hỗ trợ. 
-        // Hiện tại giữ logic tạo key giả nhưng với dữ liệu card từ DB.
-        setTimeout(() => {
-            const randomKey = Array.from({ length: 4 }, () => Math.random().toString(36).substring(2, 6).toUpperCase()).join('-');
-            setGeneratedKey(randomKey);
-            setIsPurchased(true);
+        try {
+            // 1. Kiểm tra số dư
+            const resBalance = await authApi.getAmoutById(userInfo.id);
+            const currentBalance = resBalance.amount || 0;
+
+            if (currentBalance < card.price) {
+                toast.error("Số dư tài khoản không đủ. Vui lòng nạp thêm tiền!");
+                navigate('/payment');
+                return;
+            }
+
+            // 2. Thực hiện mua thẻ
+            const response = await createBuyWallet(userInfo.id, card.price, card._id);
+
+            if (response.status === "success" || response.success) {
+                setGeneratedKey(response.key || response.data?.key || "KEY-XXXX-XXXX");
+                setIsPurchased(true);
+                toast.success("Thanh toán thành công!");
+                // Thông báo để header cập nhật lại số dư
+                window.dispatchEvent(new Event('balanceUpdated'));
+            } else {
+                toast.error(response.message || "Giao dịch thất bại!");
+            }
+        } catch (error) {
+            console.error("Lỗi khi mua thẻ:", error);
+            toast.error("Đã có lỗi xảy ra trong quá trình thanh toán.");
+        } finally {
             setIsLoading(false);
-            toast.success("Thanh toán thành công!");
-        }, 1200);
+        }
     };
 
     const copyToClipboard = () => {

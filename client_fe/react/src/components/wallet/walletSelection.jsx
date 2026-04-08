@@ -62,9 +62,7 @@ const WalletSelection = () => {
                                 <span className="price-main">{formatCurrency(card.price)}</span>
                             </div>
                             <div className="wallet-card-actions">
-                                <Link to={`/wallet/${card._id}`} className="detail-btn">
-                                    <Info size={16} /> CHI TIẾT
-                                </Link>
+
                                 <button className="buy-btn" onClick={() => navigate(`/wallet/${card._id}`)}>
                                     <Plus size={16} /> MUA THẺ
                                 </button>
