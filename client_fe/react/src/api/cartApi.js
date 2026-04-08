@@ -21,7 +21,7 @@ const addToCart = async (gameId) => {
             "Authorization": "Bearer " + manageToken.getToken(),
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ gameId: gameId, userId: getInfor().id }),
+        body: JSON.stringify({ gameId }),
     });
     const text = await response.text();
     let data = {};
@@ -35,12 +35,13 @@ const addToCart = async (gameId) => {
     return { status: response.status, ...data };
 };
 const removeFromCart = async (gameId) => {
-    const response = await fetch(`${CART_API_URL}/${getInfor().id}/${gameId}`, {
-        method: "DELETE",
+    const response = await fetch(`${CART_API_URL}/remove`, {
+        method: "POST",
         headers: {
             "Authorization": "Bearer " + manageToken.getToken(),
             "Content-Type": "application/json",
         },
+        body: JSON.stringify({ gameId }),
     });
     const text = await response.text();
     let data = {};
@@ -53,8 +54,8 @@ const removeFromCart = async (gameId) => {
     }
     return { status: response.status, ...data };
 };
-const inCart = async (userId, gameId) => {
-    const response = await fetch(`${CART_API_URL}/gameincart/${userId}/${gameId}`, {
+const inCart = async (gameId) => {
+    const response = await fetch(`${CART_API_URL}/incart/${gameId}`, {
         method: "GET",
         headers: {
             "Authorization": "Bearer " + manageToken.getToken(),

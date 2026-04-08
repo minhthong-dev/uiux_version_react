@@ -59,7 +59,7 @@ const Sidebar = () => {
                     </NavLink>
                     <NavLink to="/new" className="client-nav-item">
                         <Clock size={20} />
-                        <span>Mới nhất</span>
+                        <span>Mới nhất & Sắp ra mắt</span>
                     </NavLink>
                     <NavLink to="/discount" className="client-nav-item">
                         <Gift size={20} />

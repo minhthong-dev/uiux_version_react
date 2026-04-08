@@ -79,7 +79,7 @@ const Game = () => {
                 toast.success('Đã thêm vào giỏ hàng thành công!');
                 setIsInCart(true);
             } else {
-                toast.error(`${result.message}`);
+                toast.error(result?.error || result?.message || 'Thêm vào giỏ hàng thất bại!');
             }
             window.dispatchEvent(new Event('cartUpdated'));
         } catch (error) {
@@ -112,7 +112,7 @@ const Game = () => {
             try {
                 const userId = manageToken.getToken() ? getInfor()?.id : null;
                 const [data, wishData, likeData, cartData] = await Promise.all([
-                    gameApi.getGameById(id),
+                    gameApi.getGameDetail(id),
                     gameApi.isWishlist(id),
                     gameApi.isLike(id),
                     userId ? cartApi.inCart(userId, id) : Promise.resolve(false)
@@ -131,22 +131,16 @@ const Game = () => {
                     setIsInCart(true);
                 }
 
-                // Vì API trả về data hoặc [] nếu lỗi, nên check kỹ
-                if (data && data.data) {
-                    setGame(data.data);
-                    // Fetch genre names
-                    if (data.data.genre && data.data.genre.length > 0) {
-                        const genrePromises = data.data.genre.map(gId => categoryApi.getCategoryById(gId));
+                const gameObj = data?.data && typeof data.data === 'object' ? data.data : data;
+                if (gameObj && gameObj._id) {
+                    setGame(gameObj);
+                    if (Array.isArray(gameObj.genre) && gameObj.genre.length > 0) {
+                        const genrePromises = gameObj.genre.map(gId => categoryApi.getCategoryById(gId));
                         const genreResults = await Promise.all(genrePromises);
                         setGenres(genreResults.filter(Boolean));
                     }
-                } else if (data && !data.data && data._id) {
-                    setGame(data);
-                    if (data.genre && data.genre.length > 0) {
-                        const genrePromises = data.genre.map(gId => categoryApi.getCategoryById(gId));
-                        const genreResults = await Promise.all(genrePromises);
-                        setGenres(genreResults.filter(Boolean));
-                    }
+                } else if (data?.error === 'invalid_json') {
+                    toast.error('API chi tiết game trả về dữ liệu không hợp lệ. Kiểm tra BASE_API_URL/endpoint.');
                 }
             } catch (error) {
                 console.error("Lỗi khi tải chi tiết game:", error);

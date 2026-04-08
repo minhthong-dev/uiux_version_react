@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { Package } from 'lucide-react';
 import {
     LayoutDashboard,
     Gamepad2,
@@ -24,6 +25,7 @@ const Sidebar = () => {
         { path: '/wallet-category', icon: <Globe />, label: 'Wallet Region' },
         { path: '/users', icon: <Users />, label: 'Người dùng' },
         { path: '/discount', icon: <Percent />, label: 'Khuyến mãi' },
+        { path: '/inventory', icon: <Package />, label: 'Kho hàng' },
         { path: '/support', icon: <Settings />, label: 'Hỗ trợ' },
         { path: '/orders', icon: <ShoppingCart />, label: 'Đơn hàng' },
         { path: '/stats', icon: <BarChart3 />, label: 'Thống kê' },

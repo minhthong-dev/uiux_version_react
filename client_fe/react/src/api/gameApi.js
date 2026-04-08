@@ -32,8 +32,30 @@ const getGameById = async (gameId) => {
             "Content-Type": "application/json",
         },
     });
-    const data = await response.json();
-    return data || [];
+    const text = await response.text();
+    if (!text) return null;
+    try {
+        return JSON.parse(text);
+    } catch {
+        return { error: 'invalid_json', raw: text, status: response.status };
+    }
+};
+
+const getGameDetail = async (gameId) => {
+    const response = await fetch(`${GAME_API_URL}/${gameId}/detail`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+    });
+    const text = await response.text();
+    if (!text) return null;
+    try {
+        return JSON.parse(text);
+    } catch {
+        return { error: 'invalid_json', raw: text, status: response.status };
+    }
 };
 const addWishlist = async (gameId) => {
     const response = await fetch(`${GAME_API_URL}/wishlist`, {
@@ -213,6 +235,7 @@ export default {
     getAllGames,
     searchGames,
     getGameById,
+    getGameDetail,
     addWishlist,
     removeWishlist,
     getWishlist,
