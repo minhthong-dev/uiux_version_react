@@ -14,6 +14,8 @@ import Payment from './components/payment/payment'
 import History from './components/history/history'
 import Checkout from './components/checkout/checkout'
 import AuthSuccess from './components/auth/authSuccess'
+import WalletSelection from './components/wallet/walletSelection'
+import WalletDetail from './components/wallet/walletDetail'
 import Layout from './layout/index'
 import './App.css'
 import { SocketProvider } from './context/socketContext'
@@ -51,6 +53,8 @@ function App() {
             <Route path="/support" element={<Support />} />
             <Route path="/history" element={<History />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/wallets" element={<WalletSelection />} />
+            <Route path="/wallet/:id" element={<WalletDetail />} />
             <Route path="/checkout" element={<Checkout />} />
           </Route>
           {/* Thêm các route khác ở đây */}

@@ -10,6 +10,9 @@ import Discount from './components/discounts/discount';
 import Support from './components/support/support';
 import ToastContainer from './components/notification/toast';
 import { SocketProvider } from './context/socketContext'
+import WalletManagement from './components/wallet/WalletManagement';
+import WalletCategoryManagement from './components/wallet/WalletCategoryManagement';
+
 function App() {
   return (
     <>
@@ -26,6 +29,8 @@ function App() {
             <Route path="/users" element={<User />} />
             <Route path="/discount" element={<Discount />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/wallet" element={<WalletManagement />} />
+            <Route path="/wallet-category" element={<WalletCategoryManagement />} />
           </Route>
         </Routes>
       </SocketProvider>

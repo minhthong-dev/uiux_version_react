@@ -1,0 +1,118 @@
+.wallet-container {
+    padding: 60px 40px;
+    max-width: 1200px;
+    margin: 40px auto;
+    background-color: var(--vanilla-custard);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+}
+
+.wallet-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.wallet-title {
+    font-size: 3.5rem;
+    font-weight: 950;
+    background-color: var(--flag-red);
+    color: var(--white);
+    padding: 15px 30px;
+    display: inline-block;
+    border: var(--border-thick);
+    box-shadow: 10px 10px 0 #000;
+    margin-bottom: 20px;
+    transform: rotate(-1deg);
+}
+
+.wallet-subtitle {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+    text-transform: uppercase;
+}
+
+.wallet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.wallet-card {
+    background-color: var(--white);
+    border: var(--border-thick);
+    box-shadow: 8px 8px 0 #000;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.wallet-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0 #000;
+}
+
+.wallet-region-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #000;
+    color: #fff;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.wallet-name {
+    font-size: 1.5rem;
+    font-weight: 950;
+    margin: 15px 0 10px;
+    color: #000;
+}
+
+.wallet-price-container {
+    margin-bottom: 20px;
+}
+
+.price-main {
+    font-size: 1.8rem;
+    font-weight: 950;
+    color: var(--flag-red);
+    display: block;
+}
+
+.wallet-card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.detail-btn, .buy-btn {
+    flex: 1;
+    border: 3px solid #000;
+    padding: 10px;
+    font-weight: 900;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.detail-btn { background: #fff; }
+.buy-btn { background: var(--accent-color, var(--sunflower-gold)); }
+
+.support-info {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 700;
+    color: #444;
+}
