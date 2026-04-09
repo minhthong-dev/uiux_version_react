@@ -220,7 +220,7 @@
     padding: 2rem;
 }
 
-.modal-content {
+.game-modal {
     max-height: 90vh;
     overflow-y: auto;
     width: 100%;
