@@ -96,6 +96,7 @@ export const SocketProvider = ({ children }) => {
             ioSocket.on("connect", () => {
                 setIsconnected(true);
                 setSocket(ioSocket);
+                ioSocket.emit('isBlock', data)
                 ioSocket.emit('join_room', data);
                 console.log("Socket.io đã kết nối");
             });
@@ -107,8 +108,9 @@ export const SocketProvider = ({ children }) => {
             });
 
             ioSocket.on('receive_user_block', (data) => {
-                console.log("receive_user_block: ", data);
-                if (data.id === dataUser().id) {
+                console.log("data: ", data)
+                console.log("receive_user_block: ", getInfor());
+                if (data.id === dataUser().data.id || data.userId === getInfor().id) {
                     handleUserBlock(data.message);
                 }
             });

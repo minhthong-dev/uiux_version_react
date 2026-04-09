@@ -101,6 +101,21 @@
     background-color: var(--flag-red);
 }
 
+.history-item.buying.wallet-type .item-icon-box {
+    background-color: var(--azure-blue);
+}
+
+.mini-wallet-icon {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--sunflower-gold);
+    border: 2px solid #000;
+}
+
 .item-main-area {
     flex: 1;
     padding: 25px;
