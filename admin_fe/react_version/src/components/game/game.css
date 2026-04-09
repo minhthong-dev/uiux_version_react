@@ -221,6 +221,7 @@
 }
 
 .game-modal {
+    max-width: 1000px;
     max-height: 90vh;
     overflow-y: auto;
     width: 100%;
