@@ -8,6 +8,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { manageToken, getInfor } from '../../utils/manageToken';
 import useGameDiscount from '../../hooks/gameDiscount';
 import { toast } from '../notification/toast';
+import { useInventory } from '../../context/inventoryContext';
 import './game.css';
 
 const Game = () => {
@@ -19,12 +20,13 @@ const Game = () => {
     const [inWishlist, setInWishlist] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
     const [isInCart, setIsInCart] = useState(false);
+    const [isInStock, setIsInStock] = useState(true);
     const { goToGenre } = useGenreNav();
     const [coutLike, setCoutLike] = useState(0);
     const { calculateDiscount } = useGameDiscount();
+    const { checkStock } = useInventory();
     const { finalDiscount, discountedPrice } = game ? calculateDiscount(game) : { finalDiscount: 0, discountedPrice: 0 };
 
-    // Hàm helper để chuyển đổi link YouTube thường sang link embed
     const getEmbedUrl = (url) => {
         if (!url) return null;
         if (url.includes('youtube.com/embed/')) return url;
@@ -119,6 +121,9 @@ const Game = () => {
                 ]);
                 console.log(data);
                 loadLikeCount();
+
+                const inStock = await checkStock(id);
+                setIsInStock(inStock);
                 if (wishData === true) {
                     setInWishlist(true);
                 }
@@ -312,12 +317,18 @@ const Game = () => {
                         )}
                     </div>
                 </div>
-                <button
-                    className={`add-to-cart-btn ${isInCart ? 'in-cart' : ''}`}
-                    onClick={isInCart ? () => navigate('/cart') : handleAddToCart}
-                >
-                    {isInCart ? '✓ ĐÃ TRONG GIỎ HÀNG' : 'THÊM VÀO GIỎ HÀNG'}
-                </button>
+                {isInStock ? (
+                    <button
+                        className={`add-to-cart-btn ${isInCart ? 'in-cart' : ''}`}
+                        onClick={isInCart ? () => navigate('/cart') : handleAddToCart}
+                    >
+                        {isInCart ? '✓ ĐÃ TRONG GIỎ HÀNG' : 'THÊM VÀO GIỎ HÀNG'}
+                    </button>
+                ) : (
+                    <button className="add-to-cart-btn out-of-stock" disabled>
+                        HẾT HÀNG
+                    </button>
+                )}
             </section>
         </div>
     );

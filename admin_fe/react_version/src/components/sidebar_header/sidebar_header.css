@@ -17,17 +17,21 @@
     justify-content: center;
     width: 200px;
     height: 50px;
-    background: var(--white);
-    border: var(--border-thick);
-    box-shadow: var(--shadow-small);
+    background: transparent;
     overflow: hidden;
-    padding: 2px;
+    padding: 0;
 }
 
 .header-logo img {
     max-height: 100%;
     max-width: 100%;
     object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
+    transition: transform 0.2s ease;
+}
+
+.header-logo:hover img {
+    transform: scale(1.05);
 }
 
 .header-actions {

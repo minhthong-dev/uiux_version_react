@@ -21,6 +21,7 @@ import Layout from './layout/index'
 import './App.css'
 import { SocketProvider } from './context/socketContext'
 import { DiscountProvider } from './context/discountContext'
+import { InventoryProvider } from './context/inventoryContext'
 import { useNavigate } from 'react-router-dom'
 import ToastContainer from './components/notification/toast'
 function App() {
@@ -38,6 +39,7 @@ function App() {
   return (
     <SocketProvider>
       <DiscountProvider>
+        <InventoryProvider>
         <ToastContainer />
         <Routes>
           <Route path="/auth" element={<Login />} />
@@ -61,6 +63,7 @@ function App() {
           </Route>
           {/* Thêm các route khác ở đây */}
         </Routes>
+        </InventoryProvider>
       </DiscountProvider>
     </SocketProvider>
   )
