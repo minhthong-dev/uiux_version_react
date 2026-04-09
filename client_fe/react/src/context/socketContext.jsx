@@ -106,7 +106,12 @@ export const SocketProvider = ({ children }) => {
                 connectJavaWS(token, data);
             });
 
-            ioSocket.on('receive_user_block', (data) => handleUserBlock(data));
+            ioSocket.on('receive_user_block', (data) => {
+                console.log("receive_user_block: ", data);
+                if (data.id === dataUser().id) {
+                    handleUserBlock(data.message);
+                }
+            });
 
         } catch (error) {
             console.error("Lỗi khởi tạo socket (đã skip):", error);
