@@ -8,6 +8,7 @@ import User from './components/user/index'
 import Layout from './components/layout/index';
 import Discount from './components/discounts/discount';
 import Support from './components/support/support';
+import Inventory from './components/inventory/index';
 import ToastContainer from './components/notification/toast';
 import { SocketProvider } from './context/socketContext'
 import WalletManagement from './components/wallet/WalletManagement';
@@ -31,6 +32,7 @@ function App() {
             <Route path="/support" element={<Support />} />
             <Route path="/wallet" element={<WalletManagement />} />
             <Route path="/wallet-category" element={<WalletCategoryManagement />} />
+            <Route path="/inventory" element={<Inventory />} />
           </Route>
         </Routes>
       </SocketProvider>

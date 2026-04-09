@@ -13,8 +13,8 @@ const Header = () => {
     }
     return (
         <header className="admin-header">
-            <div className="header-logo">
-                GAME SHOP ADMIN
+            <div className="header-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+                <img src="/logo.png" alt="Logo" />
             </div>
 
             <div className="header-actions">
