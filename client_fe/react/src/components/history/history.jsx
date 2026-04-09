@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import historyApi from "../../api/historyApi";
 import gameApi from "../../api/gameApi";
+import walletApi from "../../api/walletApi";
 import "./history.css";
 
 const History = () => {
     const [historyData, setHistoryData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [gamesCache, setGamesCache] = useState({});
+    const [walletsCache, setWalletsCache] = useState({});
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [filterType, setFilterType] = useState("all");
@@ -29,28 +31,60 @@ const History = () => {
 
                     // Thu thập tất cả gameId từ các giao dịch buying
                     const allGameIds = new Set();
+                    const allWalletIds = new Set();
                     sortedData.forEach(item => {
-                        if (item.type === "buying" && item.gameIds) {
-                            item.gameIds.forEach(idObj => {
-                                const id = typeof idObj === 'string' ? idObj : (idObj.$oid || idObj);
-                                if (id) allGameIds.add(id);
-                            });
+                        if (item.type === "buying") {
+                            if (item.gameIds && Array.isArray(item.gameIds)) {
+                                item.gameIds.forEach(idObj => {
+                                    const id = typeof idObj === 'string' ? idObj : (idObj.$oid || idObj);
+                                    if (id) allGameIds.add(id);
+                                });
+                            }
+
+
+                            const potentialWalletId = item.walletId || item.idWallet || item.wallet;
+                            if (potentialWalletId) {
+                                const wId = typeof potentialWalletId === 'string' ? potentialWalletId : (potentialWalletId.$oid || potentialWalletId);
+                                if (wId) allWalletIds.add(wId);
+                            }
+
+                            if (item.gameIds && item.gameIds.length === 1 && !potentialWalletId) {
+                                const gId = typeof item.gameIds[0] === 'string' ? item.gameIds[0] : (item.gameIds[0].$oid || item.gameIds[0]);
+                                if (gId) allWalletIds.add(gId);
+                            }
                         }
                     });
 
                     // Lấy chi tiết game (caching)
                     if (allGameIds.size > 0) {
                         const gamePromises = Array.from(allGameIds).map(id =>
-                            gameApi.getGameById(id).then(res => ({ id, data: res.data || res }))
+                            gameApi.getGameById(id)
+                                .then(res => ({ id, data: res ? (res.data || res) : null }))
+                                .catch(() => ({ id, data: null }))
                         );
                         const gamesResults = await Promise.all(gamePromises);
                         const cache = {};
                         gamesResults.forEach(res => {
-                            cache[res.id] = res.data;
+                            if (res.data) cache[res.id] = res.data;
                         });
                         setGamesCache(cache);
                     }
+
+                    if (allWalletIds.size > 0) {
+                        const walletPromises = Array.from(allWalletIds).map(id =>
+                            walletApi.getWalletById(id)
+                                .then(res => ({ id, data: res ? (res.data || res) : null }))
+                                .catch(() => ({ id, data: null }))
+                        );
+                        const walletResults = await Promise.all(walletPromises);
+                        const wCache = {};
+                        walletResults.forEach(res => {
+                            if (res.data) wCache[res.id] = res.data;
+                        });
+                        setWalletsCache(wCache);
+                    }
                 }
+
             } catch (error) {
                 console.error("Lỗi khi tải lịch sử hoặc thông tin game:", error);
             } finally {
@@ -65,11 +99,24 @@ const History = () => {
     useEffect(() => {
         if (filterType === "all") {
             setFilteredData(historyData);
+        } else if (filterType === "wallet") {
+            setFilteredData(historyData.filter(item => {
+                const wId = item.walletId || item.idWallet || item.wallet;
+                const isStoredInGames = item.gameIds && item.gameIds.length === 1 && walletsCache[typeof item.gameIds[0] === 'string' ? item.gameIds[0] : (item.gameIds[0].$oid || item.gameIds[0])];
+                return item.type === "buying" && (wId || isStoredInGames);
+            }));
+        } else if (filterType === "buying") {
+            setFilteredData(historyData.filter(item => {
+                const wId = item.walletId || item.idWallet || item.wallet;
+                const isStoredInGames = item.gameIds && item.gameIds.length === 1 && walletsCache[typeof item.gameIds[0] === 'string' ? item.gameIds[0] : (item.gameIds[0].$oid || item.gameIds[0])];
+                return item.type === "buying" && !wId && !isStoredInGames;
+            }));
         } else {
             setFilteredData(historyData.filter(item => item.type === filterType));
         }
         setCurrentPage(1);
-    }, [filterType, historyData]);
+    }, [filterType, historyData, walletsCache]);
+
 
     // Tính toán phân trang
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -129,11 +176,18 @@ const History = () => {
                     Nạp tiền
                 </button>
                 <button
+                    className={`filter-btn ${filterType === 'wallet' ? 'active' : ''}`}
+                    onClick={() => setFilterType('wallet')}
+                >
+                    Thẻ ví
+                </button>
+                <button
                     className={`filter-btn ${filterType === 'buying' ? 'active' : ''}`}
                     onClick={() => setFilterType('buying')}
                 >
                     Mua game
                 </button>
+
             </div>
 
             <div className="history-list">
@@ -142,53 +196,74 @@ const History = () => {
                         <div className="status-card">Chưa có giao dịch phù hợp</div>
                     </div>
                 ) : (
-                    currentItems.map((item) => (
-                        <div key={item._id} className={`history-item ${item.type}`}>
-                            <div className="item-icon-box">
-                                {item.type === "amount" ? "💰" : "🎮"}
-                            </div>
-
-                            <div className="item-main-area">
-                                <div className="item-header">
-                                    <span className="item-type-badge">
-                                        {item.type === "amount" ? "Nạp tiền" : "Mua game"}
-                                    </span>
-                                    <span className="item-date">📅 {formatDate(item.createdAt)}</span>
+                    currentItems.map((item) => {
+                        const wIdValue = item.walletId || item.idWallet || item.wallet;
+                        const gIdValue = item.gameIds && item.gameIds.length === 1 ? (typeof item.gameIds[0] === 'string' ? item.gameIds[0] : (item.gameIds[0].$oid || item.gameIds[0])) : null;
+                        const isWalletPurchase = item.type === "buying" && (wIdValue || (gIdValue && walletsCache[gIdValue]));
+                        return (
+                            <div key={item._id} className={`history-item ${item.type} ${isWalletPurchase ? 'wallet-type' : ''}`}>
+                                <div className="item-icon-box">
+                                    {item.type === "amount" ? "💰" : (isWalletPurchase ? "🎟️" : "🎮")}
                                 </div>
 
-                                <div className="item-content">
-                                    <div className="item-main-info">
-                                        {/* <span className="item-id">ID: {item._id}</span> */}
-                                        <div className="item-value">
-                                            {item.type === "amount" ? "+" : "-"} {formatCurrency(item.totalValue)}
-                                        </div>
+                                <div className="item-main-area">
+                                    <div className="item-header">
+                                        <span className="item-type-badge">
+                                            {item.type === "amount" ? "Nạp tiền" : (isWalletPurchase ? "Thẻ ví" : "Mua game")}
+                                        </span>
+                                        <span className="item-date">📅 {formatDate(item.createdAt)}</span>
                                     </div>
 
-                                    <div className="item-details">
-                                        {item.type === "buying" && item.gameIds && item.gameIds.length > 0 && (
-                                            <div className="purchased-games-list">
-                                                {item.gameIds.map((idObj, idx) => {
-                                                    const id = typeof idObj === 'string' ? idObj : (idObj.$oid || idObj);
-                                                    const game = gamesCache[id];
-                                                    return (
-                                                        <div key={idx} className="mini-game-card">
-                                                            {game?.media?.coverImage && (
-                                                                <img src={game.media.coverImage} alt={game.name} className="mini-game-img" />
-                                                            )}
-                                                            <span className="mini-game-name">{game?.name || "Đang tải..."}</span>
-                                                        </div>
-                                                    );
-                                                })}
+                                    <div className="item-content">
+                                        <div className="item-main-info">
+                                            {/* <span className="item-id">ID: {item._id}</span> */}
+                                            <div className="item-value">
+                                                {item.type === "amount" ? "+" : "-"} {formatCurrency(item.totalValue)}
                                             </div>
-                                        )}
-                                        <div className={`status-tag ${item.isHide ? 'hidden' : 'visible'}`}>
-                                            {item.isHide ? "Đã ẩn" : "Công khai"}
+                                        </div>
+
+                                        <div className="item-details">
+                                            {isWalletPurchase && (
+                                                <div className="purchased-games-list">
+                                                    {(() => {
+                                                        const finalWId = wIdValue ? (typeof wIdValue === 'string' ? wIdValue : (wIdValue.$oid || wIdValue)) : gIdValue;
+                                                        const wallet = walletsCache[finalWId];
+                                                        return (
+                                                            <div className="mini-game-card">
+                                                                <div className="mini-wallet-icon">🎟️</div>
+                                                                <span className="mini-game-name">{wallet?.name || "Thẻ ví (Nạp tiền)"}</span>
+                                                            </div>
+                                                        );
+                                                    })()}
+                                                </div>
+                                            )}
+                                            {!isWalletPurchase && item.type === "buying" && item.gameIds && item.gameIds.length > 0 && (
+
+                                                <div className="purchased-games-list">
+                                                    {item.gameIds.map((idObj, idx) => {
+                                                        const id = typeof idObj === 'string' ? idObj : (idObj.$oid || idObj);
+                                                        const game = gamesCache[id];
+                                                        return (
+                                                            <div key={idx} className="mini-game-card">
+                                                                {game?.media?.coverImage && (
+                                                                    <img src={game.media.coverImage} alt={game.name} className="mini-game-img" />
+                                                                )}
+                                                                <span className="mini-game-name">{game?.name || "Đang tải..."}</span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
+                                            <div className={`status-tag ${item.isHide ? 'hidden' : 'visible'}`}>
+                                                {item.isHide ? "Đã ẩn" : "Công khai"}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
+
                 )}
             </div>
 
