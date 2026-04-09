@@ -1,4 +1,3 @@
-import { update } from "apt";
 import BASE_API_URL from "../config/configApiUrl";
 import { manageToken, getInfor } from "../utils/manageToken";
 const AUTH_API_URL = `${BASE_API_URL}/users`;
@@ -76,10 +75,10 @@ const loginWithGoogle = () => {
     // }
 };
 // yeu cau cap nhat mat khau
-const updatePassRes = () =>{
+const updatePassRes = () => {
     const res = fetch(`${AUTH_API_URL}/update-password-request`, {
         method: "POST",
-        headers:{
+        headers: {
             "authorization": "Bearer " + manageToken.getToken(),
             "Content-Type": "application/json",
         }
@@ -87,13 +86,13 @@ const updatePassRes = () =>{
     return res.json();
 };
 const updatePass = async (currentPassword, newPassword) => {
-    const res= await fetch(`${AUTH_API_URL}/update-password`, {
+    const res = await fetch(`${AUTH_API_URL}/update-password`, {
         method: "POST",
-        headers:{
+        headers: {
             "authorization": "Bearer " + manageToken.getToken(),
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({currentPassword: currentPassword, newPassword: newPassword})
+        body: JSON.stringify({ currentPassword: currentPassword, newPassword: newPassword })
     });
     return res.json();
 }
