@@ -113,7 +113,7 @@ const Header = () => {
         <header className="client-header">
             <div className="header-left">
                 <div className="client-logo" onClick={() => navigate('/')}>
-                    <img src="/logo.png" alt="Logo" />
+                    GAME STORE
                 </div>
 
                 <div className="search-container">
@@ -166,9 +166,9 @@ const Header = () => {
 
                 {isLoggedIn ? (
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <button className="user-btn" onClick={() => navigate('/profile')}>
+                        <button className="user-btn">
                             <User size={20} />
-                            <span>{userInfo?.username || userInfo?.name || 'USER'}</span>
+                            <span>{userInfo?.username || 'USER'}</span>
                         </button>
                         <button className="user-btn" style={{ background: 'var(--flag-red)', color: 'white' }} onClick={handleLogout}>
                             <LogOut size={20} />
