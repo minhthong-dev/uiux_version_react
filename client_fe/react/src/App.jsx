@@ -16,6 +16,7 @@ import Checkout from './components/checkout/checkout'
 import AuthSuccess from './components/auth/authSuccess'
 import WalletSelection from './components/wallet/walletSelection'
 import WalletDetail from './components/wallet/walletDetail'
+import Profile from './components/profile/profile'
 import Layout from './layout/index'
 import './App.css'
 import { SocketProvider } from './context/socketContext'
@@ -56,6 +57,7 @@ function App() {
             <Route path="/wallets" element={<WalletSelection />} />
             <Route path="/wallet/:id" element={<WalletDetail />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
           {/* Thêm các route khác ở đây */}
         </Routes>

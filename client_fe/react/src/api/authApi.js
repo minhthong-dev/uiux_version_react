@@ -74,7 +74,28 @@ const loginWithGoogle = () => {
     //     window.location.href = `http://localhost:3636/oauth2/authorize/google`;
     // }
 };
-
+// yeu cau cap nhat mat khau
+const updatePassRes = () => {
+    const res = fetch(`${AUTH_API_URL}/update-password-request`, {
+        method: "POST",
+        headers: {
+            "authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        }
+    });
+    return res.json();
+};
+const updatePass = async (currentPassword, newPassword) => {
+    const res = await fetch(`${AUTH_API_URL}/update-password`, {
+        method: "POST",
+        headers: {
+            "authorization": "Bearer " + manageToken.getToken(),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ currentPassword: currentPassword, newPassword: newPassword })
+    });
+    return res.json();
+}
 export default {
     login,
     resgister,
@@ -82,5 +103,7 @@ export default {
     resetPassword,
     updateMoney,
     getAmoutById,
-    loginWithGoogle
+    loginWithGoogle,
+    updatePassRes,
+    updatePass
 };
