@@ -73,7 +73,7 @@ const FormCreateGame = ({ onSave, onClose, initialData }) => {
             exit={{ opacity: 0 }}
         >
             <motion.div
-                className="modal-content game-modal"
+                className="form-create-game game-modal"
                 initial={{ scale: 0.8, y: 50 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.8, y: 50 }}
