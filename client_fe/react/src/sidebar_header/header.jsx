@@ -5,6 +5,8 @@ import { data, useNavigate } from 'react-router-dom';
 import { manageToken, getInfor } from '../utils/manageToken';
 import cartApi from '../api/cartApi';
 import { useSocket } from '../context/socketContext';
+import authApi from '../api/authApi';
+import { formatCurrency } from '../utils/formatCurrency';
 
 const Header = () => {
     const navigate = useNavigate();
@@ -13,7 +15,9 @@ const Header = () => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [cartCount, setCartCount] = useState(0);
+    const [walletBalance, setWalletBalance] = useState(0);
     const { socket } = useSocket();
+
     /* Tải số lượng items trong giỏ hàng */
     const loadCartCount = async () => {
         if (!manageToken.getToken()) return;
@@ -29,6 +33,21 @@ const Header = () => {
         }
     };
 
+    const loadWalletBalance = async () => {
+        try {
+            const token = manageToken.getToken();
+            if (token) {
+                const info = getInfor(token);
+                if (info && info.id) {
+                    const response = await authApi.getAmoutById(info.id);
+                    setWalletBalance(response.amount || 0);
+                }
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải số dư ví:", error);
+        }
+    };
+
     useEffect(() => {
         const token = manageToken.getToken();
         if (token) {
@@ -36,6 +55,7 @@ const Header = () => {
             try {
                 setUserInfo(getInfor(token));
                 loadCartCount();
+                loadWalletBalance();
             } catch (error) {
                 console.error("Token invalid");
             }
@@ -54,6 +74,15 @@ const Header = () => {
         window.addEventListener('cartUpdated', handleCartUpdated);
         return () => window.removeEventListener('cartUpdated', handleCartUpdated);
     }, []);
+    useEffect(() => {
+        if (!socket) return;
+        socket.on('nap_tien_thanh_cong', () => {
+            loadWalletBalance();
+        });
+        return () => {
+            socket.off('nap_tien_thanh_cong');
+        };
+    }, [socket]);
 
     const handleLogout = () => {
         const dataUser = () => {
@@ -84,7 +113,7 @@ const Header = () => {
         <header className="client-header">
             <div className="header-left">
                 <div className="client-logo" onClick={() => navigate('/')}>
-                    <img src="/logo.png" alt="Logo" />
+                    GAME STORE
                 </div>
 
                 <div className="search-container">
@@ -106,9 +135,12 @@ const Header = () => {
             </div>
 
             <nav className="store-nav">
-                <a href="#" className="store-nav-link">CỬA HÀNG</a>
-                <a href="#" className="store-nav-link">THƯ VIỆN</a>
-                <a href="#" className="store-nav-link">CỘNG ĐỒNG</a>
+                {isLoggedIn && (
+                    <div className="header-wallet" onClick={() => navigate('/payment')} style={{ cursor: 'pointer' }}>
+                        <span className="wallet-label">SỐ DƯ: </span>
+                        <span className="wallet-amount">{formatCurrency(walletBalance)}</span>
+                    </div>
+                )}
             </nav>
 
             <div className="header-right">
@@ -134,9 +166,9 @@ const Header = () => {
 
                 {isLoggedIn ? (
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <button className="user-btn" onClick={() => navigate('/profile')}>
+                        <button className="user-btn">
                             <User size={20} />
-                            <span>{userInfo?.username || userInfo?.name || 'USER'}</span>
+                            <span>{userInfo?.username || 'USER'}</span>
                         </button>
                         <button className="user-btn" style={{ background: 'var(--flag-red)', color: 'white' }} onClick={handleLogout}>
                             <LogOut size={20} />

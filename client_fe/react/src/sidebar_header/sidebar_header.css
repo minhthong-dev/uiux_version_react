@@ -19,28 +19,15 @@
 }
 
 .client-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 220px;
-    height: 70px;
-    background: transparent;
+    font-size: 1.8rem;
+    font-weight: 950;
+    background: var(--sunflower-gold);
+    color: var(--deep-space-blue);
+    padding: 5px 20px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    text-transform: uppercase;
     cursor: pointer;
-    overflow: hidden;
-    padding: 0;
-}
-
-.client-logo img {
-    max-height: 100%;
-    max-width: 100%;
-    object-fit: contain;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
-    transition: transform 0.3s ease;
-}
-
-.client-logo:hover img {
-    transform: scale(1.1);
-    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.6));
 }
 
 .search-container {
@@ -82,6 +69,37 @@
 
 .store-nav-link:hover {
     color: var(--sunflower-gold);
+}
+
+.header-wallet {
+    background: var(--white);
+    border: var(--border-thick);
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-small);
+    transition: all 0.2s;
+}
+
+.header-wallet:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
+    background: var(--vanilla-custard);
+}
+
+.wallet-label {
+    font-weight: 950;
+    color: var(--deep-space-blue);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.wallet-amount {
+    font-weight: 900;
+    color: var(--flag-red);
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
 }
 
 .header-right {
