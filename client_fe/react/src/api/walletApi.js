@@ -1,4 +1,6 @@
 import axiosClient from "./axiosClient";
+import { manageToken } from "../utils/manageToken";
+
 
 const walletApi = {
     getAllWallets: async () => {
