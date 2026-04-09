@@ -32,6 +32,9 @@ const Login = () => {
     return (
         <div className="login-container">
             <div className="login-card">
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                    <img src="/logo.png" alt="Logo" style={{ width: '120px', height: '120px', objectFit: 'contain' }} />
+                </div>
                 <h1 className="login-title">TRUY CAP ADMIN</h1>
 
                 {/* Khu vực thông báo lỗi giả lập */}

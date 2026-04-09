@@ -12,12 +12,22 @@
 }
 
 .header-logo {
-    font-size: 1.5rem;
-    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 50px;
     background: var(--white);
-    padding: 5px 15px;
     border: var(--border-thick);
     box-shadow: var(--shadow-small);
+    overflow: hidden;
+    padding: 2px;
+}
+
+.header-logo img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
 }
 
 .header-actions {
