@@ -1,8 +1,19 @@
 import axios from "axios";
 import { toast } from "../components/notification/toast";
 
+
+const isLocalhost = Boolean(
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '[::1]' ||
+    window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
+);
+
+const API_URL = isLocalhost
+    ? 'http://localhost:3636/api'
+    : 'https://node-version-webbangame.onrender.com/api';
+
 const axiosClient = axios.create({
-    baseURL: "https://node-version-webbangame.onrender.com/api",
+    baseURL: API_URL,
     headers: {
         "Content-Type": "application/json",
     },

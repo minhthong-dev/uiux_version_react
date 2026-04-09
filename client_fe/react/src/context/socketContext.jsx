@@ -40,7 +40,7 @@ export const SocketProvider = ({ children }) => {
             console.log("Đang thử kết nối Java WebSocket...");
             let ws;
             try {
-                ws = new WebSocket(`ws://localhost:3636/ws/webbangame?token=${token}`);
+                ws = new WebSocket(`ws://localhost:3000/ws/webbangame?token=${token}`);
             } catch (error) {
                 console.error("Lỗi khi tạo WebSocket (đã skip):", error);
                 return;

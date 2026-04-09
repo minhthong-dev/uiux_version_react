@@ -13,7 +13,8 @@ import {
     Trophy,
     Search,
     History,
-    CircleDollarSign
+    CircleDollarSign,
+    Wallet
 } from 'lucide-react';
 import './sidebar_header.css';
 import useGenreNav from '../hooks/useGenreNav';
@@ -58,7 +59,7 @@ const Sidebar = () => {
                     </NavLink>
                     <NavLink to="/new" className="client-nav-item">
                         <Clock size={20} />
-                        <span>Mới nhất</span>
+                        <span>Mới nhất & Sắp ra mắt</span>
                     </NavLink>
                     <NavLink to="/discount" className="client-nav-item">
                         <Gift size={20} />
@@ -67,6 +68,10 @@ const Sidebar = () => {
                     <NavLink to="/search" className="client-nav-item">
                         <Search size={20} />
                         <span>Tìm kiếm</span>
+                    </NavLink>
+                    <NavLink to="/wallets" className="client-nav-item">
+                        <Wallet size={20} />
+                        <span>Ví điện tử</span>
                     </NavLink>
                 </nav>
             </div>

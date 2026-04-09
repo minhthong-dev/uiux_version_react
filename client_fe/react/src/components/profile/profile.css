@@ -1,0 +1,205 @@
+/* client_fe/react/src/components/profile/profile.css */
+
+.nb-profile-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.nb-title {
+    font-size: 3rem;
+    color: var(--black);
+    text-shadow: 4px 4px 0px var(--amber-gold), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    margin-bottom: 40px;
+    letter-spacing: -2px;
+}
+
+.nb-profile-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 40px;
+}
+
+.nb-card {
+    background: var(--white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-hard);
+    padding: 30px;
+    margin-bottom: 40px;
+    border-radius: 4px;
+}
+
+.nb-card-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    border-bottom: var(--border-thick);
+    padding-bottom: 10px;
+    color: var(--azure-blue);
+}
+
+/* User Info */
+.nb-info-item {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.nb-label {
+    font-weight: 900;
+    color: var(--blaze-orange);
+    text-transform: uppercase;
+}
+
+.nb-value {
+    font-weight: 600;
+    background: var(--bg-color);
+    padding: 10px;
+    border: var(--border-thin);
+    margin-top: 5px;
+}
+
+/* Password Form */
+.nb-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.nb-input {
+    font-size: 1.1rem;
+    padding: 12px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    outline: none;
+    transition: all 0.2s;
+    font-family: inherit;
+    background: var(--white);
+}
+
+.nb-input:focus {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
+}
+
+.nb-btn {
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-family: inherit;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.nb-btn-orange {
+    background: var(--blaze-orange);
+    color: var(--white);
+}
+
+.nb-btn-orange:hover {
+    background: var(--neon-pink);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
+}
+
+.nb-message {
+    margin-top: 15px;
+    font-weight: 900;
+    background: var(--bg-color);
+    padding: 10px;
+    border: var(--border-thin);
+    text-align: center;
+}
+
+/* Tabs */
+.nb-tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.nb-tab {
+    flex: 1;
+    background: var(--white);
+    color: var(--black);
+    padding: 15px;
+    font-size: 1.2rem;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+    cursor: pointer;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: all 0.1s;
+    text-align: center;
+}
+
+.nb-tab-active {
+    background: var(--amber-gold);
+    box-shadow: var(--shadow-hard);
+    transform: translate(-2px, -2px);
+}
+
+/* History List */
+.nb-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.nb-history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border: var(--border-thick);
+    background: #fff;
+    box-shadow: var(--shadow-small);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.nb-history-item:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: var(--shadow-hard);
+}
+
+.nb-history-name {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    color: var(--azure-blue);
+    font-weight: 900;
+}
+
+.nb-history-date {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--black);
+}
+
+.nb-history-amount {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--neon-pink);
+    background: var(--amber-gold);
+    padding: 10px 15px;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-small);
+}
+
+.nb-empty {
+    font-size: 1.2rem;
+    font-weight: 900;
+    text-align: center;
+    padding: 40px;
+    border: var(--border-thick);
+    background: var(--bg-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nb-profile-layout {
+        grid-template-columns: 1fr;
+    }
+}

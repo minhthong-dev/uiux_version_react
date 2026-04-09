@@ -1,10 +1,10 @@
 const getBaseApiUrl = () => {
-  const isLocal = 
-    window.location.hostname === "localhost" || 
+  const isLocal =
+    window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1";
 
-  return isLocal 
-    ? "http://localhost:3636/api" 
+  return isLocal
+    ? "http://localhost:3636/api"
     : "https://node-version-webbangame.onrender.com/api";
 };
 

@@ -134,9 +134,9 @@ const Header = () => {
 
                 {isLoggedIn ? (
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <button className="user-btn">
+                        <button className="user-btn" onClick={() => navigate('/profile')}>
                             <User size={20} />
-                            <span>{userInfo?.username || 'USER'}</span>
+                            <span>{userInfo?.username || userInfo?.name || 'USER'}</span>
                         </button>
                         <button className="user-btn" style={{ background: 'var(--flag-red)', color: 'white' }} onClick={handleLogout}>
                             <LogOut size={20} />
