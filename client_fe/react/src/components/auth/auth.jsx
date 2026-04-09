@@ -72,7 +72,7 @@ const Login = () => {
 
                 <div className="web-header">
                     <div className="web-title-wrapper">
-                        <span className="web-icon">🎮</span>
+                        <img src="/logo.png" alt="Logo" className="web-icon" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
                         <h1 className="web-title">
                             <span className="title-word t-poor">POOR</span>
                             <span className="title-dash">-</span>

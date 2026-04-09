@@ -19,15 +19,23 @@
 }
 
 .client-logo {
-    font-size: 1.8rem;
-    font-weight: 950;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 250px;
+    height: 60px;
     background: var(--sunflower-gold);
-    color: var(--deep-space-blue);
-    padding: 5px 20px;
     border: var(--border-thick);
     box-shadow: var(--shadow-small);
-    text-transform: uppercase;
     cursor: pointer;
+    overflow: hidden;
+    padding: 2px;
+}
+
+.client-logo img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
 }
 
 .search-container {

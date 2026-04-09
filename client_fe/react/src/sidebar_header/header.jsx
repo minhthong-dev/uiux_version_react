@@ -84,7 +84,7 @@ const Header = () => {
         <header className="client-header">
             <div className="header-left">
                 <div className="client-logo" onClick={() => navigate('/')}>
-                    GAME STORE
+                    <img src="/logo.png" alt="Logo" />
                 </div>
 
                 <div className="search-container">
