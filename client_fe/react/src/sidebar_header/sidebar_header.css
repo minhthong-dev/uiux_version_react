@@ -71,6 +71,37 @@
     color: var(--sunflower-gold);
 }
 
+.header-wallet {
+    background: var(--white);
+    border: var(--border-thick);
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-small);
+    transition: all 0.2s;
+}
+
+.header-wallet:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
+    background: var(--vanilla-custard);
+}
+
+.wallet-label {
+    font-weight: 950;
+    color: var(--deep-space-blue);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.wallet-amount {
+    font-weight: 900;
+    color: var(--flag-red);
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
 .header-right {
     display: flex;
     gap: 15px;
