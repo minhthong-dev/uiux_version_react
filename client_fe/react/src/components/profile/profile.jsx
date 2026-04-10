@@ -8,16 +8,19 @@ import "./profile.css";
 const Profile = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [historyList, setHistoryList] = useState([]);
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [message, setMessage] = useState("");
     const [activeTab, setActiveTab] = useState("game");
+
+    // Đổi mật khẩu bằng OTP
+    const [otpSent, setOtpSent] = useState(false);
+    const [otpLoading, setOtpLoading] = useState(false);
+    const [otp, setOtp] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [message, setMessage] = useState({ text: "", type: "" });
 
     useEffect(() => {
         const info = getInfor();
         if (info) {
             setUserInfo(info);
-            // Lấy lịch sử giao dịch
             historyApi.getHistory().then(res => {
                 setHistoryList(Array.isArray(res) ? res : (res?.data || []));
             }).catch(err => {
@@ -26,26 +29,46 @@ const Profile = () => {
         }
     }, []);
 
-    const handleChangePassword = async (e) => {
-        e.preventDefault();
-        setMessage("");
+    // Bước 1: Yêu cầu BE gửi OTP
+    const handleRequestOtp = async () => {
+        setMessage({ text: "", type: "" });
+        setOtpLoading(true);
         try {
-            const res = await authApi.updatePass(currentPassword, newPassword);
+            const res = await authApi.updatePassRes();
             if (res) {
-                setMessage("✅ Đổi mật khẩu thành công!");
-                setCurrentPassword("");
-                setNewPassword("");
+                setOtpSent(true);
+                setMessage({ text: "✅ OTP đã gửi về email của bạn!", type: "success" });
             } else {
-                setMessage("❌ Đổi mật khẩu thất bại.");
+                setMessage({ text: "❌ Không thể gửi OTP, vui lòng thử lại.", type: "error" });
             }
         } catch (error) {
             console.error(error);
-            setMessage("❌ Có lỗi xảy ra, vui lòng kiểm tra lại mật khẩu cũ.");
+            setMessage({ text: "❌ Có lỗi xảy ra khi gửi OTP.", type: "error" });
+        } finally {
+            setOtpLoading(false);
         }
     };
 
-    // Lọc lịch sử dựa trên tab (giả định có thuộc tính liên quan đến wallet hoặc game)
-    // Nếu API không chia type rõ ràng, ta hiển thị tất cả nhưng dùng cờ an toàn tính chất tham khảo
+    // Bước 2: Xác nhận OTP + mật khẩu mới
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        setMessage({ text: "", type: "" });
+        try {
+            const res = await authApi.updatePass(otp, newPassword);
+            if (res && !res.error) {
+                setMessage({ text: "✅ Đổi mật khẩu thành công!", type: "success" });
+                setOtp("");
+                setNewPassword("");
+                setOtpSent(false);
+            } else {
+                setMessage({ text: `❌ ${res?.message || "Đổi mật khẩu thất bại, kiểm tra lại OTP."}`, type: "error" });
+            }
+        } catch (error) {
+            console.error(error);
+            setMessage({ text: "❌ Có lỗi xảy ra, vui lòng thử lại.", type: "error" });
+        }
+    };
+
     const filteredHistory = historyList.filter(item => {
         if (activeTab === "game") {
             return item.type === "game" || item.gameId || (!item.walletId && !item.type?.includes("wallet"));
@@ -75,69 +98,62 @@ const Profile = () => {
 
                     <div className="nb-card nb-password-card">
                         <h2 className="nb-card-title">Đổi Mật Khẩu</h2>
-                        <form className="nb-form" onSubmit={handleChangePassword}>
-                            <input 
-                                type="password" 
-                                className="nb-input" 
-                                placeholder="Mật khẩu hiện tại" 
-                                value={currentPassword}
-                                onChange={e => setCurrentPassword(e.target.value)}
-                                required 
-                            />
-                            <input 
-                                type="password" 
-                                className="nb-input" 
-                                placeholder="Mật khẩu mới" 
-                                value={newPassword}
-                                onChange={e => setNewPassword(e.target.value)}
-                                required 
-                            />
-                            <button type="submit" className="nb-btn nb-btn-orange">Cập Nhật</button>
-                        </form>
-                        {message && <div className="nb-message">{message}</div>}
+
+                        {/* Bước 1: Gửi OTP */}
+                        {!otpSent && (
+                            <button
+                                className="nb-btn nb-btn-orange"
+                                onClick={handleRequestOtp}
+                                disabled={otpLoading}
+                            >
+                                {otpLoading ? "Đang gửi..." : "Gửi OTP Đổi Mật Khẩu"}
+                            </button>
+                        )}
+
+                        {/* Bước 2: Nhập OTP + mật khẩu mới */}
+                        {otpSent && (
+                            <form className="nb-form" onSubmit={handleChangePassword}>
+                                <input
+                                    type="text"
+                                    className="nb-input"
+                                    placeholder="Nhập mã OTP"
+                                    value={otp}
+                                    onChange={e => setOtp(e.target.value)}
+                                    required
+                                />
+                                <input
+                                    type="password"
+                                    className="nb-input"
+                                    placeholder="Mật khẩu mới"
+                                    value={newPassword}
+                                    onChange={e => setNewPassword(e.target.value)}
+                                    required
+                                />
+                                <div className="nb-btn-group">
+                                    <button type="submit" className="nb-btn nb-btn-orange">
+                                        Xác Nhận
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="nb-btn nb-btn-ghost"
+                                        onClick={() => { setOtpSent(false); setOtp(""); setNewPassword(""); setMessage({ text: "", type: "" }); }}
+                                    >
+                                        Huỷ
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+
+                        {message.text && (
+                            <div className={`nb-message ${message.type === "success" ? "nb-message-success" : "nb-message-error"}`}>
+                                {message.text}
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {/* Cột phải: Lịch sử */}
-                <div className="nb-main-content">
-                    <div className="nb-card nb-history-card">
-                        <div className="nb-tabs">
-                            <button 
-                                className={`nb-tab ${activeTab === "game" ? "nb-tab-active" : ""}`}
-                                onClick={() => setActiveTab("game")}
-                            >
-                                Mua Game
-                            </button>
-                            <button 
-                                className={`nb-tab ${activeTab === "wallet" ? "nb-tab-active" : ""}`}
-                                onClick={() => setActiveTab("wallet")}
-                            >
-                                Mua Wallet
-                            </button>
-                        </div>
-                        <div className="nb-history-list">
-                            {filteredHistory.length === 0 ? (
-                                <div className="nb-empty">Chưa có giao dịch ở mục này.</div>
-                            ) : (
-                                filteredHistory.map((item, index) => (
-                                    <div key={index} className="nb-history-item">
-                                        <div className="nb-history-info">
-                                            <h3 className="nb-history-name">
-                                                {item.gameName || item.walletName || item.name || item.title || item.description || `Giao dịch #${item.id || index + 1}`}
-                                            </h3>
-                                            <p className="nb-history-date">
-                                                {item.createdAt || item.date ? new Date(item.createdAt || item.date).toLocaleDateString("vi-VN") : "Gần đây"}
-                                            </p>
-                                        </div>
-                                        <div className="nb-history-amount">
-                                            {item.amount || item.price || 0} VNĐ
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                </div>
+                {/* Cột phải: Lịch sử (tạm ẩn) */}
+                {/* <div className="nb-main-content">...</div> */}
             </div>
         </div>
     );

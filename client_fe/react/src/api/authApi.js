@@ -75,24 +75,25 @@ const loginWithGoogle = () => {
     // }
 };
 // yeu cau cap nhat mat khau
-const updatePassRes = () => {
-    const res = fetch(`${AUTH_API_URL}/update-password-request`, {
-        method: "POST",
+const updatePassRes = async () => {
+    const res = await fetch(`${AUTH_API_URL}/update-pass-request`, {
+        method: "GET",
         headers: {
             "authorization": "Bearer " + manageToken.getToken(),
             "Content-Type": "application/json",
         }
     });
+    console.log(res);
     return res.json();
 };
-const updatePass = async (currentPassword, newPassword) => {
-    const res = await fetch(`${AUTH_API_URL}/update-password`, {
-        method: "POST",
+const updatePass = async (otp, newPassword) => {
+    const res = await fetch(`${AUTH_API_URL}/update-pass`, {
+        method: "PATCH",
         headers: {
             "authorization": "Bearer " + manageToken.getToken(),
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ currentPassword: currentPassword, newPassword: newPassword })
+        body: JSON.stringify({ otp: otp, newPassword: newPassword })
     });
     return res.json();
 }

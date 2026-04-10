@@ -105,13 +105,51 @@
     box-shadow: var(--shadow-hard);
 }
 
+.nb-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: var(--shadow-small);
+}
+
+.nb-btn-ghost {
+    background: var(--white);
+    color: var(--black);
+}
+
+.nb-btn-ghost:hover {
+    background: var(--bg-color);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard);
+}
+
+.nb-btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+.nb-btn-group .nb-btn {
+    flex: 1;
+}
+
 .nb-message {
     margin-top: 15px;
     font-weight: 900;
-    background: var(--bg-color);
     padding: 10px;
     border: var(--border-thin);
     text-align: center;
+}
+
+.nb-message-success {
+    background: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+}
+
+.nb-message-error {
+    background: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
 }
 
 /* Tabs */
