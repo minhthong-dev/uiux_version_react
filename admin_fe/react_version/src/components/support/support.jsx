@@ -5,7 +5,47 @@ import './support.css';
 import { getHistoryChatListAdmin, getHistoryChat } from '../../api/chatApi';
 
 const Support = () => {
-    const { socket, isConnected, supportUsers, supportMessages, setPendingCount, upsertSupportUser, addAdminMessage } = useSocket();
+    const { socket, isConnected } = useSocket();
+    const [supportUsers, setSupportUsers] = useState(() => {
+        try { return JSON.parse(sessionStorage.getItem('supportUsers')) || []; } catch { return []; }
+    });
+    const [supportMessages, setSupportMessages] = useState(() => {
+        try { return JSON.parse(sessionStorage.getItem('supportMessages')) || {}; } catch { return {}; }
+    });
+    const [pendingCount, setPendingCount] = useState(0);
+
+    const upsertSupportUser = useCallback((userId, name, lastMessage, timestamp, isWaiting = false) => {
+        setSupportUsers(prev => {
+            const updatedUser = {
+                id: userId,
+                name: name || `User #${userId?.toString().slice(-4) || userId}`,
+                lastMessage: lastMessage || '',
+                timestamp: timestamp || new Date().toISOString(),
+                isWaiting,
+            };
+            const exists = prev.find(u => u.id === userId);
+            if (exists) {
+                return [updatedUser, ...prev.filter(u => u.id !== userId)];
+            } else {
+                return [updatedUser, ...prev];
+            }
+        });
+    }, []);
+
+    const addAdminMessage = useCallback((userId, text, timestamp) => {
+        setSupportMessages(prev => ({
+            ...prev,
+            [userId]: [...(prev[userId] || []), { sender: 'admin', text, timestamp: timestamp || new Date().toISOString() }]
+        }));
+    }, []);
+
+    useEffect(() => {
+        sessionStorage.setItem('supportUsers', JSON.stringify(supportUsers));
+    }, [supportUsers]);
+
+    useEffect(() => {
+        sessionStorage.setItem('supportMessages', JSON.stringify(supportMessages));
+    }, [supportMessages]);
     const [activeUserId, setActiveUserId] = useState(null);
     const [inputText, setInputText] = useState('');
     const [isSending, setIsSending] = useState(false);
@@ -79,9 +119,58 @@ const Support = () => {
     // Reset pending count khi vào trang hoặc chat
     useEffect(() => {
         setPendingCount(0);
-    }, [setPendingCount, activeUserId]);
+    }, [activeUserId]);
 
-    // Chú ý: Lắng nghe socket đã được chuyển lên SocketContext
+    // Lắng nghe socket ws pure cho chat
+    useEffect(() => {
+        if (!socket || !isConnected) return;
+
+        // Báo cho java server biết đây là admin (nếu cần)
+        socket.send(JSON.stringify({ event: 'iam_admin' }));
+
+        const handleMessage = (event) => {
+            try {
+                const msg = JSON.parse(event.data);
+
+                if (msg.event === 'new_user_waiting') {
+                    const { userId, username, timestamp } = msg.data?.infor || msg.data || {};
+                    if (!userId) return;
+                    upsertSupportUser(userId, username, 'Đang chờ hỗ trợ...', timestamp, true);
+                    setPendingCount(prev => prev + 1);
+                }
+                else if (msg.event === 'receive_user_online_list') {
+                    const rawUsers = Array.isArray(msg.data) ? msg.data : [msg.data];
+                    const onlineList = rawUsers.map(item => {
+                        const userData = item?.data || item;
+                        const id = userData?.userId || userData?.id || item?.room;
+                        return id ? {
+                            id,
+                            username: userData?.username || userData?.name || 'Unknown',
+                        } : null;
+                    }).filter(Boolean);
+                    onlineList.forEach(u => {
+                        upsertSupportUser(u.id, u.username, 'Đang online', new Date().toISOString(), false);
+                    });
+                }
+                else if (msg.event === 'receive_user_message') {
+                    const { userId, username, timestamp } = msg.data?.infor || msg.data || {};
+                    const text = msg.message || msg.data?.message;
+                    if (!userId || !text) return;
+                    upsertSupportUser(userId, username, text, timestamp, false);
+                    setSupportMessages(prev => ({
+                        ...prev,
+                        [userId]: [...(prev[userId] || []), { sender: 'user', text, timestamp: timestamp || new Date().toISOString() }]
+                    }));
+                    setPendingCount(prev => prev + 1);
+                }
+            } catch (err) {
+                console.error("Lỗi parse WS:", err);
+            }
+        };
+
+        socket.addEventListener('message', handleMessage);
+        return () => socket.removeEventListener('message', handleMessage);
+    }, [socket, isConnected, upsertSupportUser]);
 
     const activeUser = supportUsers.find(u => u.id === activeUserId);
     const activeHistory = activeUserId ? (supportMessages[activeUserId] || []) : [];
@@ -122,12 +211,10 @@ const Support = () => {
         const messageData = { room: activeUserId, text: trimmed, timestamp };
 
         setIsSending(true);
-        socket.emit('admin_message', messageData, () => {
-            setIsSending(false);
-        });
-
-        // Nếu server không gọi ack callback, tự reset sau 3s
-        setTimeout(() => setIsSending(false), 3000);
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ event: 'admin_message', data: messageData }));
+        }
+        setIsSending(false);
 
         addAdminMessage(activeUserId, trimmed, timestamp);
         upsertSupportUser(activeUserId, activeUser?.name, trimmed, timestamp, false);

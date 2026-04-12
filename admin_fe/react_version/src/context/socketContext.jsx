@@ -1,8 +1,5 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
-import SOCKET_URL from '../config/configSocketUrl';
-import { manageToken } from '../utils/manageToken';
-import { toast } from '../components/notification/toast';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { manageToken, getInfor } from '../utils/manageToken';
 
 const SocketContext = createContext();
 
@@ -12,150 +9,89 @@ export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsconnected] = useState(false);
 
-    /* State toàn cục cho support chat */
-    const [supportUsers, setSupportUsers] = useState(() => {
-        const saved = sessionStorage.getItem('supportUsers');
-        return saved ? JSON.parse(saved) : [];
-    });
-    const [supportMessages, setSupportMessages] = useState(() => {
-        const saved = sessionStorage.getItem('supportMessages');
-        return saved ? JSON.parse(saved) : {};
-    });
-    const [onlineUsers, setOnlineUsers] = useState([]); // danh sách user đang online từ socket
-    const [pendingCount, setPendingCount] = useState(0);        // số tin nhắn chưa đọc
+    const dataUser = () => {
+        const info = getInfor();
+        return {
+            room: info?.id,
+            data: info
+        };
+    };
 
-    const upsertSupportUser = useCallback((userId, name, lastMessage, timestamp, isWaiting = false) => {
-        setSupportUsers(prev => {
-            const updatedUser = {
-                id: userId,
-                name: name || `User #${userId.slice(-4)}`,
-                lastMessage: lastMessage || '',
-                timestamp: timestamp || new Date().toISOString(),
-                isWaiting,
+    useEffect(() => {
+        let javaWsInstance = null;
+        const token = manageToken.getToken();
+
+        if (!token) return;
+
+        const userData = dataUser();
+
+        const connectJavaWS = () => {
+            const javaWsHost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+                ? "ws://localhost:3636"
+                : "wss://java-version-webbangame.onrender.com";
+
+            const wsUrl = `${javaWsHost}/ws/webbangame?token=${token}`;
+            const ws = new WebSocket(wsUrl);
+            javaWsInstance = ws;
+
+            ws.onopen = () => {
+                setSocket(ws);
+                // Gửi thông tin để server xác nhận kết nối
+                ws.send(JSON.stringify({ event: 'xin chao minh thong', data: userData }));
+                ws.send(JSON.stringify({ event: 'join_room', data: userData }));
+                ws.send(JSON.stringify({ event: 'isConnected', data: userData }));
+                console.log("Java WebSocket opened, waiting for confirmation...");
             };
-            const exists = prev.find(u => u.id === userId);
-            let newUsers;
-            if (exists) {
-                newUsers = [updatedUser, ...prev.filter(u => u.id !== userId)];
-            } else {
-                newUsers = [updatedUser, ...prev];
+
+            const handleMessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    // Xác nhận kết nối từ server Java
+                    if (msg.event === 'server_confirm_connection') {
+                        setIsconnected(true);
+                        console.log("Server confirmed connection:", msg.message);
+                    }
+                    if (msg.event === 'receive_user_block') {
+                        handleUserBlock(msg.data);
+                    }
+                } catch (e) {
+                    console.error("Lỗi parse message Java:", e);
+                }
+            };
+
+            ws.addEventListener('message', handleMessage);
+
+            ws.onclose = () => {
+                setIsconnected(false);
+                ws.removeEventListener('message', handleMessage);
+            };
+
+            ws.onerror = (error) => {
+                console.error("WebSocket Error:", error);
+                setIsconnected(false);
+                ws.removeEventListener('message', handleMessage);
+            };
+        };
+
+        const handleUserBlock = (msg) => {
+            alert(msg);
+            manageToken.removeToken();
+            window.location.href = '/auth';
+        };
+
+        // Kết nối thẳng tới Java hoàn toàn
+        connectJavaWS();
+
+        return () => {
+            if (javaWsInstance) {
+                javaWsInstance.close();
             }
-            return newUsers;
-        });
+        };
     }, []);
-
-    const addAdminMessage = useCallback((userId, text, timestamp) => {
-        setSupportMessages(prev => ({
-            ...prev,
-            [userId]: [...(prev[userId] || []), { sender: 'admin', text, timestamp: timestamp || new Date().toISOString() }]
-        }));
-    }, []);
-
-    // Sync to sessionStorage
-    useEffect(() => {
-        sessionStorage.setItem('supportUsers', JSON.stringify(supportUsers));
-    }, [supportUsers]);
-
-    useEffect(() => {
-        sessionStorage.setItem('supportMessages', JSON.stringify(supportMessages));
-    }, [supportMessages]);
-
-    useEffect(() => {
-        const newSocket = io(SOCKET_URL, {
-            reconnection: true,
-            reconnectionAttempts: 5,
-            reconnectionDelay: 1000,
-            transports: ['polling', 'websocket'],
-            withCredentials: true
-        });
-
-        newSocket.on('connect', () => {
-            console.log('connected', newSocket.id);
-            setIsconnected(true);
-        });
-
-        newSocket.emit('iam_admin', manageToken.getToken());
-
-        newSocket.on('admin_check', (data) => {
-            console.log(data);
-        });
-
-        /* Lắng nghe user vào hàng chờ */
-        newSocket.on('new_user_waiting', (data) => {
-            const { userId, username, timestamp } = data?.data?.infor || {};
-            if (!userId) return;
-            upsertSupportUser(userId, username, 'Đang chờ hỗ trợ...', timestamp, true);
-            setPendingCount(prev => prev + 1);
-            toast.info(`🙋 ${username || 'Người dùng'} đang chờ hỗ trợ!`);
-        });
-
-        /* Lắng nghe danh sách user online */
-        newSocket.on('receive_user_online_list', (payload) => {
-            if (!payload) return;
-
-            const rawUsers = Array.isArray(payload) ? payload : [payload];
-            const onlineList = rawUsers
-                .map(item => {
-                    const userData = item?.data || item;
-                    const id = userData?.userId || userData?.id || item?.room;
-                    if (!id) return null;
-                    return {
-                        id,
-                        userId: userData?.userId || userData?.id,
-                        username: userData?.username || userData?.name || 'Unknown',
-                        email: userData?.email || '',
-                        role: userData?.role || 'user'
-                    };
-                })
-                .filter(Boolean);
-
-            setOnlineUsers(onlineList);
-
-            // Cập nhật bổ sung supportUsers nếu cần, dễ tìm khi click
-            onlineList.forEach(u => {
-                upsertSupportUser(u.id, u.username, 'Đang online', new Date().toISOString(), false);
-            });
-        });
-
-        /* Lắng nghe tin nhắn từ user */
-        newSocket.on('receive_user_message', (data) => {
-            const { userId, username, timestamp } = data?.data?.infor || {};
-            const text = data?.message;
-            if (!userId || !text) return;
-
-            upsertSupportUser(userId, username, text, timestamp, false);
-            setSupportMessages(prev => ({
-                ...prev,
-                [userId]: [...(prev[userId] || []), { sender: 'user', text, timestamp: timestamp || new Date().toISOString() }]
-            }));
-            setPendingCount(prev => prev + 1);
-            toast.info(`💬 ${username || 'User'}: ${text.length > 40 ? text.slice(0, 40) + '...' : text}`);
-        });
-
-        newSocket.on('disconnect', () => {
-            console.log('disconnected', newSocket.id);
-            setIsconnected(false);
-        });
-
-        setSocket(newSocket);
-        return () => newSocket.close();
-    }, [upsertSupportUser]);
-
 
     return (
-        <SocketContext.Provider value={{
-            socket,
-            isConnected,
-            supportUsers, setSupportUsers,
-            supportMessages, setSupportMessages,
-            onlineUsers, setOnlineUsers,
-            pendingCount, setPendingCount,
-            upsertSupportUser,
-            addAdminMessage,
-        }}>
+        <SocketContext.Provider value={{ socket, isConnected }}>
             {children}
         </SocketContext.Provider>
     );
 };
-
-export default { SocketProvider, useSocket };
